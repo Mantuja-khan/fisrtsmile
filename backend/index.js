@@ -41,7 +41,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // FIXED FOR EXPRESS 5
-app.options(/.*/, cors(corsOptions));
+app.options('(.*)', cors(corsOptions));
 
 // Default Route
 app.get('/', (req, res) => {
