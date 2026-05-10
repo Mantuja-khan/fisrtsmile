@@ -146,15 +146,14 @@ function AdminProducts() {
            // Note: We use fetch directly since api config might be /api and we need /api/upload
            // wait, api is configured as axios instance for /api. So /upload is fine.
            const { data } = await api.post("/upload", { image: base64, name: file.name });
-           const baseUrl = apiHost.replace("/api", "");
-           const fullUrl = `${baseUrl}${data.url}`;
+           const relativePath = data.url;
            
            const inputElement = document.getElementById(targetField + "_input") as HTMLInputElement | HTMLTextAreaElement;
            if (inputElement) {
                if (targetField === "image") {
-                   inputElement.value = fullUrl;
+                   inputElement.value = relativePath;
                } else {
-                   inputElement.value = inputElement.value ? inputElement.value + "\n" + fullUrl : fullUrl;
+                   inputElement.value = inputElement.value ? inputElement.value + "\n" + relativePath : relativePath;
                }
            }
            toast.success("Image uploaded!");

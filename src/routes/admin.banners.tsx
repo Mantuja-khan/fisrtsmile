@@ -58,9 +58,8 @@ function AdminBanners() {
        try {
            const apiHost = import.meta.env.VITE_API_URL || "http://localhost:5003/api";
            const { data } = await api.post("/upload", { image: base64, name: file.name });
-           const baseUrl = apiHost.replace("/api", "");
-           const fullUrl = `${baseUrl}${data.url}`;
-           setImagePreview(fullUrl);
+           const relativePath = data.url;
+           setImagePreview(relativePath); // Store relative path
            toast.success("Image uploaded!");
        } catch (error) {
            toast.error("Failed to upload image");
@@ -151,7 +150,7 @@ function AdminBanners() {
               />
               {imagePreview && (
                 <div className="aspect-[21/9] w-full max-w-lg rounded-lg overflow-hidden border border-border mt-2">
-                  <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                  <img src={resolveImage(imagePreview)} className="w-full h-full object-cover" alt="Preview" />
                 </div>
               )}
             </div>

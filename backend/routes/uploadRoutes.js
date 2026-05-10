@@ -2,7 +2,13 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 
+import { fileURLToPath } from 'url';
+
 const router = express.Router();
+
+// Derive current __dirname for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 router.post('/', (req, res) => {
     try {
@@ -12,8 +18,8 @@ router.post('/', (req, res) => {
             return res.status(400).json({ message: 'No image provided' });
         }
 
-        // Ensure uploads directory exists
-        const uploadDir = path.join(process.cwd(), 'uploads');
+        // Strict Absolute Path construction: Go up one level to "backend/", then into "uploads"
+        const uploadDir = path.join(__dirname, '..', 'uploads');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }

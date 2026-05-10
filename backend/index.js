@@ -40,8 +40,7 @@ const corsOptions = {
 // Apply CORS
 app.use(cors(corsOptions));
 
-// FIXED FOR EXPRESS 5
-app.options('(.*)', cors(corsOptions));
+
 
 // Default Route
 app.get('/', (req, res) => {
@@ -56,8 +55,11 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/banners', bannerRoutes);
 
-// Static Upload Folder
-const __dirname = path.resolve();
+import { fileURLToPath } from 'url';
+
+// Derive current __dirname for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(
     '/uploads',
