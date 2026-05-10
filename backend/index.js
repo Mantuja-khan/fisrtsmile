@@ -37,8 +37,11 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+// Apply CORS
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
+// FIXED FOR EXPRESS 5
+app.options(/.*/, cors(corsOptions));
 
 // Default Route
 app.get('/', (req, res) => {
@@ -55,13 +58,18 @@ app.use('/api/banners', bannerRoutes);
 
 // Static Upload Folder
 const __dirname = path.resolve();
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use(
+    '/uploads',
+    express.static(path.join(__dirname, 'uploads'))
+);
 
 // Port
 const PORT = process.env.PORT || 5003;
 
 app.listen(PORT, () => {
     console.log(
-        `Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+        `Server running in ${process.env.NODE_ENV || 'development'
+        } mode on port ${PORT}`
     );
 });
