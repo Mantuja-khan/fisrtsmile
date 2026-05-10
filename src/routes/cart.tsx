@@ -3,6 +3,7 @@ import { useShop } from "@/store/shop";
 import { Trash2, Tag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { resolveImage } from "@/data/products";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — ToyKart" }] }),
@@ -52,7 +53,7 @@ function CartPage() {
           {cartItems.map((item) => (
             <div key={item.id} className="p-4 flex gap-3">
               <Link to="/product/$id" params={{ id: item.id }} className="size-24 shrink-0 rounded-lg overflow-hidden bg-muted">
-                <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                <img src={resolveImage(item.product.image)} alt={item.product.name} className="w-full h-full object-cover" />
               </Link>
               <div className="flex-1 min-w-0">
                 <Link to="/product/$id" params={{ id: item.id }} className="font-medium text-sm md:text-base line-clamp-2 hover:text-primary">

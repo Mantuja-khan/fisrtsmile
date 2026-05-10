@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useProduct, useProducts } from "@/hooks/useCatalog";
-import { discountPct, effectivePrice, type Product } from "@/data/products";
+import { discountPct, effectivePrice, type Product, resolveImage } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductReviews } from "@/components/ProductReviews";
 import { useShop } from "@/store/shop";
@@ -54,7 +54,7 @@ function ProductPage() {
                   onClick={() => setActiveImg(i)}
                   className={`size-16 rounded-md overflow-hidden border-2 ${activeImg === i ? "border-primary" : "border-border"}`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={resolveImage(img)} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -62,7 +62,7 @@ function ProductPage() {
             <div className="flex-1 order-1 md:order-2">
               <div className="aspect-square rounded-xl overflow-hidden bg-muted group">
                 <img
-                  src={product.images[activeImg]}
+                  src={resolveImage(product.images[activeImg])}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
@@ -76,7 +76,7 @@ function ProductPage() {
                   onClick={() => setActiveImg(i)}
                   className={`size-14 rounded-md overflow-hidden border-2 ${activeImg === i ? "border-primary" : "border-border"}`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={resolveImage(img)} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

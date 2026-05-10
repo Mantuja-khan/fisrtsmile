@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { CreditCard, Smartphone, Banknote, MapPin, Tag } from "lucide-react";
 import api from "@/services/api";
 import { z } from "zod";
-import { effectivePrice } from "@/data/products";
+import { effectivePrice, resolveImage } from "@/data/products";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — ToyKart" }] }),
@@ -249,7 +249,7 @@ function CheckoutPage() {
           <div className="space-y-2 max-h-60 overflow-auto pr-1">
             {cartItems.map((i) => (
               <div key={i.id} className="flex gap-2 text-sm">
-                <img src={i.product.image} alt="" className="size-12 rounded object-cover bg-muted" />
+                <img src={resolveImage(i.product.image)} alt="" className="size-12 rounded object-cover bg-muted" />
                 <div className="flex-1 min-w-0">
                   <div className="line-clamp-1">{i.product.name}</div>
                   <div className="text-xs text-muted-foreground">Qty {i.qty}</div>

@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { useProducts, useCategories, useBanners } from "@/hooks/useCatalog";
 import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus } from "lucide-react";
 import { useAuth } from "@/store/auth";
+import { resolveImage } from "@/data/products";
 
 import under199 from "@/assets/shopbyprice/under199.png";
 import under399 from "@/assets/shopbyprice/under399.png";
@@ -49,7 +50,7 @@ function HomePage() {
         {heroBanners.length > 0 ? (
           <div className="relative w-full overflow-hidden group">
             <Link to="/products" search={heroBanners[heroIdx].category?.slug ? { category: heroBanners[heroIdx].category.slug } : undefined} className="block w-full">
-              <img src={heroBanners[heroIdx].image} alt="Hero Banner" className="w-full h-auto min-h-[150px] object-cover animate-fade-in" />
+              <img src={resolveImage(heroBanners[heroIdx].image)} alt="Hero Banner" className="w-full h-auto min-h-[150px] object-cover animate-fade-in" />
             </Link>
             {heroBanners.length > 1 && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
@@ -225,7 +226,7 @@ function HomePage() {
                 search={banner.category?.slug ? { category: banner.category.slug } : undefined}
                 className="block rounded-2xl overflow-hidden shadow-card bg-muted"
               >
-                <img src={banner.image} alt="Promo" className="w-full h-auto object-contain rounded-2xl" />
+                <img src={resolveImage(banner.image)} alt="Promo" className="w-full h-auto object-contain rounded-2xl" />
               </Link>
             ))}
           </div>

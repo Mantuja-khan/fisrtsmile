@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
 import { useCategories, useProducts } from "@/hooks/useCatalog";
-import { effectivePrice } from "@/data/products";
+import { effectivePrice, resolveImage } from "@/data/products";
 import logo from "@/assets/firstsmile_logo.png";
 
 export function Header() {
@@ -79,7 +79,7 @@ export function Header() {
                     onClick={() => { setSearchOpen(false); setQ(""); }}
                     className="flex items-center gap-3 p-2 transition"
                   >
-                    <img src={p.image} alt={p.name} className="size-12 rounded-md object-cover shrink-0" />
+                    <img src={resolveImage(p.image)} alt={p.name} className="size-12 rounded-md object-cover shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-semibold truncate">{p.name}</div>
                       <div className="text-xs text-muted-foreground truncate">{p.category?.name ?? "Toys"}</div>
@@ -188,7 +188,7 @@ export function Header() {
                 ) : (
                   searchResults.map(p => (
                     <Link key={p.id} to="/product/$id" params={{ id: p.id }} onClick={() => setSearchOpen(false)} className="flex items-center gap-3 p-2 border-b border-border last:border-0">
-                       <img src={p.image} className="w-10 h-10 object-cover rounded" />
+                       <img src={resolveImage(p.image)} className="w-10 h-10 object-cover rounded" />
                        <span className="text-sm font-semibold truncate flex-1">{p.name}</span>
                     </Link>
                   ))
