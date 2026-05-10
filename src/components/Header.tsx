@@ -1,0 +1,305 @@
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Package, MapPin, LogOut, Headphones, Heart } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useShop } from "@/store/shop";
+import { useAuth } from "@/store/auth";
+import { useCategories, useProducts } from "@/hooks/useCatalog";
+import { effectivePrice } from "@/data/products";
+import logo from "@/assets/firstsmile_logo.png";
+
+export function Header() {
+  const [q, setQ] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const navigate = useNavigate();
+  const { cartCount } = useShop();
+  const { user, isAdmin, signOut } = useAuth();
+  const { data: categories = [] } = useCategories();
+  const { data: products = [] } = useProducts();
+
+  const [catOpen, setCatOpen] = useState(false);
+  const [ageOpen, setAgeOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const catRef = useRef<HTMLDivElement>(null);
+  const ageRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (catRef.current && !catRef.current.contains(target)) setCatOpen(false);
+      if (ageRef.current && !ageRef.current.contains(target)) setAgeOpen(false);
+      if (profileRef.current && !profileRef.current.contains(target)) setProfileOpen(false);
+      if (
+        searchRef.current && !searchRef.current.contains(target)
+      ) setSearchOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  // Live search results
+  const searchResults = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return [];
+    return products
+      .filter((p) =>
+        p.name.toLowerCase().includes(term) ||
+        (p.category_name ?? "").toLowerCase().includes(term),
+      )
+      .slice(0, 6);
+  }, [q, products]);
+
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate({ to: "/products", search: { q: q || undefined } as never });
+    setSearchOpen(false);
+  };
+
+  const name = user?.full_name || user?.email?.split("@")[0] || "User";
+
+  const renderResults = () => {
+    if (!searchOpen || !q.trim()) return null;
+    return (
+      <div className="absolute z-30 left-0 right-0 mt-1 bg-surface text-foreground rounded-md shadow-pop max-h-96 overflow-auto border border-border">
+        {searchResults.length === 0 ? (
+          <div className="p-4 text-sm text-muted-foreground">No products match "{q}"</div>
+        ) : (
+          <ul>
+            {searchResults.map((p) => {
+              const fp = effectivePrice(p.price, p.offerPct);
+              return (
+                <li key={p.id}>
+                  <Link
+                    to="/product/$id"
+                    params={{ id: p.id }}
+                    onClick={() => { setSearchOpen(false); setQ(""); }}
+                    className="flex items-center gap-3 p-2 transition"
+                  >
+                    <img src={p.image} alt={p.name} className="size-12 rounded-md object-cover shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold truncate">{p.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">{p.category?.name ?? "Toys"}</div>
+                    </div>
+                    <div className="text-sm font-bold text-primary shrink-0">₹{fp.toLocaleString("en-IN")}</div>
+                  </Link>
+                </li>
+              );
+            })}
+            <li className="border-t border-border">
+              <button
+                onMouseDown={(e) => { e.preventDefault(); onSearch(e as unknown as React.FormEvent); }}
+                className="w-full text-left p-2.5 text-sm text-primary font-semibold"
+              >
+                See all results for "{q}" →
+              </button>
+            </li>
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <header className="sticky top-0 z-40 bg-white shadow-sm flex flex-col">
+      {/* Top Red Bar */}
+      <div className="bg-[#E43E3D] text-white">
+        <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 md:py-4">
+          
+          <Link to="/" className="flex items-center shrink-0">
+            <img src={logo} alt="First Smile" className="h-8 md:h-12 w-auto object-contain brightness-0 invert" />
+          </Link>
+
+          {/* Center Search */}
+          <div ref={searchRef} className="flex-1 max-w-2xl hidden md:flex relative">
+            <form onSubmit={onSearch} className="w-full flex">
+              <input
+                value={q}
+                onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }}
+                onFocus={() => setSearchOpen(true)}
+                placeholder="Search the store"
+                className="w-full px-5 py-2.5 text-sm text-black bg-white rounded-l-full outline-none"
+              />
+              <button type="submit" className="px-6 bg-[#FFC107] text-[#E43E3D] rounded-r-full flex items-center justify-center">
+                <Search className="size-5 font-bold" />
+              </button>
+            </form>
+            {renderResults()}
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-6 ml-auto">
+            {/* User Login/Account */}
+            <div className="relative hidden md:block">
+              <Link to="/account" className="flex flex-col items-center justify-center gap-1">
+                <User className="size-6" />
+                <span className="text-[11px] font-semibold">{user ? name : "Sign In"}</span>
+              </Link>
+            </div>
+
+            {/* Mobile Search Toggle */}
+            <button className="md:hidden p-2 text-white" onClick={() => setSearchOpen(!searchOpen)}>
+              <Search className="size-6" />
+            </button>
+
+            {/* Cart */}
+            <Link to="/cart" className="relative flex flex-col items-center justify-center gap-1">
+              <div className="relative">
+                <ShoppingCart className="size-7" />
+                <span className="absolute -top-1.5 -right-2 bg-white text-[#E43E3D] text-[11px] font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center border border-[#E43E3D]">
+                  {cartCount}
+                </span>
+              </div>
+              <span className="text-[11px] font-semibold hidden md:block opacity-0">Cart</span>
+            </Link>
+
+            {/* Mobile Menu Toggle */}
+            <button className="md:hidden p-2 text-white" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Menu className="size-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile search bar (Full width overlay when open) */}
+        {searchOpen && (
+          <div className="md:hidden px-4 py-3 bg-[#E43E3D] border-t border-white/20 relative z-50">
+            <form onSubmit={onSearch} className="w-full flex relative">
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search the store"
+                autoFocus
+                className="w-full px-4 py-2.5 text-sm text-black bg-white rounded-full outline-none"
+              />
+              <button type="submit" className="absolute right-12 top-1 bottom-1 px-3 text-[#E43E3D] flex items-center justify-center">
+                <Search className="size-5" />
+              </button>
+              <button type="button" onClick={() => setSearchOpen(false)} className="absolute right-2 top-1 bottom-1 px-3 text-muted-foreground flex items-center justify-center font-bold">
+                ✕
+              </button>
+            </form>
+            {q.trim() && (
+              <div className="absolute left-4 right-4 mt-1 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50 max-h-64 overflow-y-auto">
+                 {searchResults.length === 0 ? (
+                  <div className="p-3 text-sm text-muted-foreground">No results found</div>
+                ) : (
+                  searchResults.map(p => (
+                    <Link key={p.id} to="/product/$id" params={{ id: p.id }} onClick={() => setSearchOpen(false)} className="flex items-center gap-3 p-2 border-b border-border last:border-0">
+                       <img src={p.image} className="w-10 h-10 object-cover rounded" />
+                       <span className="text-sm font-semibold truncate flex-1">{p.name}</span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Mobile Menu Content */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-surface text-foreground border-t border-border absolute w-full z-50 shadow-pop">
+            <div className="flex flex-col">
+               <Link to="/products" className="p-4 border-b border-border flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                 <Grid3x3 className="size-5 text-primary" /> <span className="font-semibold">All Categories</span>
+               </Link>
+               <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Age</Link>
+               <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#E43E3D]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
+               <Link to="/about" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+               <Link to="/contact" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom White Bar */}
+      <div className="hidden md:block border-b border-border bg-white text-[#E43E3D]">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3 text-sm font-bold">
+          
+          <div ref={catRef} className="relative border-r border-[#E43E3D]/20 pr-4">
+            <button
+              onClick={() => { setCatOpen((v) => !v); setAgeOpen(false); setProfileOpen(false); }}
+              className="flex items-center gap-2 uppercase"
+            >
+              <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
+            </button>
+            {catOpen && (
+              <div className="absolute left-0 mt-4 w-72 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+                <div className="p-2 max-h-96 overflow-auto grid grid-cols-2 gap-1">
+                  {categories.length === 0 && (
+                    <div className="col-span-2 text-sm text-muted-foreground p-3 text-center">Loading...</div>
+                  )}
+                  {categories.map((c) => (
+                    <Link
+                      key={c._id}
+                      to="/products"
+                      search={{ category: c.slug } as never}
+                      onClick={() => setCatOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium"
+                    >
+                      <span className="text-lg">{c.icon ?? "🎁"}</span>
+                      <span className="truncate">{c.name}</span>
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  to="/products"
+                  onClick={() => setCatOpen(false)}
+                  className="block border-t border-border p-2.5 text-center text-sm font-semibold text-primary"
+                >
+                  View all products →
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
+            <div ref={ageRef} className="relative">
+              <button
+                onClick={() => { setAgeOpen((v) => !v); setCatOpen(false); setProfileOpen(false); }}
+                className="uppercase tracking-wide flex items-center gap-1"
+              >
+                SHOP BY AGE <ChevronDown className={`size-4 transition ${ageOpen ? "rotate-180" : ""}`} />
+              </button>
+              {ageOpen && (
+                <div className="absolute left-0 mt-4 w-48 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+                  <div className="p-2 flex flex-col gap-1">
+                    {["0-2 years", "3-5 years", "6-8 years", "9-12 years", "13+ years"].map((age) => (
+                      <Link
+                        key={age}
+                        to="/products"
+                        search={{ age: age } as never}
+                        onClick={() => setAgeOpen(false)}
+                        className="block px-3 py-2 rounded text-sm font-medium"
+                      >
+                        {age}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>
+            <Link to="/coupons" className="uppercase tracking-wide text-[#E43E3D]">COUPONS</Link>
+            <Link to="/account" className="uppercase tracking-wide">MY PROFILE</Link>
+          </div>
+
+          <div className="flex items-center gap-4 border-l border-[#E43E3D]/20 pl-4">
+            <Link to="/about" className="capitalize font-semibold text-sm">
+              About Us
+            </Link>
+            <div className="border-l border-[#E43E3D]/20 h-5"></div>
+            <Link to="/contact" className="flex items-center gap-1.5">
+              <Headphones className="size-5" />
+              <span className="capitalize font-semibold text-sm">Contact Us</span>
+            </Link>
+          </div>
+
+        </div>
+      </div>
+    </header>
+  );
+}

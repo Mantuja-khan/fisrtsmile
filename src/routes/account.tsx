@@ -1,0 +1,755 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect, useCallback } from "react";
+import { User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, Building2, Map as MapIcon, Lock, Mail } from "lucide-react";
+import { useAuth } from "@/store/auth";
+import api from "@/services/api";
+import { toast } from "sonner";
+import { z } from "zod";
+import loginBg from "@/assets/loginsignup.png";
+import logoImg from "@/assets/firstsmile_logo.png";
+import heroImg from "@/assets/hero-toys.jpg";
+import loginHereImg from "@/assets/loginhere.png";
+import signupHereImg from "@/assets/signuphere.png";
+import offersGetImg from "@/assets/offerget.png";
+
+const searchSchema = z.object({
+  view: z.enum(["profile", "orders", "addresses"]).optional(),
+});
+
+export const Route = createFileRoute("/account")({
+  validateSearch: (search) => searchSchema.parse(search),
+  head: () => ({ meta: [{ title: "My Account — First Smile" }] }),
+  component: AccountPage,
+});
+
+const strongPassword = z.string()
+  .min(6, "Password must be at least 6 characters")
+  .regex(/[A-Z]/, "Password must contain at least one capital letter")
+  .regex(/[a-z]/, "Password must contain at least one small letter")
+  .regex(/\d/, "Password must contain at least one number")
+  .regex(/[@$!%*?&#]/, "Password must contain at least one special symbol")
+  .max(72);
+
+const signupSchema = z.object({
+  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(80),
+  email: z.string().trim().email("Invalid email address").max(255),
+  password: strongPassword,
+  phone: z.string().trim().min(10, "Invalid phone number").max(15),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});
+const resetPasswordSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+  newPassword: strongPassword,
+});
+const loginSchema = z.object({
+  email: z.string().trim().email("Invalid email address").max(255),
+  password: z.string().min(1, "Password required").max(72),
+});
+
+function AccountPage() {
+  const { user, isAdmin, signIn, signUp, signOut, loading, updateProfile } = useAuth();
+  const navigate = useNavigate();
+  const { view: searchView } = Route.useSearch();
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [view, setView] = useState<"profile" | "orders" | "addresses">(searchView || "profile");
+
+  useEffect(() => {
+    if (searchView && searchView !== view) {
+      setView(searchView);
+    }
+  }, [searchView]);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [otpBusy, setOtpBusy] = useState(false);
+
+  if (loading) {
+    return <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Loading...</div>;
+  }
+
+  if (user) {
+    const name = user.full_name || user.email?.split("@")[0] || "User";
+    return (
+      <>
+        <div className="container mx-auto px-4 py-6 max-w-[1200px] bg-muted/30 min-h-[calc(100vh-140px)]">
+
+          <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+            <aside className="space-y-4">
+              {/* User Info Box */}
+              <div className="bg-surface rounded shadow-sm flex items-center p-4 gap-4">
+                <div className="size-12 rounded-full bg-primary/10 text-primary grid place-items-center font-bold text-xl uppercase shrink-0">
+                  {name[0]}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs text-muted-foreground">Hello,</div>
+                  <div className="font-bold text-base truncate">{name}</div>
+                  {isAdmin && <div className="mt-1 text-[10px] bg-secondary text-secondary-foreground font-extrabold px-2 py-0.5 rounded inline-block">ADMIN</div>}
+                </div>
+              </div>
+
+              {/* Navigation Menu */}
+              <nav className="bg-surface rounded shadow-sm overflow-hidden">
+
+                <div className="border-b border-border">
+                  <button onClick={() => setView("orders")} className={`w-full text-left px-5 py-4 flex items-center gap-4 transition ${view === "orders" ? "bg-primary/5 text-primary" : "text-muted-foreground"}`}>
+                    <Package className="size-5 shrink-0" />
+                    <span className="font-semibold text-[15px] flex-1">MY ORDERS</span>
+                    <span className="text-xl">›</span>
+                  </button>
+                </div>
+
+                <div className="border-b border-border">
+                  <div className="px-5 py-3 flex items-center gap-4 text-muted-foreground">
+                    <User className="size-5 shrink-0" />
+                    <span className="font-semibold text-[15px] tracking-wide">ACCOUNT SETTINGS</span>
+                  </div>
+                  <div className="flex flex-col pb-2">
+                    <button onClick={() => setView("profile")} className={`text-left px-14 py-2.5 text-sm transition ${view === "profile" ? "text-primary bg-primary/5 font-semibold" : ""}`}>
+                      Profile Information
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  {isAdmin && (
+                    <button
+                      onClick={() => navigate({ to: "/admin" })}
+                      className="w-full text-left px-5 py-4 border-b border-border flex items-center gap-4 text-secondary font-semibold"
+                    >
+                      <Shield className="size-5 shrink-0" /> <span className="text-[15px]">ADMIN PANEL</span>
+                    </button>
+                  )}
+                  <button onClick={signOut} className="w-full text-left px-5 py-4 flex items-center gap-4 text-muted-foreground font-semibold transition">
+                    <LogOut className="size-5 shrink-0" /> <span className="text-[15px]">Logout</span>
+                  </button>
+                </div>
+
+              </nav>
+            </aside>
+
+            <section className="bg-surface rounded shadow-sm min-h-[400px]">
+              {view === "profile" && <ProfileDetails />}
+              {view === "orders" && <MyOrders />}
+            </section>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const sendOtpRequest = async () => {
+    if (!email) { toast.error("Please enter your email first"); return; }
+    if (mode === "signup" && (!fullName || !phone || !password)) {
+      toast.error("Please fill all details first");
+      return;
+    }
+    setOtpBusy(true);
+    try {
+      await api.post("/auth/send-otp", { email, type: mode === "forgot" ? "forgot" : "signup" });
+      setOtpSent(true);
+      toast.success("OTP sent to your email! 📧");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if ((mode === "signup" || mode === "forgot") && !otpSent) {
+      await sendOtpRequest();
+      return;
+    }
+
+    if (mode === "forgot" && otpSent && !otpVerified) {
+      setOtpBusy(true);
+      try {
+        await api.post("/auth/verify-otp", { email, otp });
+        setOtpVerified(true);
+        toast.success("OTP verified. Please set your new password.");
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "Invalid OTP");
+      } finally {
+        setOtpBusy(false);
+      }
+      return;
+    }
+
+    setBusy(true);
+    try {
+      if (mode === "signup") {
+        const v = signupSchema.safeParse({ fullName, email, password, phone, otp });
+        if (!v.success) { toast.error(v.error.issues[0].message); return; }
+        const { error } = await signUp(v.data.email, v.data.password, v.data.fullName, v.data.phone, v.data.otp);
+        if (error) { toast.error(error); return; }
+        toast.success("Account created! 🎉 Welcome to First Smile.");
+        localStorage.setItem("show_signup_discount_popup", "true");
+        setMode("login");
+      } else if (mode === "forgot") {
+        if (password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          setBusy(false);
+          return;
+        }
+        const v = resetPasswordSchema.safeParse({ email, otp, newPassword: password });
+        if (!v.success) { toast.error(v.error.issues[0].message); return; }
+        await api.post("/auth/reset-password", v.data);
+        toast.success("Password reset successful! You can now log in.");
+        setMode("login");
+        setOtpSent(false);
+        setOtpVerified(false);
+        setOtp("");
+        setPassword("");
+        setConfirmPassword("");
+      } else {
+        const v = loginSchema.safeParse({ email, password });
+        if (!v.success) { toast.error(v.error.issues[0].message); return; }
+        const { error } = await signIn(v.data.email, v.data.password);
+        if (error) { toast.error(error); return; }
+        toast.success("Logged in successfully!");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <div
+        className="min-h-[calc(100vh-140px)] w-full bg-cover bg-center bg-no-repeat relative flex items-center justify-center p-4 md:p-8"
+        style={{ backgroundImage: `url(${loginBg})` }}
+      >
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+
+        <div className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${(mode === "login" || mode === "forgot") ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/80 md:bg-white backdrop-blur-md md:backdrop-blur-none transition-all duration-500 ease-in-out`} key={mode}>
+
+          {/* Mobile Background */}
+          <div
+            className="md:hidden absolute inset-0 bg-cover bg-top opacity-60 blur-sm pointer-events-none"
+            style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
+          ></div>
+
+          {/* Side - Image for Desktop */}
+          <div
+            className="hidden md:block md:w-1/2 relative bg-cover bg-top min-h-[500px] animate-in fade-in slide-in-from-bottom duration-500"
+            style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
+          >
+          </div>
+
+          {/* Side - Form */}
+          <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/40 md:bg-white animate-in fade-in slide-in-from-top duration-500">
+            <div className="text-center mb-8">
+              <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
+                {mode === "login" ? "USER LOGIN" : mode === "signup" ? "CREATE ACCOUNT" : "RESET PASSWORD"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">Welcome to the website</p>
+            </div>
+
+            <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
+              {mode === "signup" && (
+                <div className="space-y-4">
+                  <div className="relative flex items-center">
+                    <User className="absolute left-4 size-4 text-[#802a8f]/60" />
+                    <input
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                      placeholder="Username"
+                    />
+                  </div>
+                  <div className="relative flex items-center">
+                    <Phone className="absolute left-4 size-4 text-[#802a8f]/60" />
+                    <input
+                      required
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                      placeholder="Mobile Number"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {(!otpSent || mode !== "forgot") && (
+                <div className="relative flex items-center">
+                  <Mail className="absolute left-4 size-4 text-[#802a8f]/60" />
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                    placeholder="Email Address"
+                  />
+                </div>
+              )}
+
+              {(mode !== "forgot" || otpVerified) && (
+                <div className="mt-4 flex flex-col">
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-4 size-4 text-[#802a8f]/60" />
+                    <input
+                      required
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                      placeholder={mode === "forgot" ? "New Password" : "Password"}
+                    />
+                  </div>
+                  {(mode === "signup" || (mode === "forgot" && otpVerified)) && (
+                    <div className="mt-2 text-[10px] text-muted-foreground px-4 grid grid-cols-2 gap-1 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        {/[A-Z]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Capital letter
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {/[a-z]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Small letter
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {/\d/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Number
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {/[@$!%*?&#]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Special symbol
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {mode === "forgot" && otpVerified && (
+                <div className="relative flex items-center mt-4">
+                  <Lock className="absolute left-4 size-4 text-[#802a8f]/60" />
+                  <input
+                    required
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                    placeholder="Confirm New Password"
+                  />
+                </div>
+              )}
+
+              {otpSent && (!otpVerified || mode === "signup") && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300 mt-4">
+                  <div className="flex justify-between px-2">
+                    <label className="text-[11px] font-bold text-[#802a8f] uppercase">Enter 6-Digit OTP</label>
+                    <button type="button" onClick={sendOtpRequest} className="text-[10px] text-[#802a8f] hover:underline">Resend?</button>
+                  </div>
+                  <input
+                    required
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    className="w-full px-4 py-3 text-center text-lg font-bold tracking-[0.5em] bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition text-[#802a8f]"
+                    placeholder="000000"
+                  />
+                </div>
+              )}
+
+              {mode === "login" && (
+                <div className="flex justify-between items-center px-2 text-[11px] font-medium text-muted-foreground mt-2">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" className="accent-[#802a8f]" /> Remember
+                  </label>
+                  <button type="button" onClick={() => { setMode("forgot"); setOtpSent(false); setOtpVerified(false); }} className="hover:text-[#802a8f] transition">Forgot password?</button>
+                </div>
+              )}
+
+              <button disabled={busy || otpBusy} className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6">
+                {busy || otpBusy ? "Please wait..." : (
+                  mode === "login" ? "Login" :
+                    mode === "forgot" ? (
+                      otpVerified ? "Set Password" :
+                        otpSent ? "Verify OTP" : "Send OTP"
+                    ) :
+                      otpSent ? "Confirm & Register" : "Send OTP"
+                )}
+              </button>
+
+              <div className="text-center mt-6">
+                <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setOtpSent(false); }} className="text-xs text-muted-foreground hover:text-[#802a8f] transition">
+                  {mode === "login" ? "Create Account" : "Back to Login"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ProfileDetails() {
+  const { user, updateProfile } = useAuth();
+  const [busy, setBusy] = useState(false);
+
+  const [name, setName] = useState(user?.full_name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!updateProfile) return;
+    setBusy(true);
+    const { error } = await updateProfile({ full_name: name, phone });
+    setBusy(false);
+    if (!error) toast.success("Profile updated!");
+  };
+
+  return (
+    <div className="p-6 md:p-8">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h2 className="text-xl font-bold">Profile Information</h2>
+      </div>
+      <form onSubmit={save} className="max-w-md space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Full Name</label>
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email Address</label>
+          <input
+            value={user?.email}
+            disabled
+            className="w-full px-4 py-2.5 text-sm border border-input rounded bg-muted/30 text-muted-foreground cursor-not-allowed outline-none"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone Number</label>
+          <input
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+          />
+        </div>
+        <button disabled={busy} className="bg-primary text-primary-foreground font-semibold px-10 py-2.5 rounded shadow-sm hover:brightness-110 disabled:opacity-50 transition">
+          {busy ? "Saving..." : "Save Changes"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function Addresses() {
+  const { user, updateProfile } = useAuth();
+  const [busy, setBusy] = useState(false);
+
+  const [addr, setAddr] = useState(user?.address || "");
+  const [city, setCity] = useState(user?.city || "");
+  const [state, setState] = useState(user?.state || "");
+  const [pin, setPin] = useState(user?.pincode || "");
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!updateProfile) return;
+    setBusy(true);
+    const { error } = await updateProfile({ address: addr, city, state, pincode: pin });
+    setBusy(false);
+    if (!error) toast.success("Address saved!");
+  };
+
+  return (
+    <div className="p-6 md:p-8">
+      <div className="mb-6 pb-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-xl font-bold">Manage Addresses</h2>
+      </div>
+
+      <form onSubmit={save} className="max-w-2xl border border-border p-6 rounded bg-muted/10 space-y-5">
+        <h3 className="font-semibold text-sm text-primary uppercase tracking-wide mb-2">Edit Default Address</h3>
+
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Street Address / Area</label>
+          <textarea
+            required
+            value={addr}
+            onChange={e => setAddr(e.target.value)}
+            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary min-h-[80px]"
+            placeholder="Flat No, Wing, Apartment name, Landmark..."
+          />
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">City / Town</label>
+            <input
+              required
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">State</label>
+            <input
+              required
+              value={state}
+              onChange={e => setState(e.target.value)}
+              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pincode</label>
+            <input
+              required
+              type="number"
+              value={pin}
+              onChange={e => setPin(e.target.value)}
+              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <div className="pt-2">
+          <button disabled={busy} className="bg-primary text-primary-foreground font-semibold px-8 py-2.5 rounded shadow-sm hover:brightness-110 disabled:opacity-50 transition">
+            {busy ? "Saving..." : "Save Address"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+type MyOrder = {
+  _id: string;
+  order_number: string;
+  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled";
+  total: number;
+  createdAt: string;
+  payment_method: string;
+  isPaid?: boolean;
+  items: { name: string; quantity: number; price: number; image?: string; product: string }[];
+};
+
+function MyOrders() {
+  const { user } = useAuth();
+  const [orders, setOrders] = useState<MyOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
+
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const payOnline = async (o: MyOrder) => {
+    setPayingId(o._id);
+    try {
+      const res = await loadRazorpay();
+      if (!res) {
+        toast.error("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
+      const { data: rzOrder } = await api.post(`/orders/${o._id}/razorpay`, { amount: o.total });
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_i0B9Ak13aCyPwp",
+        amount: rzOrder.amount,
+        currency: "INR",
+        name: "First Smile",
+        description: "Order Payment",
+        order_id: rzOrder.id,
+        handler: async function (response: any) {
+          try {
+            await api.put(`/orders/${o._id}/pay`, {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toast.success(`Payment successful for Order ID: ${o.order_number}`);
+            load();
+          } catch (err) {
+            toast.error("Payment verification failed");
+          }
+        },
+        prefill: {
+          name: user?.full_name || "Customer",
+          email: user?.email,
+          contact: user?.phone || "",
+        },
+        theme: { color: "#3399cc" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to initiate payment");
+    } finally {
+      setPayingId(null);
+    }
+  };
+
+  const load = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const { data } = await api.get("/orders/myorders");
+      setOrders(data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to load orders");
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const cancel = async (id: string) => {
+    if (!confirm("Cancel this order? This cannot be undone.")) return;
+    setCancellingId(id);
+    try {
+      await api.put(`/orders/${id}/cancel`);
+      toast.success("Order cancelled. Refund (if prepaid) in 4–10 working days.");
+      load();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to cancel order");
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  if (loading) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading orders...</div>;
+  if (orders.length === 0) {
+    return (
+      <div className="p-12 text-center">
+        <div className="size-16 rounded-full bg-muted mx-auto grid place-items-center mb-4"><Package className="size-8 text-muted-foreground/50" /></div>
+        <h3 className="font-bold text-lg">No orders yet</h3>
+        <p className="text-sm text-muted-foreground mb-6">Looks like you haven't started your joy journey yet.</p>
+        <Link to="/products" className="bg-primary text-primary-foreground font-bold px-6 py-2.5 rounded-full shadow-card hover:brightness-110">Start Shopping</Link>
+      </div>
+    );
+  }
+
+  const statusBadge = (s: MyOrder["status"]) => {
+    const map: Record<MyOrder["status"], string> = {
+      placed: "bg-primary/20 text-primary border-primary/20",
+      processing: "bg-warning/20 text-warning-foreground border-warning/20",
+      shipped: "bg-secondary/20 text-secondary-foreground border-secondary/20",
+      delivered: "bg-discount/20 text-discount border-discount/20",
+      cancelled: "bg-destructive/20 text-destructive border-destructive/20",
+    };
+    const key = s.toLowerCase() as keyof typeof map;
+    return <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border tracking-wider uppercase ${map[key] || "bg-muted text-muted-foreground"}`}>{s}</span>;
+  };
+
+  return (
+    <div>
+      {orders.map((o) => {
+        const lstatus = o.status.toLowerCase();
+        const canCancel = lstatus === "placed" || lstatus === "processing";
+        const isCancelled = lstatus === "cancelled";
+        const isDelivered = lstatus === "delivered";
+
+        return (
+          <div key={o._id} className="border-b border-border last:border-0 hover:bg-muted/10 transition group">
+            {o.items?.map((it, idx) => (
+              <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 cursor-pointer border-t border-border first:border-0" onClick={() => navigate({ to: "/track", search: { orderId: o.order_number } as any })}>
+                {/* Product Image */}
+                <div className="shrink-0 w-24 h-24 sm:w-28 sm:h-28 bg-muted rounded overflow-hidden">
+                  <img src={it.image || "https://placehold.co/100x100?text=No+Image"} alt={it.name} className="w-full h-full object-cover" />
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-semibold text-base sm:text-lg truncate group-hover:text-primary transition">{it.name}</h3>
+                    <div className="text-sm text-muted-foreground mt-1 space-x-3">
+                      <span>Qty: {it.quantity}</span>
+                      <span>₹{Number(it.price).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+
+                  {/* Status & Actions Mobile */}
+                  <div className="mt-3 sm:hidden">
+                    <div className={`font-semibold text-sm flex items-center gap-2 ${isCancelled ? 'text-destructive' : isDelivered ? 'text-discount' : 'text-primary'}`}>
+                      <span className={`size-2 rounded-full ${isCancelled ? 'bg-destructive' : isDelivered ? 'bg-discount' : 'bg-primary'}`}></span>
+                      {isCancelled ? "Cancelled" : isDelivered ? "Delivered" : "Delivery expected soon"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status & Actions Desktop */}
+                <div className="hidden sm:flex flex-col items-end text-right w-64 shrink-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold">₹{(it.quantity * it.price).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className={`font-semibold text-[15px] flex items-center gap-2 mt-2 ${isCancelled ? 'text-destructive' : isDelivered ? 'text-discount' : 'text-foreground'}`}>
+                    <span className={`size-2.5 rounded-full ${isCancelled ? 'bg-destructive' : isDelivered ? 'bg-discount' : 'bg-primary'}`}></span>
+                    {isCancelled ? "Cancelled" : isDelivered ? `Delivered on ${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : "Delivery expected soon"}
+                  </div>
+                  {!isCancelled && !isDelivered && (
+                    <div className="text-xs text-muted-foreground mt-1">Your item has been {lstatus}</div>
+                  )}
+                  {o.isPaid ? (
+                    <div className="text-xs font-semibold text-success mt-1">Paid via Online</div>
+                  ) : (
+                    <div className="text-xs font-semibold text-warning mt-1">Cash on Delivery</div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Order Action Bar */}
+            <div className="px-4 sm:px-6 py-3 bg-muted/20 flex flex-wrap items-center justify-between gap-4 text-sm border-t border-border">
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span className="font-medium">Order #{o.order_number}</span>
+                <span className="hidden sm:inline">Ordered on {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {!o.isPaid && lstatus !== "cancelled" && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); payOnline(o); }}
+                    disabled={payingId === o._id}
+                    className="text-success font-semibold hover:underline"
+                  >
+                    {payingId === o._id ? "Processing..." : "Pay Now"}
+                  </button>
+                )}
+                {canCancel && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); cancel(o._id); }}
+                    disabled={cancellingId === o._id}
+                    className="text-destructive font-semibold hover:underline"
+                  >
+                    {cancellingId === o._id ? "Cancelling..." : "Cancel Order"}
+                  </button>
+                )}
+                <Link
+                  to="/track"
+                  search={{ orderId: o.order_number } as any}
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Track Order
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
