@@ -5,6 +5,7 @@ import api from "@/services/api";
 import { toast } from "sonner";
 import { Plus, Trash2, X, Image as ImageIcon } from "lucide-react";
 import { resolveImage } from "@/data/products";
+import { compressImage } from "@/utils/imageCompressor";
 
 export const Route = createFileRoute("/admin/banners")({
   component: AdminBanners,
@@ -50,23 +51,23 @@ function AdminBanners() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-       const base64 = reader.result;
-       setUploading(true);
-       try {
-           const apiHost = import.meta.env.VITE_API_URL || "http://localhost:5003/api";
-           const { data } = await api.post("/upload", { image: base64, name: file.name });
-           const relativePath = data.url;
-           setImagePreview(relativePath); // Store relative path
-           toast.success("Image uploaded!");
-       } catch (error) {
-           toast.error("Failed to upload image");
-       } finally {
-           setUploading(false);
-       }
-    };
+    setUploading(true);
+    try {
+       // Compresses browser-side to around 300kb-600kb 
+       const base64 = await compressImage(file, 1920, 0.8); 
+       
+       const { data } = await api.post("/upload", { 
+           image: base64, 
+           name: file.name.replace(/\.[^/.]+$/, "") + ".jpg" 
+       });
+       const relativePath = data.url;
+       setImagePreview(relativePath); // Store relative path
+       toast.success("Image uploaded!");
+    } catch (error) {
+       toast.error("Failed to upload image");
+    } finally {
+       setUploading(false);
+    }
   };
 
   const save = async (e: React.FormEvent) => {

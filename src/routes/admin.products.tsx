@@ -5,6 +5,7 @@ import api from "@/services/api";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star } from "lucide-react";
 import { resolveImage } from "@/data/products";
+import { compressImage } from "@/utils/imageCompressor";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -136,33 +137,32 @@ function AdminProducts() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-       const base64 = reader.result;
-       setUploading(true);
-       try {
-           const apiHost = import.meta.env.VITE_API_URL || "http://localhost:5003/api";
-           // Note: We use fetch directly since api config might be /api and we need /api/upload
-           // wait, api is configured as axios instance for /api. So /upload is fine.
-           const { data } = await api.post("/upload", { image: base64, name: file.name });
-           const relativePath = data.url;
-           
-           const inputElement = document.getElementById(targetField + "_input") as HTMLInputElement | HTMLTextAreaElement;
-           if (inputElement) {
-               if (targetField === "image") {
-                   inputElement.value = relativePath;
-               } else {
-                   inputElement.value = inputElement.value ? inputElement.value + "\n" + relativePath : relativePath;
-               }
+    setUploading(true);
+    try {
+       // COMPRESS FIRST: Converts to optimized JPEG, auto-limiting size under 1MB usually
+       const base64 = await compressImage(file, 1200, 0.8); 
+       
+       const { data } = await api.post("/upload", { 
+           image: base64, 
+           // sanitize name to have .jpg since compressor converts to jpeg
+           name: file.name.replace(/\.[^/.]+$/, "") + ".jpg" 
+       });
+       const relativePath = data.url;
+       
+       const inputElement = document.getElementById(targetField + "_input") as HTMLInputElement | HTMLTextAreaElement;
+       if (inputElement) {
+           if (targetField === "image") {
+               inputElement.value = relativePath;
+           } else {
+               inputElement.value = inputElement.value ? inputElement.value + "\n" + relativePath : relativePath;
            }
-           toast.success("Image uploaded!");
-       } catch (error) {
-           toast.error("Failed to upload image");
-       } finally {
-           setUploading(false);
        }
-    };
+       toast.success("Image uploaded!");
+    } catch (error) {
+       toast.error("Failed to upload image");
+    } finally {
+       setUploading(false);
+    }
   };
 
   const toggleHero = async (id: string, currentVal: boolean) => {
