@@ -9,36 +9,43 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import bannerRoutes from './routes/bannerRoutes.js';
+
 import path from 'path';
 
 // Load env vars
 dotenv.config();
 
-// Connect to database
+// Connect DB
 connectDB();
 
 const app = express();
 
 // Body parser
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Enable CORS
-app.use(cors({
+// CORS Configuration
+const corsOptions = {
     origin: [
         'https://bbci.co.in',
-        'http://localhost:8080', // Vite dev
-        'http://localhost:3000'
+        'https://www.bbci.co.in',
+        'http://localhost:3000',
+        'http://localhost:8080'
     ],
-    credentials: true
-}));
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
 
-// Default route
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Default Route
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Define routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -46,9 +53,15 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/banners', bannerRoutes);
 
+// Static Upload Folder
 const __dirname = path.resolve();
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Port
 const PORT = process.env.PORT || 5003;
 
-app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(
+        `Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+    );
+});
