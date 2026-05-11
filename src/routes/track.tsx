@@ -76,7 +76,7 @@ function TrackPage() {
     }
   };
 
-  const currentIdx = order ? STAGES.findIndex((s) => s.key === order.status) : -1;
+  const currentIdx = order ? STAGES.findIndex((s) => s.key === order.status.toLowerCase()) : -1;
   const canCancel = order && (order.status === "placed" || order.status === "processing");
 
   return (
@@ -124,24 +124,44 @@ function TrackPage() {
               </div>
             </div>
           ) : (
-            <div className="mt-6 relative">
-              <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-border" />
-              <ol className="space-y-6">
+            <div className="mt-12 mb-8 relative">
+              {/* Progress Track Line background */}
+              <div className="absolute left-[12.5%] right-[12.5%] top-5 h-1 bg-muted rounded-full" />
+              
+              {/* Animated / Filled Progress Line */}
+              <div 
+                className="absolute left-[12.5%] top-5 h-1 bg-discount rounded-full transition-all duration-1000 ease-out"
+                style={{ width: currentIdx === -1 ? "0%" : `${(Math.max(0, currentIdx) / (STAGES.length - 1)) * 75}%` }}
+              />
+
+              <div className="relative flex justify-between items-start">
                 {STAGES.map((s, i) => {
                   const done = i <= currentIdx;
+                  const isActive = i === currentIdx;
                   return (
-                    <li key={s.key} className="flex gap-4 items-start relative">
-                      <div className={`size-10 grid place-items-center rounded-full shrink-0 z-10 ${done ? "bg-discount text-white" : "bg-muted text-muted-foreground"}`}>
+                    <div key={s.key} className="flex flex-col items-center flex-1 text-center group">
+                      {/* Icon Container */}
+                      <div className={`size-10 rounded-full flex items-center justify-center relative z-10 transition-all duration-500 ${done ? "bg-discount text-white shadow-md scale-110" : "bg-white border-2 border-muted text-muted-foreground"}`}>
                         <s.icon className="size-5" />
+                        {isActive && (
+                          <span className="absolute inset-0 rounded-full border-2 border-discount animate-ping opacity-75"></span>
+                        )}
                       </div>
-                      <div>
-                        <div className={`font-semibold ${done ? "" : "text-muted-foreground"}`}>{s.label}</div>
-                        {i === currentIdx && <div className="text-xs text-discount font-semibold">Current status</div>}
+                      {/* Label */}
+                      <div className="mt-3 flex flex-col items-center">
+                        <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-wide transition-colors ${done ? "text-foreground" : "text-muted-foreground/70"}`}>
+                          {s.label}
+                        </span>
+                        {isActive && (
+                          <span className="inline-block mt-1 text-[9px] font-extrabold bg-discount/10 text-discount px-1.5 py-0.5 rounded border border-discount/20 animate-pulse uppercase">
+                            Current
+                          </span>
+                        )}
                       </div>
-                    </li>
+                    </div>
                   );
                 })}
-              </ol>
+              </div>
             </div>
           )}
 

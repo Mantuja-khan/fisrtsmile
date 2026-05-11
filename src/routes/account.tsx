@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
-import { User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, Building2, Map as MapIcon, Lock, Mail } from "lucide-react";
+import { User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, Building2, Map as MapIcon, Lock, Mail, ChevronRight } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import api from "@/services/api";
 import { toast } from "sonner";
@@ -78,70 +78,113 @@ function AccountPage() {
   if (user) {
     const name = user.full_name || user.email?.split("@")[0] || "User";
     return (
-      <>
-        <div className="container mx-auto px-4 py-6 max-w-[1200px] bg-muted/30 min-h-[calc(100vh-140px)]">
-
-          <div className="grid lg:grid-cols-[280px_1fr] gap-4">
-            <aside className="space-y-4">
-              {/* User Info Box */}
-              <div className="bg-surface rounded shadow-sm flex items-center p-4 gap-4">
-                <div className="size-12 rounded-full bg-primary/10 text-primary grid place-items-center font-bold text-xl uppercase shrink-0">
+      <div className="min-h-[calc(100vh-140px)] bg-slate-50 py-8 md:py-12">
+        <div className="container mx-auto px-4 max-w-6xl">
+          
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            
+            {/* Professional Responsive Sidebar Navigation */}
+            <aside className="w-full lg:w-1/3 xl:w-1/4 space-y-6 shrink-0 lg:sticky lg:top-24 transition-all">
+              
+              {/* High-End User Header */}
+              <div className="bg-white border border-slate-200/60 rounded-2xl shadow-sm p-6 flex items-center gap-4 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#E43E3D] via-[#802a8f] to-[#E43E3D]"></div>
+                <div className="size-16 rounded-2xl bg-gradient-to-br from-rose-500 to-[#E43E3D] text-white grid place-items-center font-bold text-2xl uppercase shadow-md group-hover:scale-105 transition-transform shrink-0">
                   {name[0]}
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">Hello,</div>
-                  <div className="font-bold text-base truncate">{name}</div>
-                  {isAdmin && <div className="mt-1 text-[10px] bg-secondary text-secondary-foreground font-extrabold px-2 py-0.5 rounded inline-block">ADMIN</div>}
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-slate-400 font-bold tracking-wider uppercase">Hello,</p>
+                  <h2 className="font-bold text-xl text-slate-800 truncate leading-tight">{name}</h2>
+                  {isAdmin && (
+                    <div className="mt-1.5 text-[10px] bg-violet-100 text-[#802a8f] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 border border-violet-200">
+                      <Shield className="size-3" /> ADMIN
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Navigation Menu */}
-              <nav className="bg-surface rounded shadow-sm overflow-hidden">
-
-                <div className="border-b border-border">
-                  <button onClick={() => setView("orders")} className={`w-full text-left px-5 py-4 flex items-center gap-4 transition ${view === "orders" ? "bg-primary/5 text-primary" : "text-muted-foreground"}`}>
-                    <Package className="size-5 shrink-0" />
-                    <span className="font-semibold text-[15px] flex-1">MY ORDERS</span>
-                    <span className="text-xl">›</span>
+              {/* Glassy Smooth Navigation */}
+              <nav className="bg-white border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-2 space-y-1">
+                  
+                  <button 
+                    onClick={() => setView("orders")} 
+                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
+                      view === "orders" 
+                        ? "bg-[#E43E3D] text-white shadow-md" 
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <Package className={`size-5 ${view === "orders" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
+                    <span className="font-bold text-sm flex-1 text-left">My Orders</span>
+                    <ChevronRight className={`size-4 opacity-50 ${view === "orders" ? "rotate-0" : "-rotate-0"}`} />
                   </button>
-                </div>
 
-                <div className="border-b border-border">
-                  <div className="px-5 py-3 flex items-center gap-4 text-muted-foreground">
-                    <User className="size-5 shrink-0" />
-                    <span className="font-semibold text-[15px] tracking-wide">ACCOUNT SETTINGS</span>
+                  <div className="pt-4 pb-2 px-4 flex items-center gap-2">
+                    <div className="h-px bg-slate-100 flex-1"></div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Settings</span>
+                    <div className="h-px bg-slate-100 flex-1"></div>
                   </div>
-                  <div className="flex flex-col pb-2">
-                    <button onClick={() => setView("profile")} className={`text-left px-14 py-2.5 text-sm transition ${view === "profile" ? "text-primary bg-primary/5 font-semibold" : ""}`}>
-                      Profile Information
-                    </button>
-                  </div>
-                </div>
 
-                <div>
+                  <button 
+                    onClick={() => setView("profile")} 
+                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
+                      view === "profile" 
+                        ? "bg-[#E43E3D] text-white shadow-md" 
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <User className={`size-5 ${view === "profile" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
+                    <span className="font-bold text-sm flex-1 text-left">Profile Information</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setView("addresses")} 
+                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
+                      view === "addresses" 
+                        ? "bg-[#E43E3D] text-white shadow-md" 
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <MapPin className={`size-5 ${view === "addresses" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
+                    <span className="font-bold text-sm flex-1 text-left">Manage Addresses</span>
+                  </button>
+
+                  <div className="h-px bg-slate-100 my-2 mx-2"></div>
+
                   {isAdmin && (
                     <button
                       onClick={() => navigate({ to: "/admin" })}
-                      className="w-full text-left px-5 py-4 border-b border-border flex items-center gap-4 text-secondary font-semibold"
+                      className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-violet-700 font-bold hover:bg-violet-50 hover:text-violet-900 transition-colors duration-200"
                     >
-                      <Shield className="size-5 shrink-0" /> <span className="text-[15px]">ADMIN PANEL</span>
+                      <Shield className="size-5 text-violet-400" /> 
+                      <span className="text-sm flex-1 text-left uppercase tracking-wide">Admin Panel</span>
                     </button>
                   )}
-                  <button onClick={signOut} className="w-full text-left px-5 py-4 flex items-center gap-4 text-muted-foreground font-semibold transition">
-                    <LogOut className="size-5 shrink-0" /> <span className="text-[15px]">Logout</span>
+
+                  <button 
+                    onClick={signOut} 
+                    className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-rose-600 font-bold hover:bg-rose-50 transition-colors duration-200"
+                  >
+                    <LogOut className="size-5 text-rose-400" /> 
+                    <span className="text-sm flex-1 text-left">Sign Out</span>
                   </button>
                 </div>
-
               </nav>
             </aside>
 
-            <section className="bg-surface rounded shadow-sm min-h-[400px]">
-              {view === "profile" && <ProfileDetails />}
-              {view === "orders" && <MyOrders />}
-            </section>
+            {/* Content Engine Pane */}
+            <main className="w-full lg:flex-1 bg-white border border-slate-200/60 rounded-2xl shadow-sm min-h-[500px] overflow-hidden relative animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="p-6 md:p-8">
+                {view === "profile" && <ProfileDetails />}
+                {view === "orders" && <MyOrders />}
+                {view === "addresses" && <Addresses />}
+              </div>
+            </main>
+
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -192,7 +235,9 @@ function AccountPage() {
         const { error } = await signUp(v.data.email, v.data.password, v.data.fullName, v.data.phone, v.data.otp);
         if (error) { toast.error(error); return; }
         toast.success("Account created! 🎉 Welcome to First Smile.");
+        localStorage.setItem("signup_phone", v.data.phone);
         localStorage.setItem("show_signup_discount_popup", "true");
+        window.dispatchEvent(new Event("trigger-discount-popup"));
         setMode("login");
       } else if (mode === "forgot") {
         if (password !== confirmPassword) {

@@ -35,24 +35,27 @@ export const createProduct = async (req, res) => {
         images,
         badge,
         category,
+        brand,
         age_range,
         in_stock,
         show_in_hero,
     } = req.body;
 
+    const finalMrp = mrp ? Number(mrp) : Number(price);
     // Calculate offer_pct automatically if not provided
-    const offer_pct = req.body.offer_pct !== undefined ? req.body.offer_pct : (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0);
+    const offer_pct = req.body.offer_pct !== undefined ? req.body.offer_pct : (finalMrp > price ? Math.round(((finalMrp - price) / finalMrp) * 100) : 0);
 
     const product = new Product({
         name,
         description,
         price,
-        mrp,
+        mrp: finalMrp,
         offer_pct,
         image,
         images: images || [],
         badge,
         category,
+        brand,
         age_range,
         in_stock,
         show_in_hero,
@@ -75,6 +78,7 @@ export const updateProduct = async (req, res) => {
         images,
         badge,
         category,
+        brand,
         age_range,
         in_stock,
         show_in_hero,
@@ -86,7 +90,9 @@ export const updateProduct = async (req, res) => {
         product.name = name || product.name;
         product.description = description || product.description;
         product.price = price !== undefined ? price : product.price;
-        product.mrp = mrp !== undefined ? mrp : product.mrp;
+        
+        const finalMrp = mrp !== undefined ? (mrp ? Number(mrp) : product.price) : product.mrp;
+        product.mrp = finalMrp;
         
         // Recalculate offer_pct automatically
         product.offer_pct = req.body.offer_pct !== undefined ? req.body.offer_pct : (product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0);
@@ -95,6 +101,7 @@ export const updateProduct = async (req, res) => {
         product.images = images || product.images;
         product.badge = badge || product.badge;
         product.category = category || product.category;
+        product.brand = brand !== undefined ? brand : product.brand;
         product.age_range = age_range !== undefined ? age_range : product.age_range;
         product.in_stock = in_stock !== undefined ? in_stock : product.in_stock;
         product.show_in_hero = show_in_hero !== undefined ? show_in_hero : product.show_in_hero;

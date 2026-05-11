@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
+import { BRANDS } from "@/data/brands";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -24,6 +25,7 @@ type ProductRow = {
   rating_count: number;
   in_stock: boolean;
   badge: string | null;
+  brand: string | null;
   age_range: string | null;
   offer_pct: number;
   show_in_hero: boolean;
@@ -70,17 +72,18 @@ function AdminProducts() {
       description: String(fd.get("description") || ""),
       category: (fd.get("category") as string) || null,
       price: Number(fd.get("price")),
-      mrp: Number(fd.get("mrp")),
+      mrp: fd.get("mrp") ? Number(fd.get("mrp")) : null,
       image: String(fd.get("image") || "") || null,
       images: images,
       badge: (fd.get("badge") as string) || null,
+      brand: (fd.get("brand") as string) || null,
       age_range: String(fd.get("age_range") || ""),
       in_stock: fd.get("in_stock") === "on",
       show_in_hero: fd.get("show_in_hero") === "on",
     };
 
     if (!payload.name) return toast.error("Name required");
-    if (payload.price < 0 || payload.mrp < 0) return toast.error("Prices must be ≥ 0");
+    if (payload.price < 0 || (payload.mrp !== null && payload.mrp < 0)) return toast.error("Prices must be ≥ 0");
 
     try {
       if (editing) {
@@ -224,8 +227,16 @@ function AdminProducts() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">MRP (₹)</label>
-              <input name="mrp" type="number" step="0.01" required defaultValue={editing ? Number(editing.mrp) : ""} placeholder="e.g. 999" className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">MRP (₹) <span className="text-[10px] font-normal italic lowercase">(Optional)</span></label>
+              <input name="mrp" type="number" step="0.01" defaultValue={editing?.mrp ? Number(editing.mrp) : ""} placeholder="e.g. 999" className="w-full px-3 py-2 text-sm border border-input rounded" />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Brand</label>
+              <select name="brand" defaultValue={editing?.brand ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded">
+                <option value="">— No brand selected —</option>
+                {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
             </div>
 
             <div>

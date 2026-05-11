@@ -23,6 +23,7 @@ type DbRow = {
   badge: string | null;
   age_range: string | null;
   offer_pct: number;
+  brand: string | null;
 };
 
 const mapRow = (r: DbRow): Product => {
@@ -44,6 +45,7 @@ const mapRow = (r: DbRow): Product => {
     badge: r.badge,
     ageRange: r.age_range ?? "All",
     offerPct: r.offer_pct ?? 0,
+    brand: r.brand,
   };
 };
 

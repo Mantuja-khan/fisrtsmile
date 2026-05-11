@@ -5,6 +5,8 @@ import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
 import { useCategories, useProducts } from "@/hooks/useCatalog";
 import { effectivePrice, resolveImage } from "@/data/products";
+import { HighlightText } from "@/components/HighlightText";
+import { BRANDS } from "@/data/brands";
 import logo from "@/assets/firstsmile_logo.png";
 
 export function Header() {
@@ -17,10 +19,12 @@ export function Header() {
   const { data: products = [] } = useProducts();
 
   const [catOpen, setCatOpen] = useState(false);
+  const [brandOpen, setBrandOpen] = useState(false);
   const [ageOpen, setAgeOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const catRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -31,6 +35,7 @@ export function Header() {
     const onClick = (e: MouseEvent) => {
       const target = e.target as Node;
       if (catRef.current && !catRef.current.contains(target)) setCatOpen(false);
+      if (brandRef.current && !brandRef.current.contains(target)) setBrandOpen(false);
       if (ageRef.current && !ageRef.current.contains(target)) setAgeOpen(false);
       if (profileRef.current && !profileRef.current.contains(target)) setProfileOpen(false);
       if (
@@ -64,7 +69,7 @@ export function Header() {
   const renderResults = () => {
     if (!searchOpen || !q.trim()) return null;
     return (
-      <div className="absolute z-30 left-0 right-0 mt-1 bg-surface text-foreground rounded-md shadow-pop max-h-96 overflow-auto border border-border">
+      <div className="absolute z-30 top-full left-0 right-0 mt-1 bg-surface text-foreground rounded-md shadow-pop max-h-96 overflow-auto border border-border">
         {searchResults.length === 0 ? (
           <div className="p-4 text-sm text-muted-foreground">No products match "{q}"</div>
         ) : (
@@ -81,7 +86,9 @@ export function Header() {
                   >
                     <img src={resolveImage(p.image)} alt={p.name} className="size-12 rounded-md object-cover shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold truncate">{p.name}</div>
+                      <div className="text-sm font-semibold truncate">
+                        <HighlightText text={p.name} highlight={q} />
+                      </div>
                       <div className="text-xs text-muted-foreground truncate">{p.category?.name ?? "Toys"}</div>
                     </div>
                     <div className="text-sm font-bold text-primary shrink-0">₹{fp.toLocaleString("en-IN")}</div>
@@ -104,9 +111,9 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white shadow-sm flex flex-col">
+    <header className="flex flex-col w-full">
       {/* Top Red Bar */}
-      <div className="bg-[#E43E3D] text-white">
+      <div className="bg-[#E43E3D] text-white relative z-50">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 md:py-4">
           
           <Link to="/" className="flex items-center shrink-0">
@@ -182,14 +189,16 @@ export function Header() {
               </button>
             </form>
             {q.trim() && (
-              <div className="absolute left-4 right-4 mt-1 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50 max-h-64 overflow-y-auto">
+              <div className="absolute top-full left-4 right-4 mt-0.5 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50 max-h-64 overflow-y-auto border border-border">
                  {searchResults.length === 0 ? (
                   <div className="p-3 text-sm text-muted-foreground">No results found</div>
                 ) : (
                   searchResults.map(p => (
                     <Link key={p.id} to="/product/$id" params={{ id: p.id }} onClick={() => setSearchOpen(false)} className="flex items-center gap-3 p-2 border-b border-border last:border-0">
                        <img src={resolveImage(p.image)} className="w-10 h-10 object-cover rounded" />
-                       <span className="text-sm font-semibold truncate flex-1">{p.name}</span>
+                       <span className="text-sm font-semibold truncate flex-1">
+                         <HighlightText text={p.name} highlight={q} />
+                       </span>
                     </Link>
                   ))
                 )}
@@ -206,6 +215,7 @@ export function Header() {
                  <Grid3x3 className="size-5 text-primary" /> <span className="font-semibold">All Categories</span>
                </Link>
                <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Age</Link>
+               <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Brand</Link>
                <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#E43E3D]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
                <Link to="/about" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
                <Link to="/contact" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
@@ -215,7 +225,7 @@ export function Header() {
       </div>
 
       {/* Bottom White Bar */}
-      <div className="hidden md:block border-b border-border bg-white text-[#E43E3D]">
+      <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#E43E3D] shadow-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 text-sm font-bold">
           
           <div ref={catRef} className="relative border-r border-[#E43E3D]/20 pr-4">
@@ -226,7 +236,7 @@ export function Header() {
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-0 mt-4 w-72 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+              <div className="absolute left-0 mt-4 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
                 <div className="p-2 max-h-96 overflow-auto grid grid-cols-2 gap-1">
                   {categories.length === 0 && (
                     <div className="col-span-2 text-sm text-muted-foreground p-3 text-center">Loading...</div>
@@ -240,7 +250,7 @@ export function Header() {
                       className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium"
                     >
                       <span className="text-lg">{c.icon ?? "🎁"}</span>
-                      <span className="truncate">{c.name}</span>
+                      <span>{c.name}</span>
                     </Link>
                   ))}
                 </div>
@@ -256,6 +266,32 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
+            <div ref={brandRef} className="relative">
+              <button
+                onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); setProfileOpen(false); }}
+                className="uppercase tracking-wide flex items-center gap-1 font-bold text-[#E43E3D] hover:opacity-80 transition"
+              >
+                BRANDS <ChevronDown className={`size-4 transition ${brandOpen ? "rotate-180" : ""}`} />
+              </button>
+              {brandOpen && (
+                <div className="absolute left-0 mt-4 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+                  <div className="p-2 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
+                    {BRANDS.map((b) => (
+                      <Link
+                        key={b}
+                        to="/products"
+                        search={{ brand: b } as never}
+                        onClick={() => setBrandOpen(false)}
+                        className="block px-3 py-2 hover:bg-muted rounded text-sm font-medium transition"
+                      >
+                        {b}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div ref={ageRef} className="relative">
               <button
                 onClick={() => { setAgeOpen((v) => !v); setCatOpen(false); setProfileOpen(false); }}

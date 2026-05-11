@@ -1,0 +1,20 @@
+export const BRANDS = [
+  "Skillmatics",
+  "Mirada",
+  "Winfun",
+  "Step2",
+  "Casdon",
+  "PlayShifu",
+  "Wild Republic",
+  "ELC Toys",
+  "Barbie",
+  "Baby Alive",
+  "DIY Slime",
+  "Rubbabu",
+  "iToys",
+  "Go Discover",
+  "Smartivity",
+  "Funskool",
+  "Blix",
+  "Toykraft"
+].sort();

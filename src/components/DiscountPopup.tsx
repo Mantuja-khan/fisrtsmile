@@ -13,13 +13,53 @@ export function DiscountPopup() {
   const [discountClaimed, setDiscountClaimed] = useState(false);
   const [generatedCoupon, setGeneratedCoupon] = useState("");
 
-  useEffect(() => {
+  const generateAndSaveCoupon = (phoneToUse: string) => {
+    if (!phoneToUse) return null;
+    
+    // Check if already added for this phone to prevent duplication
+    const existing = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+    const alreadyHas = existing.find((c: any) => c.phone === phoneToUse && c.code.startsWith("FS5OFF"));
+    if (alreadyHas) return alreadyHas.code;
+
+    const code = "FS5OFF-" + Math.floor(1000 + Math.random() * 9000);
+    existing.push({ code, discount: 5, active: true, phone: phoneToUse });
+    localStorage.setItem("firstsmile_coupons", JSON.stringify(existing));
+    localStorage.setItem("firstsmile_discount_guest", "true");
+    return code;
+  };
+
+  const checkAndShow = () => {
     const shouldShow = localStorage.getItem("show_signup_discount_popup") === "true";
+    const savedPhone = localStorage.getItem("signup_phone") || user?.phone || "";
     if (shouldShow) {
+      setDiscountPhone(savedPhone);
       setShowPopup(true);
       localStorage.removeItem("show_signup_discount_popup");
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    // Check on initial load
+    checkAndShow();
+
+    // Listen for real-time events from other components
+    const onTrigger = () => checkAndShow();
+    window.addEventListener("trigger-discount-popup", onTrigger);
+    
+    return () => window.removeEventListener("trigger-discount-popup", onTrigger);
+  }, [user]);
+
+  const handleClose = () => {
+    // Save silently in background if not explicitly claimed, so it appears in 'My Coupons'
+    if (!discountClaimed) {
+      const phoneToUse = discountPhone || localStorage.getItem("signup_phone") || user?.phone;
+      if (phoneToUse) {
+        generateAndSaveCoupon(phoneToUse);
+        localStorage.removeItem("signup_phone");
+      }
+    }
+    setShowPopup(false);
+  };
 
   const handleClaimDiscount = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,20 +70,15 @@ export function DiscountPopup() {
       return;
     }
 
-    const code = "FS5OFF-" + Math.floor(1000 + Math.random() * 9000);
-    const existing = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
-    existing.push({ code, discount: 5, active: true, phone: discountPhone });
-    localStorage.setItem("firstsmile_coupons", JSON.stringify(existing));
+    const code = generateAndSaveCoupon(discountPhone);
+    localStorage.removeItem("signup_phone");
 
-    // Disallow future popups completely for guest
-    localStorage.setItem("firstsmile_discount_guest", "true");
-
-    setGeneratedCoupon(code);
-    setDiscountClaimed(true);
-    toast.success(`Coupon code ${code} generated!`);
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 6000);
+    if (code) {
+      setGeneratedCoupon(code);
+      setDiscountClaimed(true);
+      toast.success(`Coupon code ${code} unlocked successfully!`);
+      setTimeout(() => handleClose(), 6000);
+    }
   };
 
   if (!showPopup) return null;
@@ -52,7 +87,7 @@ export function DiscountPopup() {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white/95 md:bg-surface w-full max-w-3xl rounded-3xl shadow-pop relative overflow-hidden flex flex-col md:flex-row border border-border h-auto md:h-[400px]">
         <button
-          onClick={() => setShowPopup(false)}
+          onClick={handleClose}
           className="absolute top-4 right-4 z-20 bg-primary/20 rounded-full p-1 text-primary hover:bg-primary/30 transition"
         >
           <XCircle className="size-6" />
@@ -107,7 +142,7 @@ export function DiscountPopup() {
                 <Link
                   to="/coupons"
                   className="text-primary hover:underline font-bold"
-                  onClick={() => setShowPopup(false)}
+                  onClick={handleClose}
                 >
                   Coupons
                 </Link>{" "}

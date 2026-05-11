@@ -51,7 +51,6 @@ export function Footer() {
         <div className="container mx-auto px-4 py-4 text-xs opacity-60 flex flex-wrap items-center justify-between gap-2">
           <div className="flex gap-4">
             <span>© {new Date().getFullYear()} First Smile. Indian jurisdiction. Users must be 18+.</span>
-            <Link to="/admin/login" className="hover:underline">Admin Login</Link>
           </div>
           <span>Made with ❤️ for little explorers</span>
         </div>

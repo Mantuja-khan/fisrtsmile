@@ -142,7 +142,7 @@ function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 relative">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative">
               {offers.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
@@ -160,7 +160,7 @@ function HomePage() {
               </div>
               <Link to="/products" className="text-sm font-semibold text-primary">View all →</Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {featured.map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
@@ -180,8 +180,16 @@ function HomePage() {
               search={{ category: c.slug } as never}
               className="group flex flex-col items-center shrink-0 w-20 md:w-28 text-center"
             >
-              <div className="size-16 md:size-24 rounded-full bg-muted flex items-center justify-center text-3xl md:text-4xl shadow-sm mb-2 overflow-hidden">
-                {c.icon ?? "🎁"}
+              <div className="size-16 md:size-24 rounded-full bg-muted flex items-center justify-center shadow-sm mb-2 overflow-hidden border border-border/50">
+                {c.image ? (
+                  <img 
+                    src={resolveImage(c.image)} 
+                    alt={c.name} 
+                    className="w-full h-full object-cover scale-110 transition-transform duration-300 group-hover:scale-125" 
+                  />
+                ) : (
+                  <span className="text-3xl md:text-4xl group-hover:scale-110 transition-transform duration-300">{c.icon ?? "🎁"}</span>
+                )}
               </div>
               <div className="text-xs md:text-sm font-semibold text-foreground/90 line-clamp-2 leading-tight">
                 {c.name}

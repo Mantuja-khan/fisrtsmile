@@ -36,6 +36,7 @@ export type Product = {
   badge?: string | null;
   ageRange: string;
   offerPct: number;
+  brand?: string | null;
 };
 
 export type Category = {

@@ -10,6 +10,7 @@ import { PageLoader } from "@/components/PageLoader";
 import { ShopProvider } from "@/store/shop";
 import { AuthProvider } from "@/store/auth";
 import { DiscountPopup } from "@/components/DiscountPopup";
+import { SpecialOffersPopup } from "@/components/SpecialOffersPopup";
 
 function NotFoundComponent() {
   return (
@@ -55,6 +56,7 @@ function RootComponent() {
             <Footer />
             <MobileBottomNav />
             <DiscountPopup />
+            <SpecialOffersPopup />
             <Toaster richColors position="top-center" />
           </div>
         </ShopProvider>
