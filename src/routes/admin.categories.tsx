@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, X, ImageIcon } from "lucide-react";
+import { Plus, Trash2, Pencil, X, ImageIcon, Loader2 } from "lucide-react";
 import { compressImage } from "@/utils/imageCompressor";
 import { resolveImage } from "@/data/products";
 
@@ -25,14 +25,38 @@ function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+const matrixData = [
+  { name: "BLOCKS", subs: ["BLOCKS", "BULLET BLOCKS", "CONSTRUCTION BLOCK", "INTELOCKING BLOCKS", "LIGHT BLOCKS", "MAGNETIC", "MEGA BLOCK"] },
+  { name: "DOLL & DOLL SETS", subs: ["DOLL", "DOLL HOUSE", "DOLL SET"] },
+  { name: "RIDE ON", subs: ["BATTERY OPERATED", "BATTERY TOY ASSESSORIES", "CYCLE", "CYCLE ASSESSORIES", "MANUAL RIDE ON", "SCOOTER", "SWING CAR", "TRICYCLE"] },
+  { name: "BOARD GAME & PUZZLE", subs: ["ART & CRAFT", "BOARD GAME", "CHESS", "CONSTRUCTION BLOCK", "CUBE", "FISHING GAME", "LUDO & SNAKES", "MIND GAME", "PLAYING CARDS", "PUZZLE", "SCIENCE GAME", "TABLE TOP GAME"] },
+  { name: "SCHOOL", subs: ["COLORING & STATIONERY", "DIARY", "GEOMETRY PENCIL BOX", "LUNCH BOX", "PENCIL BOX", "POUCH", "SCHOOL BAG", "SIPPER", "WATER BOTTLE"] },
+  { name: "DECORATION", subs: ["BALLOON", "CANDLE", "CURTAINS", "COMBO SETS"] },
+  { name: "ELECTRONIC TOYS", subs: ["CAMERA", "VIDEO GAME"] },
+  { name: "KIDS FURNITURE", subs: ["CHAIR", "ROCKING CHAIR", "STOOL", "STUDY TABLE"] },
+  { name: "SOFT TOYS", subs: ["BAG", "BOY", "CAT", "CHRACTER", "DOG", "PENGUINE", "SOFA", "Soft Toys"] },
+  { name: "FIGURE & PLAYSET", subs: ["ANIMAL FIGURE", "AVENGER", "BEAUTY", "DOCTOR", "KITCHEN", "MIX", "Peppa Pig", "SHOPPING", "TEA SET", "TENT HOUSE", "TOOL KIT", "WENDING MACHINE"] },
+  { name: "KIDS ASSESSORIES", subs: ["HAIR BAND", "MAKE UP", "OTHERS", "SLING BAG", "TOOTH BRUSH", "WATCH", "UMBRELLA"] },
+  { name: "GIFT", subs: ["CLOCK", "Fan", "GIFT", "HEADPHONE", "KEYCHAIN", "LAMP", "LAZER LIGHT", "PENS"] },
+  { name: "MUSICAL", subs: ["GUITAR", "MIKE", "MOUTH ORGAN", "PIANO", "SPEAKER"] },
+  { name: "VEHICLES & TRACKS", subs: ["DIE CAST TOY", "DIY", "FRICTION TOY", "RC TOYS", "TRACK SET"] },
+  { name: "GUNS & WEAPONS", subs: ["BOW & ARROW", "BUBBLE GUN", "BULLET", "BULLET GUN", "MUSICAL GUN", "SWORD"] },
+  { name: "NOVELTY TOYS", subs: ["BINOCULAR", "CUP", "MINI TOYS", "PIGGY BANK", "STICKER", "YOYO", "HOOPLA", "HOP BALL"] },
+  { name: "FESTIVAL", subs: ["HOLI", "RAKHSA BANDHAN", "XMAS"] },
+  { name: "INFANT & TOODLER", subs: ["GIFT PACK", "MOTHER BAG", "BEDDING SET & BLANKET", "BABAY CARE PRODUCTS", "EDUCATIONAL", "KIDS BAG", "INFANT ASSESSORIES", "KIDS FURNITURE", "INFANT TOYS / PUZZLE", "FEEDING ASSESSORIES"] },
+  { name: "SPORTS", subs: ["BADMINTON", "BALACING BOARD", "BASKET BALL", "BEYBLADE & FLYIG DISC", "BOW & ARROW", "BOWLING", "BOXING", "CARROM", "CRICKET", "DART GAME", "FOOTBALL", "GOLF", "HOCKEY", "HOWER BALL", "JUMPING ROPE", "POOL", "PUMP", "RACKET", "SAFETY ACCESSORIES", "SKATE", "SWIMMING", "TABLE TENNIS", "VOLLEY BALL", "YOGA"] }
+];
+
 function AdminCategories() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Category | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [presetParentId, setPresetParentId] = useState<string>("");
   const [uploading, setUploading] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [seedStatus, setSeedStatus] = useState("");
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading } = useQuery({
     queryKey: ["admin-categories"],
     queryFn: async () => {
         const { data } = await api.get("/categories");
@@ -105,15 +129,66 @@ function AdminCategories() {
     }
   };
 
-  const seedMatrix = async () => {
-    if (!confirm("Reset and seed all default matrix categories and subcategories? Existing custom categories will be cleared.")) return;
+  const seedMatrixClientSide = async () => {
+    if (!confirm("Populate the complete database catalog with standard Parent Categories and Subcategories matrix via live API integration? This will take ~20-30 seconds.")) return;
+    
+    setIsSeeding(true);
+    setSeedStatus("Clearing stale category records...");
+    
     try {
-        await api.get('/categories?seed=true');
-        toast.success("Categories matrix seeded successfully!");
+        // 1. Delete all current categories to reset cleanly
+        for (const cat of categories) {
+            try {
+                await api.delete(`/categories/${cat._id}`);
+            } catch (err) {
+                // proceed smoothly
+            }
+        }
+
+        // Calculate total target count for accurate user status display
+        const totalItems = matrixData.length + matrixData.reduce((acc, curr) => acc + new Set(curr.subs).size, 0);
+        let createdCount = 0;
+        let pOrder = 1;
+
+        // 2. Loop through main categories sequentially to respect server load limits
+        for (const pItem of matrixData) {
+            createdCount++;
+            setSeedStatus(`Creating (${createdCount}/${totalItems}): ${pItem.name}`);
+            const pSlug = slugify(pItem.name);
+            
+            // Create parent via standard frontend authenticated POST
+            const { data: parentRes } = await api.post('/categories', {
+                name: pItem.name,
+                slug: pSlug,
+                sort_order: pOrder++
+            });
+
+            let sOrder = 1;
+            const uniqueSubNames = [...new Set(pItem.subs)];
+            for (const subName of uniqueSubNames) {
+                createdCount++;
+                setSeedStatus(`Creating (${createdCount}/${totalItems}): ${subName}`);
+                const subSlug = `${pSlug}-${slugify(subName)}`;
+                
+                await api.post('/categories', {
+                    name: subName,
+                    slug: subSlug,
+                    parent: parentRes._id,
+                    sort_order: sOrder++
+                });
+            }
+        }
+
+        toast.success("Complete Categories Matrix fully synchronized with live Cloud Database!");
         qc.invalidateQueries({ queryKey: ["admin-categories"] });
         qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
-        toast.error("Failed to seed categories matrix");
+        toast.error("Process stopped or encountered an API load limit. Refreshing state...");
+        qc.invalidateQueries({ queryKey: ["admin-categories"] });
+        qc.invalidateQueries({ queryKey: ["categories"] });
+    } finally {
+        setIsSeeding(false);
+        setSeedStatus("");
     }
   };
 
@@ -123,23 +198,41 @@ function AdminCategories() {
         <h2 className="font-bold text-lg">Categories</h2>
         <div className="flex items-center gap-2">
           <button
-            onClick={seedMatrix}
-            className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-md text-sm font-semibold transition"
+            onClick={seedMatrixClientSide}
+            disabled={isSeeding || isLoading}
+            className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white px-3 py-2 rounded-md text-sm font-semibold transition"
             title="Populate the complete standard categories and subcategories matrix"
           >
-            ⚡ Seed Matrix Data
+            {isSeeding ? (
+              <>
+                <Loader2 className="size-4 animate-spin" /> Seeding Live DB...
+              </>
+            ) : (
+              "⚡ Seed Matrix Data"
+            )}
           </button>
           <button
             onClick={() => { setEditing(null); setShowForm(true); setPresetParentId(""); }}
-            className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
+            disabled={isSeeding}
+            className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold disabled:opacity-50"
           >
             <Plus className="size-4" /> New Category
           </button>
         </div>
       </div>
 
+      {isSeeding && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex items-center gap-3 shadow-sm animate-pulse">
+           <Loader2 className="size-5 animate-spin text-amber-600 shrink-0" />
+           <div className="text-sm font-medium leading-tight">
+             <span className="font-bold block mb-0.5">Live Remote Seeding in Progress</span>
+             {seedStatus}
+           </div>
+        </div>
+      )}
 
-      {showForm && (
+
+      {showForm && !isSeeding && (
         <form onSubmit={save} className="bg-surface rounded-xl shadow-card p-4 space-y-3 relative">
           <button type="button" onClick={() => { setShowForm(false); setEditing(null); setPresetParentId(""); }} className="absolute top-3 right-3 text-muted-foreground">
             <X className="size-4" />
@@ -230,15 +323,16 @@ function AdminCategories() {
                         setShowForm(true);
                         window.scrollTo({top: 0, behavior: 'smooth'});
                       }}
+                      disabled={isSeeding}
                       title="Add subcategory"
-                      className="p-2 hover:bg-muted rounded"
+                      className="p-2 hover:bg-muted rounded disabled:opacity-50"
                     >
                        <Plus className="size-4 text-muted-foreground" />
                     </button>
-                    <button onClick={() => { setEditing(root); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition">
+                    <button disabled={isSeeding} onClick={() => { setEditing(root); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition disabled:opacity-50">
                       <Pencil className="size-4 text-primary" />
                     </button>
-                    <button onClick={() => remove(root._id)} className="p-2 hover:bg-muted rounded">
+                    <button disabled={isSeeding} onClick={() => remove(root._id)} className="p-2 hover:bg-muted rounded disabled:opacity-50">
                       <Trash2 className="size-4 text-destructive" />
                     </button>
                   </div>
@@ -259,10 +353,10 @@ function AdminCategories() {
                       <div className="font-semibold text-sm text-slate-700">{child.name}</div>
                       <div className="text-[10px] text-muted-foreground">slug: <span className="font-mono">{child.slug}</span></div>
                     </div>
-                    <button onClick={() => { setEditing(child); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition scale-90">
+                    <button disabled={isSeeding} onClick={() => { setEditing(child); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition scale-90 disabled:opacity-50">
                       <Pencil className="size-3.5 text-primary" />
                     </button>
-                    <button onClick={() => remove(child._id)} className="p-2 hover:bg-muted rounded scale-90">
+                    <button disabled={isSeeding} onClick={() => remove(child._id)} className="p-2 hover:bg-muted rounded scale-90 disabled:opacity-50">
                       <Trash2 className="size-3.5 text-destructive" />
                     </button>
                   </div>
@@ -275,12 +369,14 @@ function AdminCategories() {
         {categories.filter(cat => cat.parent && !categories.find(r => r._id === (cat.parent?._id || cat.parent))).map(cat => (
            <div key={cat._id} className="p-4 flex items-center gap-4 bg-yellow-50/30">
               <div className="flex-1 font-semibold">{cat.name} <span className="text-xs text-destructive">(Orphaned Subcategory)</span></div>
-              <button onClick={() => { setEditing(cat); setShowForm(true); }} className="p-2"><Pencil className="size-4 text-primary"/></button>
+              <button disabled={isSeeding} onClick={() => { setEditing(cat); setShowForm(true); }} className="p-2"><Pencil className="size-4 text-primary"/></button>
            </div>
         ))}
 
-        {categories.length === 0 && <div className="p-8 text-center text-sm text-muted-foreground">No categories yet</div>}
+        {categories.length === 0 && !isLoading && !isSeeding && <div className="p-8 text-center text-sm text-muted-foreground">No categories yet. Click "⚡ Seed Matrix Data" above to populate the catalog.</div>}
       </div>
     </div>
   );
 }
+
+export default AdminCategories;
