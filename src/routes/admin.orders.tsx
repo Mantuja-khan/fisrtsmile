@@ -5,7 +5,7 @@ import api from "@/services/api";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 
-type OrderStatus = "placed" | "processing" | "shipped" | "delivered" | "cancelled";
+type OrderStatus = "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned" | "rejected";
 
 type Order = {
   _id: string;
@@ -22,6 +22,10 @@ type Order = {
   payment_method: string;
   isPaid: boolean;
   status: OrderStatus;
+  refund_status?: string;
+  awb_code?: string;
+  shipment_id?: string;
+  tracking_url?: string;
   createdAt: string;
 };
 
@@ -35,6 +39,9 @@ const statusColors: Record<OrderStatus, string> = {
   shipped: "bg-secondary text-secondary-foreground",
   delivered: "bg-discount text-white",
   cancelled: "bg-destructive text-destructive-foreground",
+  "return requested": "bg-purple-600 text-white",
+  returned: "bg-slate-800 text-white",
+  rejected: "bg-gray-400 text-white",
 };
 
 function AdminOrders() {
@@ -102,6 +109,39 @@ function AdminOrders() {
     }
   };
 
+  const saveTrackingInfo = async (oId: string, payload: any) => {
+    try {
+        await api.put(`/orders/${oId}/status`, payload);
+        toast.success(`Tracking information updated`);
+        qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Failed to save tracking info");
+    }
+  };
+
+  const processRefund = async (o: Order) => {
+    if (!confirm("Mark this order as Refunded? This only updates status; make sure to issue money via Gateway panel if needed.")) return;
+    try {
+      await api.put(`/orders/${o._id}/status`, { refund_status: "Refunded", status: o.status === "cancelled" ? "cancelled" : "Returned" });
+      toast.success("Order marked as Refunded!");
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    } catch (error: any) {
+      toast.error("Failed to update refund status");
+    }
+  };
+
+  const resolveReturn = async (o: Order, action: "approve" | "reject") => {
+    const status = action === "approve" ? "Returned" : "Rejected";
+    if (!confirm(`Are you sure you want to ${action} this return request?`)) return;
+    try {
+      await api.put(`/orders/${o._id}/status`, { status });
+      toast.success(`Return request ${action}d!`);
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    } catch (error: any) {
+      toast.error("Failed to resolve return request");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="font-bold text-lg">Orders ({orders.length})</h2>
@@ -120,9 +160,16 @@ function AdminOrders() {
               </div>
               <div className="text-right">
                 <div className="font-bold text-sm">₹{Number(o.total).toLocaleString("en-IN")}</div>
-                <span className={`inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded ${statusColors[o.status.toLowerCase() as OrderStatus] || "bg-muted text-muted-foreground"}`}>
-                  {o.status}
-                </span>
+                <div className="flex flex-col items-end gap-1 mt-1">
+                  <span className={`inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded ${statusColors[o.status.toLowerCase() as OrderStatus] || "bg-muted text-muted-foreground"}`}>
+                    {o.status}
+                  </span>
+                  {o.refund_status && (
+                    <span className="inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-sm animate-pulse">
+                      {o.refund_status}
+                    </span>
+                  )}
+                </div>
               </div>
             </button>
 
@@ -152,25 +199,84 @@ function AdminOrders() {
                     {JSON.stringify(o.shipping_address, null, 2)}
                   </pre>
                   
-                  <div className="font-semibold mt-3 mb-1">Payment</div>
-                  {!o.isPaid ? (
-                    <button
-                      onClick={() => setPaymentPaid(o)}
-                      className="text-xs px-3 py-1.5 rounded font-semibold bg-success text-success-foreground hover:brightness-110"
-                    >
-                      Mark Payment Done
-                    </button>
-                  ) : (
-                    <div className="text-xs font-semibold text-success">✓ Payment Done</div>
+                  <div className="font-semibold mt-3 mb-1">Payment & Refund</div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {!o.isPaid ? (
+                      <button
+                        onClick={() => setPaymentPaid(o)}
+                        className="text-xs px-3 py-1.5 rounded font-semibold bg-success text-success-foreground hover:brightness-110"
+                      >
+                        Mark Payment Done
+                      </button>
+                    ) : (
+                      <div className="text-xs font-semibold text-success">✓ Payment Done</div>
+                    )}
+                    
+                    {(o.status.toLowerCase() === "cancelled" || o.status.toLowerCase() === "returned" || o.status.toLowerCase() === "return requested") && !o.refund_status && (
+                      <button 
+                        onClick={() => processRefund(o)}
+                        className="text-xs px-3 py-1.5 rounded font-semibold bg-emerald-600 text-white hover:brightness-110 shadow-sm"
+                      >
+                        Trigger Refund
+                      </button>
+                    )}
+                    {o.refund_status && (
+                      <div className="text-xs font-bold text-emerald-600 border border-emerald-200 px-2 py-1 rounded bg-emerald-50 flex items-center gap-1">
+                        💰 {o.refund_status}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="font-semibold mt-4 mb-1 text-primary flex items-center justify-between">
+                    <span className="uppercase tracking-wider text-xs font-bold">Shipment Tracking</span>
+                    {(o.awb_code || o.tracking_url) && <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 rounded">Configured</span>}
+                  </div>
+                  <form 
+                    className="bg-muted/40 p-3 rounded border border-border flex flex-col gap-2 shadow-sm"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const fd = new FormData(e.currentTarget);
+                      saveTrackingInfo(o._id, {
+                        awb_code: fd.get("awb_code"),
+                        shipment_id: fd.get("shipment_id"),
+                        tracking_url: fd.get("tracking_url")
+                      });
+                    }}
+                  >
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                         <label className="text-[9px] text-muted-foreground font-bold uppercase">AWB / Courier Code</label>
+                         <input name="awb_code" placeholder="e.g. 12345678" defaultValue={o.awb_code} className="text-xs p-1.5 border rounded w-full outline-none focus:border-primary" />
+                      </div>
+                      <div>
+                         <label className="text-[9px] text-muted-foreground font-bold uppercase">Shipment ID</label>
+                         <input name="shipment_id" placeholder="Vendor system ID" defaultValue={o.shipment_id} className="text-xs p-1.5 border rounded w-full outline-none focus:border-primary" />
+                      </div>
+                    </div>
+                    <div>
+                       <label className="text-[9px] text-muted-foreground font-bold uppercase">Direct Tracking URL</label>
+                       <input name="tracking_url" placeholder="https://track.shiprocket.com/..." defaultValue={o.tracking_url} className="text-xs p-1.5 border rounded w-full outline-none focus:border-primary" />
+                    </div>
+                    <button type="submit" className="text-xs font-bold bg-primary text-white py-1.5 rounded hover:brightness-110 transition shadow-sm">Save Tracking Data</button>
+                  </form>
+
+                  {o.status.toLowerCase() === "return requested" && (
+                    <div className="mt-4 bg-purple-50 border border-purple-200 p-3 rounded shadow-sm animate-in zoom-in-95">
+                      <div className="text-xs font-bold text-purple-700 mb-2 uppercase tracking-wide">🔄 Resolve Return Request</div>
+                      <div className="flex gap-2">
+                        <button onClick={() => resolveReturn(o, "approve")} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded transition">Approve Return</button>
+                        <button onClick={() => resolveReturn(o, "reject")} className="flex-1 border border-purple-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold py-2 rounded transition">Reject Request</button>
+                      </div>
+                    </div>
                   )}
 
-                  <div className="font-semibold mt-3 mb-1">Update status</div>
+                  <div className="font-semibold mt-3 mb-1">Quick Status Toggle</div>
                   <div className="flex flex-wrap gap-1">
                     {(["placed", "processing", "shipped", "delivered", "cancelled"] as OrderStatus[]).map((s) => (
                       <button
                         key={s}
                         onClick={() => setStatus(o, s)}
-                        className={`text-xs px-2 py-1 rounded font-semibold ${o.status.toLowerCase() === s.toLowerCase() ? statusColors[s] : "bg-muted hover:bg-accent"}`}
+                        className={`text-[11px] px-2 py-1 rounded font-bold uppercase tracking-tight border transition ${o.status.toLowerCase() === s.toLowerCase() ? statusColors[s] : "bg-white border-border text-slate-600 hover:bg-slate-50"}`}
                       >
                         {s}
                       </button>

@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Megaphone } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
 import { BRANDS } from "@/data/brands";
@@ -29,6 +29,13 @@ type ProductRow = {
   age_range: string | null;
   offer_pct: number;
   show_in_hero: boolean;
+  show_in_popup?: boolean;
+  offer_starts_at?: string | null;
+  offer_expires_at?: string | null;
+  weight?: number;
+  length?: number;
+  breadth?: number;
+  height?: number;
 };
 
 function AdminProducts() {
@@ -37,6 +44,7 @@ function AdminProducts() {
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [offerOpen, setOfferOpen] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [parentCatId, setParentCatId] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["admin-products"],
@@ -50,9 +58,41 @@ function AdminProducts() {
     queryKey: ["admin-categories"],
     queryFn: async () => {
       const { data } = await api.get("/categories");
-      return data as { _id: string; name: string }[];
+      return data as { _id: string; name: string; parent?: any }[];
     },
   });
+
+  // Pre-fill the parent when editing
+  useState(() => {
+    if (editing?.category) {
+      const cat = categories.find(c => c._id === (editing.category._id || editing.category));
+      if (cat?.parent) {
+        setParentCatId(cat.parent._id || cat.parent);
+      } else if (cat) {
+        setParentCatId(cat._id);
+      }
+    }
+  });
+
+  const handleEdit = (p: ProductRow) => {
+    const catObj = categories.find(c => c._id === (p.category?._id || p.category));
+    if (catObj?.parent) {
+      setParentCatId(catObj.parent._id || catObj.parent);
+    } else if (catObj) {
+      setParentCatId(catObj._id);
+    } else {
+      setParentCatId("");
+    }
+    setEditing(p);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNew = () => {
+    setEditing(null);
+    setParentCatId("");
+    setShowForm(true);
+  };
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["admin-products"] });
@@ -80,10 +120,18 @@ function AdminProducts() {
       age_range: String(fd.get("age_range") || ""),
       in_stock: fd.get("in_stock") === "on",
       show_in_hero: fd.get("show_in_hero") === "on",
+      show_in_popup: fd.get("show_in_popup") === "on",
+      offer_starts_at: fd.get("offer_starts_at") ? String(fd.get("offer_starts_at")) : null,
+      offer_expires_at: fd.get("offer_expires_at") ? String(fd.get("offer_expires_at")) : null,
+      weight: fd.get("weight") ? Number(fd.get("weight")) : null,
+      length: fd.get("length") ? Number(fd.get("length")) : null,
+      breadth: fd.get("breadth") ? Number(fd.get("breadth")) : null,
+      height: fd.get("height") ? Number(fd.get("height")) : null,
     };
 
     if (!payload.name) return toast.error("Name required");
     if (payload.price < 0 || (payload.mrp !== null && payload.mrp < 0)) return toast.error("Prices must be ≥ 0");
+
 
     try {
       if (editing) {
@@ -178,12 +226,22 @@ function AdminProducts() {
     }
   };
 
+  const togglePopup = async (id: string, currentVal?: boolean) => {
+    try {
+      await api.put(`/products/${id}`, { show_in_popup: !currentVal });
+      toast.success(!currentVal ? "Added to Popup broadcast" : "Removed from Popup broadcast");
+      invalidate();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to update product");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-lg">Products ({products.length})</h2>
         <button
-          onClick={() => { setEditing(null); setShowForm(true); }}
+          onClick={handleNew}
           className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
         >
           <Plus className="size-4" /> Add Product
@@ -204,10 +262,32 @@ function AdminProducts() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Category</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Main Category</label>
+              <select 
+                value={parentCatId} 
+                onChange={(e) => setParentCatId(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              >
+                <option value="">— Select Parent —</option>
+                {categories
+                  .filter(c => !c.parent)
+                  .map(parent => (
+                    <option key={parent._id} value={parent._id}>{parent.name}</option>
+                  ))
+                }
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Subcategory <span className="text-[10px] italic font-normal">(Optional)</span></label>
               <select name="category" defaultValue={editing?.category?._id || editing?.category || ""} className="w-full px-3 py-2 text-sm border border-input rounded">
-                <option value="">— Select category —</option>
-                {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                <option value={parentCatId}>— Same as Main —</option>
+                {parentCatId && categories
+                  .filter(c => (c.parent?._id === parentCatId || c.parent === parentCatId))
+                  .map(child => (
+                    <option key={child._id} value={child._id}>{child.name}</option>
+                  ))
+                }
               </select>
             </div>
 
@@ -244,19 +324,68 @@ function AdminProducts() {
               <select name="age_range" defaultValue={editing?.age_range ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded">
                 <option value="">— Select age range —</option>
                 <option value="0-2 years">0-2 years</option>
-                <option value="3-5 years">3-5 years</option>
-                <option value="6-8 years">6-8 years</option>
+                <option value="2-4 years">2-4 years</option>
+                <option value="4-7 years">4-7 years</option>
+                <option value="7-9 years">7-9 years</option>
                 <option value="9-12 years">9-12 years</option>
-                <option value="13+ years">13+ years</option>
+                <option value="12+ years">12+ years</option>
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 text-sm cursor-pointer mt-6">
+            <div className="grid grid-cols-2 gap-3 md:col-span-1">
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Offer Start <span className="text-[10px] font-normal italic lowercase">(Optional)</span></label>
+                <input 
+                  name="offer_starts_at" 
+                  type="datetime-local" 
+                  defaultValue={editing?.offer_starts_at ? new Date(editing.offer_starts_at).toISOString().slice(0,16) : ""} 
+                  className="w-full px-2 py-1.5 text-sm border border-input rounded" 
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Offer Expiry <span className="text-[10px] font-normal italic lowercase">(Optional)</span></label>
+                <input 
+                  name="offer_expires_at" 
+                  type="datetime-local" 
+                  defaultValue={editing?.offer_expires_at ? new Date(editing.offer_expires_at).toISOString().slice(0,16) : ""} 
+                  className="w-full px-2 py-1.5 text-sm border border-input rounded" 
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2 bg-slate-50 p-3 rounded border border-slate-200">
+              <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2 flex items-center gap-1">
+                📦 Shipping Dimensions & Weight
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Weight (KG)</label>
+                  <input name="weight" type="number" step="0.01" defaultValue={editing?.weight ?? ""} placeholder="e.g. 0.5" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Length (CM)</label>
+                  <input name="length" type="number" defaultValue={editing?.length ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Breadth (CM)</label>
+                  <input name="breadth" type="number" defaultValue={editing?.breadth ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Height (CM)</label>
+                  <input name="height" type="number" defaultValue={editing?.height ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
                 <input type="checkbox" name="in_stock" defaultChecked={editing?.in_stock ?? true} className="size-4" /> In stock
               </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer mt-6">
+              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
                 <input type="checkbox" name="show_in_hero" defaultChecked={editing?.show_in_hero ?? false} className="size-4" /> Show in Hero
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4 text-purple-600 font-medium">
+                <input type="checkbox" name="show_in_popup" defaultChecked={editing?.show_in_popup ?? false} className="size-4" /> Broadcast in Popup
               </label>
             </div>
 
@@ -305,57 +434,67 @@ function AdminProducts() {
         </form>
       )}
 
-      <div className="bg-surface rounded-xl shadow-card divide-y divide-border overflow-hidden">
+      <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-1">
         {products.map((p) => (
-          <div key={p._id} className="p-4 flex items-center gap-4 hover:bg-muted/30 transition">
-            <div className="relative shrink-0">
-               <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border" />
-               {p.images && p.images.length > 0 && (
-                 <span className="absolute -bottom-1 -right-1 bg-white rounded-full size-6 grid place-items-center shadow-sm border border-border text-[10px] font-bold">
-                   +{p.images.length}
-                 </span>
-               )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-bold text-sm md:text-base line-clamp-1">{p.name}</div>
-              <div className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString("en-IN")}</span> 
-                <span className="mx-1.5 opacity-50">/</span>
-                <span className="line-through">₹{Number(p.mrp).toLocaleString("en-IN")}</span>
-                <span className="ml-2 text-success font-bold">{p.offer_pct}% OFF</span>
-                {!p.in_stock && <span className="ml-2 text-destructive font-bold uppercase text-[10px]">· Sold Out</span>}
+          <div key={p._id} className="bg-surface sm:bg-transparent lg:bg-surface border sm:border-transparent lg:border-0 p-4 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-4 hover:bg-muted/30 transition rounded-xl lg:rounded-none border-border lg:border-b lg:last:border-b-0">
+            <div className="flex gap-4 flex-1 min-w-0">
+              <div className="relative shrink-0">
+                 <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border" />
+                 {p.images && p.images.length > 0 && (
+                   <span className="absolute -bottom-1 -right-1 bg-white rounded-full size-6 grid place-items-center shadow-sm border border-border text-[10px] font-bold">
+                     +{p.images.length}
+                   </span>
+                 )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm md:text-base line-clamp-1">{p.name}</div>
+                <div className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                  <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString("en-IN")}</span> 
+                  <span className="mx-1.5 opacity-50">/</span>
+                  <span className="line-through">₹{Number(p.mrp).toLocaleString("en-IN")}</span>
+                  <br className="lg:hidden" />
+                  <span className="lg:ml-2 text-success font-bold">{p.offer_pct}% OFF</span>
+                  {!p.in_stock && <span className="ml-2 text-destructive font-bold uppercase text-[10px]">· Sold Out</span>}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="relative">
-                <button onClick={() => setOfferOpen(offerOpen === p._id ? null : p._id)} className="p-2 hover:bg-muted rounded-full transition" title="Override offer">
-                  <Tag className="size-4 text-muted-foreground" />
-                </button>
-                {offerOpen === p._id && (
-                  <div className="absolute right-0 top-10 z-20 bg-surface border border-border rounded-lg shadow-pop p-3 w-52">
-                    <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Set Offer Price</div>
-                    <form onSubmit={(e) => { e.preventDefault(); const val = Number(new FormData(e.currentTarget as any).get("offerPrice")); if (val && val < p.mrp) applyOfferPrice(p._id, val, p.mrp); }}>
-                       <input name="offerPrice" type="number" placeholder="New price (₹)" className="w-full text-sm p-1.5 border border-input rounded outline-none focus:border-primary" required />
-                       <button type="submit" className="w-full mt-2 bg-primary text-primary-foreground text-xs font-bold py-1.5 rounded hover:brightness-110">Apply Price</button>
-                    </form>
-                    <div className="text-[10px] text-center my-2 text-muted-foreground">OR SELECT %</div>
-                    <div className="grid grid-cols-4 gap-1">
-                      {[0, 10, 20, 30, 40, 50, 60, 70].map((o) => (
-                        <button key={o} onClick={() => applyOfferPct(p._id, o, p.mrp)} className="px-1 py-1 text-[10px] font-bold rounded hover:bg-primary hover:text-primary-foreground border border-border transition">{o}%</button>
-                      ))}
+            <div className="flex items-center gap-1 border-t lg:border-0 pt-2 lg:pt-0 mt-auto lg:mt-0 justify-between lg:justify-end">
+              <div className="flex items-center gap-1">
+                <div className="relative">
+                  <button onClick={() => setOfferOpen(offerOpen === p._id ? null : p._id)} className="p-2 hover:bg-muted rounded-full transition" title="Override offer">
+                    <Tag className="size-4 text-muted-foreground" />
+                  </button>
+                  {offerOpen === p._id && (
+                    <div className="absolute right-0 top-10 z-20 bg-surface border border-border rounded-lg shadow-pop p-3 w-52">
+                      <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Set Offer Price</div>
+                      <form onSubmit={(e) => { e.preventDefault(); const val = Number(new FormData(e.currentTarget as any).get("offerPrice")); if (val && val < p.mrp) applyOfferPrice(p._id, val, p.mrp); }}>
+                         <input name="offerPrice" type="number" placeholder="New price (₹)" className="w-full text-sm p-1.5 border border-input rounded outline-none focus:border-primary" required />
+                         <button type="submit" className="w-full mt-2 bg-primary text-primary-foreground text-xs font-bold py-1.5 rounded hover:brightness-110">Apply Price</button>
+                      </form>
+                      <div className="text-[10px] text-center my-2 text-muted-foreground">OR SELECT %</div>
+                      <div className="grid grid-cols-4 gap-1">
+                        {[0, 10, 20, 30, 40, 50, 60, 70].map((o) => (
+                          <button key={o} onClick={() => applyOfferPct(p._id, o, p.mrp)} className="px-1 py-1 text-[10px] font-bold rounded hover:bg-primary hover:text-primary-foreground border border-border transition">{o}%</button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+                <button onClick={() => toggleHero(p._id, p.show_in_hero)} className="p-2 hover:bg-warning/10 rounded-full transition" title="Toggle Hero Section">
+                  <Star className={`size-4 ${p.show_in_hero ? 'fill-warning text-warning' : 'text-muted-foreground'}`} />
+                </button>
+                <button onClick={() => togglePopup(p._id, p.show_in_popup)} className="p-2 hover:bg-purple-100 rounded-full transition" title="Broadcast in Account Popup">
+                  <Megaphone className={`size-4 ${p.show_in_popup ? 'fill-purple-600 text-purple-600' : 'text-muted-foreground'}`} />
+                </button>
               </div>
-              <button onClick={() => toggleHero(p._id, p.show_in_hero)} className="p-2 hover:bg-warning/10 rounded-full transition" title="Toggle Hero Section">
-                <Star className={`size-4 ${p.show_in_hero ? 'fill-warning text-warning' : 'text-muted-foreground'}`} />
-              </button>
-              <button onClick={() => { setEditing(p); setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="p-2 hover:bg-primary/10 rounded-full transition">
-                <Pencil className="size-4 text-primary" />
-              </button>
-              <button onClick={() => remove(p._id)} className="p-2 hover:bg-destructive/10 rounded-full transition">
-                <Trash2 className="size-4 text-destructive" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button onClick={() => handleEdit(p)} className="p-2 hover:bg-primary/10 rounded-full transition">
+                  <Pencil className="size-4 text-primary" />
+                </button>
+                <button onClick={() => remove(p._id)} className="p-2 hover:bg-destructive/10 rounded-full transition">
+                  <Trash2 className="size-4 text-destructive" />
+                </button>
+              </div>
             </div>
           </div>
         ))}

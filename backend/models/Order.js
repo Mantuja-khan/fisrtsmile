@@ -26,13 +26,17 @@ const orderSchema = new mongoose.Schema({
     payment_method: { type: String, required: true },
     status: {
         type: String,
-        enum: ['Placed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Placed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
         default: 'Placed'
     },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     payment_id: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    shiprocket_order_id: { type: String },
+    shipment_id: { type: String },
+    awb_code: { type: String },
+    tracking_url: { type: String },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

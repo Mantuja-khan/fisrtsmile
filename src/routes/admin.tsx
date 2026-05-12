@@ -66,15 +66,15 @@ function AdminLayout() {
         </div>
       </div>
       <div className="grid md:grid-cols-[220px_1fr] gap-4">
-        <aside className="bg-surface rounded-xl shadow-card p-2 h-max">
-          <nav className="space-y-1">
+        <aside className="bg-surface rounded-xl shadow-card p-2 h-max md:sticky md:top-4">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible no-scrollbar">
             {tabs.map((t) => {
               const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
               return (
                 <Link
                   key={t.to}
                   to={t.to}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${active ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium shrink-0 whitespace-nowrap ${active ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
                 >
                   <t.icon className="size-4" /> {t.label}
                 </Link>

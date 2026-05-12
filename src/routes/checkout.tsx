@@ -7,6 +7,7 @@ import { CreditCard, Smartphone, Banknote, MapPin, Tag } from "lucide-react";
 import api from "@/services/api";
 import { z } from "zod";
 import { effectivePrice, resolveImage } from "@/data/products";
+import { redirectToPayU } from "@/utils/payu";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — ToyKart" }] }),
@@ -27,7 +28,7 @@ function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useShop();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [pay, setPay] = useState<"razorpay" | "cod">("razorpay");
+  const [pay, setPay] = useState<"online" | "cod">("online");
   const [busy, setBusy] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
@@ -137,55 +138,21 @@ function CheckoutPage() {
 
       const { data } = await api.post("/orders", orderData);
 
-      if (pay === "razorpay") {
-        const res = await loadRazorpay();
-        if (!res) {
-          toast.error("Razorpay SDK failed to load. Are you online?");
-          setBusy(false);
-          return;
+      if (pay === "online") {
+        // Get PayU session Hash from backend
+        const { data: payuData } = await api.post(`/orders/${data._id}/payu`);
+        
+        // CLEAR LOCAL STATE BEFORE REDIRECT so user doesn't see double cart
+        clearCart();
+        if (appliedCoupon) {
+            const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+            const updated = saved.map((c: any) => c.code === appliedCoupon.code ? { ...c, active: false } : c);
+            localStorage.setItem("firstsmile_coupons", JSON.stringify(updated));
         }
 
-        // Create Razorpay order on backend
-        const { data: rzOrder } = await api.post(`/orders/${data._id}/razorpay`, {
-          amount: total,
-        });
-
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder", // Replace with your key
-          amount: rzOrder.amount,
-          currency: "INR",
-          name: "First Smile",
-          description: "Order Payment",
-          order_id: rzOrder.id,
-          handler: async function (response: any) {
-            try {
-              await api.put(`/orders/${data._id}/pay`, {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              });
-              clearCart();
-              if (appliedCoupon) {
-                const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
-                const updated = saved.map((c: any) => c.code === appliedCoupon.code ? { ...c, active: false } : c);
-                localStorage.setItem("firstsmile_coupons", JSON.stringify(updated));
-              }
-              toast.success(`Payment successful! Order ID: ${data.order_number}`);
-              navigate({ to: "/track", search: { orderId: data.order_number } as never });
-            } catch (err) {
-              toast.error("Payment verification failed");
-            }
-          },
-          prefill: {
-            name: v.data.fullName,
-            email: user.email,
-            contact: v.data.phone,
-          },
-          theme: { color: "#3399cc" },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
+        // Execute secure dynamic POST to PayU
+        redirectToPayU(payuData);
+        return; // Browser exits to PayU
       } else {
         clearCart();
         if (appliedCoupon) {
@@ -225,7 +192,7 @@ function CheckoutPage() {
             <h2 className="font-bold mb-3">Payment Method</h2>
             <div className="grid md:grid-cols-2 gap-2">
               {[
-                { id: "razorpay" as const, icon: CreditCard, label: "Online Payment", note: "Razorpay (UPI, Card, NetBanking)" },
+                { id: "online" as const, icon: CreditCard, label: "Pay Online", note: "PayU (UPI, Card, NetBanking)" },
                 { id: "cod" as const, icon: Banknote, label: "Cash on Delivery", note: "+ ₹60 charge" },
               ].map((opt) => (
                 <button
@@ -240,7 +207,7 @@ function CheckoutPage() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-discount mt-3 font-semibold">✓ Free shipping on prepaid orders (Razorpay)</p>
+            <p className="text-xs text-discount mt-3 font-semibold">✓ Free shipping on prepaid orders (PayOnline)</p>
           </section>
         </div>
 

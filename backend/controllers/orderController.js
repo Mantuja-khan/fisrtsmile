@@ -2,6 +2,8 @@ import Order from '../models/Order.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { trackShipmentByAWB, createShiprocketOrder } from '../services/shiprocketService.js';
+import { generatePayUHash, verifyPayUResponseHash } from '../services/payuService.js';
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -83,6 +85,12 @@ export const updateOrderStatus = async (req, res) => {
                 order.paidAt = Date.now();
             }
         }
+        
+        // Include dynamic shipment/tracking attribution if sent
+        if (req.body.awb_code !== undefined) order.awb_code = req.body.awb_code;
+        if (req.body.shipment_id !== undefined) order.shipment_id = req.body.shipment_id;
+        if (req.body.tracking_url !== undefined) order.tracking_url = req.body.tracking_url;
+
         const updatedOrder = await order.save();
         res.json(updatedOrder);
     } else {
@@ -149,6 +157,10 @@ export const verifyPayment = async (req, res) => {
             order.payment_id = razorpay_payment_id;
             order.status = 'Processing';
             const updatedOrder = await order.save();
+            
+            // Fire and forget: auto push to Shiprocket
+            createShiprocketOrder(updatedOrder);
+
             res.json(updatedOrder);
         } else {
             res.status(400).json({ message: 'Payment verification failed' });
@@ -186,3 +198,128 @@ export const cancelOrder = async (req, res) => {
         res.status(404).json({ message: 'Order not found' });
     }
 };
+
+// @desc    Request Return order by user
+// @route   PUT /api/orders/:id/return
+// @access  Private
+export const returnOrder = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+        if (order.user && order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401).json({ message: 'Not authorized' });
+            return;
+        }
+        // Only allow return request if delivered
+        if (order.status.toLowerCase() !== 'delivered') {
+            res.status(400).json({ message: 'Only delivered orders can be returned' });
+            return;
+        }
+        order.status = 'Return Requested';
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
+
+// @desc    Track order live shipment via Shiprocket AWB
+// @route   GET /api/orders/:id/track-shipment
+// @access  Private
+export const trackShipment = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+        
+        const awb = order.awb_code;
+        if (!awb) {
+            return res.status(400).json({ message: 'Tracking not active for this order yet' });
+        }
+
+        const trackingData = await trackShipmentByAWB(awb);
+        res.json(trackingData);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve tracking data from Shiprocket', error: error.message });
+    }
+};
+
+// @desc    Initialize PayU payment
+// @route   POST /api/orders/:id/payu
+export const initPayUPayment = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    const PAYU_MERCHANT_KEY = process.env.PAYU_MERCHANT_KEY || "test_key";
+    const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
+    
+    const txnParams = {
+        key: PAYU_MERCHANT_KEY,
+        salt: PAYU_SALT,
+        txnid: order._id.toString(),
+        amount: order.total.toFixed(2),
+        productinfo: "Toys Collection Purchase",
+        firstname: order.shipping_address.fullName.split(' ')[0],
+        email: order.customer_email || req.user?.email || "no-email@dummy.com",
+        udf1: order.order_number
+    };
+
+    const hash = generatePayUHash(txnParams);
+
+    res.json({
+        hash,
+        key: txnParams.key,
+        txnid: txnParams.txnid,
+        amount: txnParams.amount,
+        productinfo: txnParams.productinfo,
+        firstname: txnParams.firstname,
+        email: txnParams.email,
+        phone: order.shipping_address.phone || "",
+        surl: `${process.env.API_URL || 'http://localhost:5003/api'}/orders/payu/response`,
+        furl: `${process.env.API_URL || 'http://localhost:5003/api'}/orders/payu/response`,
+        udf1: txnParams.udf1,
+        action: process.env.PAYU_MODE === 'PROD' 
+            ? 'https://secure.payu.in/_payment' 
+            : 'https://test.payu.in/_payment'
+    });
+};
+
+// @desc    Handle PayU POST back response (SURL/FURL)
+// @route   POST /api/orders/payu/response
+export const handlePayUResponse = async (req, res) => {
+    const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
+    const isValid = verifyPayUResponseHash(req.body, PAYU_SALT);
+    const frontendBase = process.env.FRONTEND_URL || "http://localhost:5173";
+
+    if (!isValid) {
+        console.error("🚫 PayU Hash Compromise Alert!");
+        return res.redirect(`${frontendBase}/payment-failed?reason=hash_mismatch`);
+    }
+
+    const { txnid, status, mihpayid } = req.body;
+
+    try {
+        const order = await Order.findById(txnid);
+        if (!order) {
+            return res.redirect(`${frontendBase}/payment-failed?reason=order_missing`);
+        }
+
+        if (status === 'success') {
+            if (!order.isPaid) {
+                order.isPaid = true;
+                order.paidAt = Date.now();
+                order.payment_id = mihpayid;
+                order.status = 'Processing';
+                const saved = await order.save();
+                
+                createShiprocketOrder(saved);
+            }
+            return res.redirect(`${frontendBase}/payment-success?id=${order.order_number}`);
+        } else {
+            return res.redirect(`${frontendBase}/payment-failed?id=${order.order_number}`);
+        }
+    } catch (err) {
+        console.error("PayU Response Error:", err);
+        return res.redirect(`${frontendBase}/payment-failed`);
+    }
+};
+

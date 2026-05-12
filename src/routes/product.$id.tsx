@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Clock } from "lucide-react";
 import { useProduct, useProducts } from "@/hooks/useCatalog";
 import { discountPct, effectivePrice, type Product, resolveImage } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
@@ -115,19 +116,46 @@ function ProductPage() {
             <span className="text-base text-muted-foreground line-through">₹{product.mrp.toLocaleString("en-IN")}</span>
             <span className="text-sm font-semibold text-discount">{off}% off</span>
             {product.offerPct > 0 && (
-              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-destructive text-destructive-foreground">
-                Special Offer {product.offerPct}%
+              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-destructive text-destructive-foreground flex items-center gap-1">
+                <Zap className="size-3 fill-current" /> Flash Offer {product.offerPct}%
               </span>
             )}
           </div>
+
+          {/* Dynamic Expiry Timer if product is NOT already expired */}
+          {product.offerExpiresAt && product.offerPct > 0 && (
+            <div className="mt-3">
+              <Countdown deadline={product.offerExpiresAt} />
+            </div>
+          )}
           <div className="text-xs text-discount font-semibold mt-1">
             {product.inStock ? "In stock · Ships within 24 hours" : "Out of stock"}
           </div>
 
           <div className="mt-4">
-            <h3 className="font-semibold mb-2">Description</h3>
-            <p className="text-sm text-muted-foreground">{product.description}</p>
+            <h3 className="font-semibold mb-2 text-slate-900">Description</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
           </div>
+
+          {(product.weight || product.length) && (
+            <div className="mt-5 p-3 bg-slate-50 rounded-xl border border-slate-100">
+               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Specifications</h3>
+               <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+                 {product.weight !== undefined && (
+                   <div className="flex justify-between border-b border-slate-200/50 pb-1.5">
+                     <span className="text-slate-500">Weight</span>
+                     <span className="font-bold text-slate-800">{product.weight} KG</span>
+                   </div>
+                 )}
+                 <div className="flex justify-between border-b border-slate-200/50 pb-1.5 col-span-2 sm:col-span-1">
+                   <span className="text-slate-500">Dimensions (L×B×H)</span>
+                   <span className="font-bold text-slate-800">
+                     {product.length ?? 10} × {product.breadth ?? 10} × {product.height ?? 10} CM
+                   </span>
+                 </div>
+               </div>
+            </div>
+          )}
           <div className="mt-2 text-xs text-muted-foreground">Recommended age: {product.ageRange}</div>
 
           <div className="mt-4 flex items-center gap-3">
@@ -181,13 +209,56 @@ function ProductPage() {
       <ProductReviews productId={product.id} />
 
       {related.length > 0 && (
-        <div className="mt-6 bg-surface rounded-2xl shadow-card p-4 md:p-6">
-          <h2 className="text-lg md:text-xl font-bold mb-4">You may also like</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {related.map((p: Product) => <ProductCard key={p.id} product={p} />)}
+        <div className="mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="text-center py-6 border-b border-slate-100 bg-slate-50/30">
+             <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Related Products</h2>
+          </div>
+          <div className="p-4 md:p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {related.map((p: Product) => <ProductCard key={p.id} product={p} />)}
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
+function Countdown({ deadline }: { deadline: string }) {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const target = new Date(deadline).getTime();
+    
+    const calc = () => {
+      const now = new Date().getTime();
+      const dist = target - now;
+      if (dist <= 0) return setTimeLeft("Offer Expired");
+
+      const d = Math.floor(dist / (1000 * 60 * 60 * 24));
+      const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((dist % (1000 * 60)) / 1000);
+
+      let str = "";
+      if (d > 0) str += `${d}d `;
+      str += `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+      setTimeLeft(str);
+    };
+
+    calc();
+    const timer = setInterval(calc, 1000);
+    return () => clearInterval(timer);
+  }, [deadline]);
+
+  if (!timeLeft || timeLeft === "Offer Expired") return null;
+
+  return (
+    <div className="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-lg flex items-center gap-2 shadow-sm inline-flex">
+      <Clock className="size-4 animate-pulse" />
+      <span className="text-xs font-semibold">Deal ends in:</span>
+      <span className="text-sm font-mono font-bold">{timeLeft}</span>
+    </div>
+  );
+}
+

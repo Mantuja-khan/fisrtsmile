@@ -17,6 +17,7 @@ type DbRow = {
   price: number;
   mrp: number;
   image: string | null;
+  images?: string[];
   rating: number;
   rating_count: number;
   in_stock: boolean;
@@ -24,6 +25,13 @@ type DbRow = {
   age_range: string | null;
   offer_pct: number;
   brand: string | null;
+  offer_starts_at?: string | null;
+  offer_expires_at?: string | null;
+  show_in_popup?: boolean;
+  weight?: number;
+  length?: number;
+  breadth?: number; 
+  height?: number;
 };
 
 const mapRow = (r: DbRow): Product => {
@@ -38,14 +46,23 @@ const mapRow = (r: DbRow): Product => {
     price: Number(r.price),
     mrp: Number(r.mrp),
     image: img,
-    images: [img, img, img],
+    images: (r.images && r.images.length > 0) 
+      ? r.images.map((pImg: string) => resolveImage(pImg)) 
+      : [img],
     rating: Number(r.rating),
     ratingCount: r.rating_count,
     inStock: r.in_stock,
     badge: r.badge,
     ageRange: r.age_range ?? "All",
-    offerPct: r.offer_pct ?? 0,
+    offerPct: (r.offer_expires_at && new Date(r.offer_expires_at) < new Date()) ? 0 : (r.offer_pct ?? 0),
     brand: r.brand,
+    offerStartsAt: r.offer_starts_at,
+    offerExpiresAt: r.offer_expires_at,
+    showInPopup: r.show_in_popup,
+    weight: r.weight ?? 0.5,
+    length: r.length ?? 10,
+    breadth: r.breadth ?? 10,
+    height: r.height ?? 10,
   };
 };
 
@@ -59,6 +76,8 @@ export function useCategories() {
         name: c.name,
         slug: c.slug,
         icon: c.icon,
+        image: c.image,
+        parent_id: c.parent?._id || c.parent,
         sort_order: c.sort_order
       }));
     },

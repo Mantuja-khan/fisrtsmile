@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import { User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, Building2, Map as MapIcon, Lock, Mail, ChevronRight } from "lucide-react";
+import { redirectToPayU } from "@/utils/payu";
 import { useAuth } from "@/store/auth";
 import api from "@/services/api";
 import { toast } from "sonner";
@@ -574,11 +575,12 @@ function Addresses() {
 type MyOrder = {
   _id: string;
   order_number: string;
-  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned";
   total: number;
   createdAt: string;
   payment_method: string;
   isPaid?: boolean;
+  refund_status?: string; // NEW FIELD
   items: { name: string; quantity: number; price: number; image?: string; product: string }[];
 };
 
@@ -589,58 +591,11 @@ function MyOrders() {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
 
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      if ((window as any).Razorpay) return resolve(true);
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
   const payOnline = async (o: MyOrder) => {
     setPayingId(o._id);
     try {
-      const res = await loadRazorpay();
-      if (!res) {
-        toast.error("Razorpay SDK failed to load. Are you online?");
-        return;
-      }
-
-      const { data: rzOrder } = await api.post(`/orders/${o._id}/razorpay`, { amount: o.total });
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_i0B9Ak13aCyPwp",
-        amount: rzOrder.amount,
-        currency: "INR",
-        name: "First Smile",
-        description: "Order Payment",
-        order_id: rzOrder.id,
-        handler: async function (response: any) {
-          try {
-            await api.put(`/orders/${o._id}/pay`, {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            toast.success(`Payment successful for Order ID: ${o.order_number}`);
-            load();
-          } catch (err) {
-            toast.error("Payment verification failed");
-          }
-        },
-        prefill: {
-          name: user?.full_name || "Customer",
-          email: user?.email,
-          contact: user?.phone || "",
-        },
-        theme: { color: "#3399cc" },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
+      const { data } = await api.post(`/orders/${o._id}/payu`);
+      redirectToPayU(data);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to initiate payment");
     } finally {
@@ -677,6 +632,20 @@ function MyOrders() {
     }
   };
 
+  const requestReturn = async (id: string) => {
+    if (!confirm("Request a return for this order? Our support will contact you to arrange pickup.")) return;
+    setCancellingId(id);
+    try {
+      await api.put(`/orders/${id}/return`);
+      toast.success("Return request submitted successfully!");
+      load();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to submit return");
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   if (loading) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading orders...</div>;
   if (orders.length === 0) {
     return (
@@ -689,25 +658,39 @@ function MyOrders() {
     );
   }
 
-  const statusBadge = (s: MyOrder["status"]) => {
-    const map: Record<MyOrder["status"], string> = {
+  const statusBadge = (s: MyOrder["status"], refund_status?: string) => {
+    const map: Record<string, string> = {
       placed: "bg-primary/20 text-primary border-primary/20",
       processing: "bg-warning/20 text-warning-foreground border-warning/20",
       shipped: "bg-secondary/20 text-secondary-foreground border-secondary/20",
       delivered: "bg-discount/20 text-discount border-discount/20",
       cancelled: "bg-destructive/20 text-destructive border-destructive/20",
+      "return requested": "bg-purple-100 text-purple-700 border-purple-200",
+      "returned": "bg-slate-200 text-slate-700 border-slate-300",
     };
     const key = s.toLowerCase() as keyof typeof map;
-    return <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border tracking-wider uppercase ${map[key] || "bg-muted text-muted-foreground"}`}>{s}</span>;
+    return (
+      <div className="flex flex-col items-end gap-1">
+        <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border tracking-wider uppercase ${map[key] || "bg-muted text-muted-foreground"}`}>{s}</span>
+        {refund_status && (
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 uppercase">Refund: {refund_status}</span>
+        )}
+      </div>
+    );
   };
 
   return (
     <div>
       {orders.map((o) => {
         const lstatus = o.status.toLowerCase();
-        const canCancel = lstatus === "placed" || lstatus === "processing";
         const isCancelled = lstatus === "cancelled";
         const isDelivered = lstatus === "delivered";
+        
+        // 4-day window condition
+        const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const withinFourDays = diffDays <= 4;
+        const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned";
 
         return (
           <div key={o._id} className="border-b border-border last:border-0 hover:bg-muted/10 transition group">
@@ -730,10 +713,7 @@ function MyOrders() {
 
                   {/* Status & Actions Mobile */}
                   <div className="mt-3 sm:hidden">
-                    <div className={`font-semibold text-sm flex items-center gap-2 ${isCancelled ? 'text-destructive' : isDelivered ? 'text-discount' : 'text-primary'}`}>
-                      <span className={`size-2 rounded-full ${isCancelled ? 'bg-destructive' : isDelivered ? 'bg-discount' : 'bg-primary'}`}></span>
-                      {isCancelled ? "Cancelled" : isDelivered ? "Delivered" : "Delivery expected soon"}
-                    </div>
+                    {statusBadge(o.status, o.refund_status)}
                   </div>
                 </div>
 
@@ -742,18 +722,7 @@ function MyOrders() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-bold">₹{(it.quantity * it.price).toLocaleString("en-IN")}</span>
                   </div>
-                  <div className={`font-semibold text-[15px] flex items-center gap-2 mt-2 ${isCancelled ? 'text-destructive' : isDelivered ? 'text-discount' : 'text-foreground'}`}>
-                    <span className={`size-2.5 rounded-full ${isCancelled ? 'bg-destructive' : isDelivered ? 'bg-discount' : 'bg-primary'}`}></span>
-                    {isCancelled ? "Cancelled" : isDelivered ? `Delivered on ${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : "Delivery expected soon"}
-                  </div>
-                  {!isCancelled && !isDelivered && (
-                    <div className="text-xs text-muted-foreground mt-1">Your item has been {lstatus}</div>
-                  )}
-                  {o.isPaid ? (
-                    <div className="text-xs font-semibold text-success mt-1">Paid via Online</div>
-                  ) : (
-                    <div className="text-xs font-semibold text-warning mt-1">Cash on Delivery</div>
-                  )}
+                  {statusBadge(o.status, o.refund_status)}
                 </div>
               </div>
             ))}
@@ -765,24 +734,39 @@ function MyOrders() {
                 <span className="hidden sm:inline">Ordered on {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
               </div>
               <div className="flex items-center gap-3">
-                {!o.isPaid && lstatus !== "cancelled" && (
+                {!o.isPaid && lstatus !== "cancelled" && lstatus !== "returned" && (
                   <button
                     onClick={(e) => { e.stopPropagation(); payOnline(o); }}
                     disabled={payingId === o._id}
-                    className="text-success font-semibold hover:underline"
+                    className="px-3 py-1 bg-primary text-white rounded font-semibold hover:brightness-110 disabled:opacity-50 text-xs"
                   >
-                    {payingId === o._id ? "Processing..." : "Pay Now"}
+                    {payingId === o._id ? "Connecting PayU..." : "Pay Online"}
                   </button>
                 )}
-                {canCancel && (
+
+                {canRequestReturn && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); requestReturn(o._id); }}
+                    disabled={cancellingId === o._id}
+                    className="px-3 py-1 border border-purple-500 text-purple-600 hover:bg-purple-50 rounded font-medium transition text-xs"
+                  >
+                     Request Return
+                  </button>
+                )}
+                {isDelivered && !withinFourDays && lstatus !== "returned" && lstatus !== "return requested" && (
+                  <span className="text-[10px] text-muted-foreground italic px-2 border border-dashed border-muted rounded">Return window closed</span>
+                )}
+
+                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && (
                   <button
                     onClick={(e) => { e.stopPropagation(); cancel(o._id); }}
                     disabled={cancellingId === o._id}
-                    className="text-destructive font-semibold hover:underline"
+                    className="px-3 py-1 border border-destructive text-destructive hover:bg-destructive/5 rounded font-medium transition text-xs"
                   >
-                    {cancellingId === o._id ? "Cancelling..." : "Cancel Order"}
+                    {cancellingId === o._id ? "Processing..." : "Cancel"}
                   </button>
                 )}
+                
                 <Link
                   to="/track"
                   search={{ orderId: o.order_number } as any}

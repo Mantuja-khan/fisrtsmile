@@ -49,83 +49,74 @@ function AdminUsers() {
         <div className="text-sm text-muted-foreground">{users.length} total users</div>
       </div>
 
-      <div className="bg-surface rounded-xl shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-muted text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3 font-semibold">User</th>
-                <th className="px-4 py-3 font-semibold">Contact</th>
-                <th className="px-4 py-3 font-semibold">Joined</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {users.map((u: any) => (
-                <tr key={u._id} className="hover:bg-accent/50 transition">
-                  <td className="px-4 py-4">
-                    <div className="font-bold text-base">{u.full_name}</div>
-                    <div className="text-xs text-muted-foreground uppercase">{u.role}</div>
-                  </td>
-                  <td className="px-4 py-4 space-y-1">
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <Mail className="size-3 text-muted-foreground" /> {u.email}
-                    </div>
-                    {u.phone && (
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <Phone className="size-3 text-muted-foreground" /> {u.phone}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <Calendar className="size-3 text-muted-foreground" />
-                      {new Date(u.createdAt).toLocaleDateString("en-IN")}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    {u.isBlocked ? (
-                      <span className="px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold uppercase">Blocked</span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-full bg-discount/10 text-discount text-[10px] font-bold uppercase">Active</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    {u.role !== "admin" && (
-                      u.isBlocked ? (
-                        <button
-                          onClick={() => unblockMutation.mutate(u._id)}
-                          disabled={unblockMutation.isPending}
-                          className="text-discount hover:bg-discount/10 p-2 rounded-lg transition-colors inline-flex items-center gap-1 text-xs font-semibold"
-                        >
-                          <ShieldCheck className="size-4" /> Unblock
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to block ${u.full_name}? They will not be able to log in or register again.`)) {
-                              blockMutation.mutate(u._id);
-                            }
-                          }}
-                          disabled={blockMutation.isPending}
-                          className="text-destructive hover:bg-destructive/10 p-2 rounded-lg transition-colors inline-flex items-center gap-1 text-xs font-semibold"
-                        >
-                          <Ban className="size-4" /> Block
-                        </button>
-                      )
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {users.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground italic">No users found.</td>
-                </tr>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {users.map((u: any) => (
+          <div key={u._id} className="bg-surface rounded-xl shadow-card border border-border/40 p-4 flex flex-col">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-bold text-base leading-tight">{u.full_name}</h3>
+                <span className={`text-[10px] font-bold uppercase tracking-wider mt-0.5 inline-block ${u.role === 'admin' ? 'text-purple-600' : 'text-muted-foreground'}`}>
+                  {u.role}
+                </span>
+              </div>
+              {u.isBlocked ? (
+                <span className="px-2 py-0.5 rounded bg-destructive/10 text-destructive text-[10px] font-bold uppercase">Blocked</span>
+              ) : (
+                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase">Active</span>
               )}
-            </tbody>
-          </table>
-        </div>
+            </div>
+
+            <div className="space-y-2 mb-4 flex-1">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <Mail className="size-3.5 text-slate-400 shrink-0" />
+                <span className="truncate" title={u.email}>{u.email}</span>
+              </div>
+              {u.phone && (
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <Phone className="size-3.5 text-slate-400 shrink-0" />
+                  <span>{u.phone}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1 border-t border-border/40">
+                <Calendar className="size-3.5 text-slate-300 shrink-0" />
+                <span>Joined {new Date(u.createdAt).toLocaleDateString("en-IN", { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            </div>
+
+            {u.role !== "admin" && (
+              <div className="pt-3 border-t border-border flex justify-end mt-auto">
+                {u.isBlocked ? (
+                  <button
+                    onClick={() => unblockMutation.mutate(u._id)}
+                    disabled={unblockMutation.isPending}
+                    className="w-full md:w-auto bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+                  >
+                    <ShieldCheck className="size-4" /> Unblock User
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      if (confirm(`Block ${u.full_name}? They will lose portal access.`)) {
+                        blockMutation.mutate(u._id);
+                      }
+                    }}
+                    disabled={blockMutation.isPending}
+                    className="w-full md:w-auto bg-destructive/5 text-destructive hover:bg-destructive/10 border border-destructive/20 py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+                  >
+                    <Ban className="size-4" /> Block Access
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {users.length === 0 && (
+          <div className="col-span-full py-12 bg-surface rounded-xl shadow-sm border border-dashed border-border flex flex-col items-center text-muted-foreground">
+             <User className="size-8 opacity-30 mb-2" />
+             <p className="italic text-sm">No registered users yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );

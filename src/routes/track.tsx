@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Package, Truck, Home, CheckCircle2, XCircle } from "lucide-react";
+import { Package, Truck, Home, CheckCircle2, XCircle, MapPin } from "lucide-react";
 import api from "@/services/api";
 import { toast } from "sonner";
 
@@ -12,6 +12,8 @@ type OrderRow = {
   total: number;
   payment_method: string;
   customer_name: string;
+  awb_code?: string;
+  tracking_url?: string;
 };
 
 export const Route = createFileRoute("/track")({
@@ -165,6 +167,13 @@ function TrackPage() {
             </div>
           )}
 
+          {/* Live Shiprocket Info */}
+          {order.status !== "cancelled" && order.awb_code && (
+             <div className="mt-6 pt-6 border-t border-dashed border-border">
+               <LiveShiprocketTracking orderId={order._id} awb={order.awb_code} fallbackUrl={order.tracking_url} />
+             </div>
+          )}
+
           {canCancel && (
             <div className="mt-5 border-t border-border pt-4">
               <button
@@ -189,3 +198,100 @@ function TrackPage() {
     </div>
   );
 }
+
+function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string, awb: string, fallbackUrl?: string }) {
+  const [tracking, setTracking] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    async function getTracking() {
+      setLoading(true);
+      setError("");
+      try {
+        const { data } = await api.get(`/orders/${orderId}/track-shipment`);
+        if (!active) return;
+        setTracking(data);
+      } catch (err: any) {
+        if (active) setError("Temporary technical lag fetching live scan data.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    getTracking();
+    return () => { active = false; };
+  }, [orderId]);
+
+  // Parse core data safely from Shiprocket dynamic response format
+  const trackingData = tracking?.tracking_data || {};
+  const tracks = trackingData.shipment_track?.[0] || {};
+  const activities = trackingData.shipment_track_activities || [];
+  
+  const currentStatus = tracks.current_status || "Preparing dispatch";
+  const courier = tracks.courier_name || "Shiprocket Partner";
+
+  return (
+    <div className="space-y-4 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+             <span className="text-[10px] font-extrabold tracking-widest text-white bg-indigo-600 px-2 py-0.5 rounded shadow-sm uppercase">Shiprocket Live</span>
+             <span className="text-xs text-slate-500 font-medium">Via {courier}</span>
+          </div>
+          <div className="text-lg font-extrabold text-slate-900 tracking-tight">AWB {awb}</div>
+        </div>
+        {fallbackUrl && (
+          <a href={fallbackUrl} target="_blank" rel="noreferrer" className="text-xs font-bold bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-50 shadow-sm">
+            View Full Details ↗
+          </a>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="py-8 flex flex-col items-center text-center gap-3 text-slate-400 font-medium animate-pulse">
+          <Truck className="size-6" />
+          <span className="text-sm">Connecting to global tracking satellites...</span>
+        </div>
+      ) : error ? (
+        <div className="text-center py-4 bg-amber-50 text-amber-700 text-xs rounded border border-amber-100">
+          <span className="font-bold">Note:</span> Tracking credentials verification in progress. {fallbackUrl ? "You can track manually below." : ""}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+           <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center gap-3">
+              <div className="size-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-emerald-200 shadow-md animate-pulse">
+                <Package className="size-4 text-white" />
+              </div>
+              <div>
+                <div className="text-[10px] text-emerald-700 uppercase font-bold tracking-wider">Current Status</div>
+                <div className="text-sm font-bold text-emerald-900">{currentStatus}</div>
+              </div>
+           </div>
+
+           {activities.length > 0 ? (
+             <div className="p-5 space-y-6 relative before:content-[''] before:absolute before:left-[27px] before:top-[35px] before:bottom-[35px] before:w-0.5 before:bg-slate-100">
+               {activities.map((act: any, i: number) => (
+                 <div key={i} className="flex gap-4 relative z-10">
+                   <div className={`size-4 mt-1 rounded-full shrink-0 border-2 bg-white transition-colors ${i === 0 ? "border-emerald-500" : "border-slate-300"}`} />
+                   <div className="flex-1 min-w-0">
+                      <div className={`font-bold text-sm ${i === 0 ? "text-slate-900" : "text-slate-600"}`}>{act.activity}</div>
+                      <div className="flex items-center justify-between text-xs mt-0.5 font-medium">
+                         <span className="text-slate-500 flex items-center gap-1"><MapPin className="size-3" /> {act.location || "Distribution Center"}</span>
+                         <span className="text-slate-400 italic font-mono">{act.date ? new Date(act.date).toLocaleString("en-IN", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ""}</span>
+                      </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           ) : (
+             <div className="p-6 text-center text-sm text-slate-500 italic font-medium">
+               Dispatched from source. Carrier will update scanning checkpoints shortly.
+             </div>
+           )}
+        </div>
+      )}
+    </div>
+  );
+}
+

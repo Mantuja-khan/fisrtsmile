@@ -4,7 +4,7 @@ import Category from '../models/Category.js';
 // @route   GET /api/categories
 // @access  Public
 export const getCategories = async (req, res) => {
-    const categories = await Category.find({}).sort({ sort_order: 1 });
+    const categories = await Category.find({}).populate('parent').sort({ sort_order: 1 });
     res.json(categories);
 };
 
@@ -12,7 +12,7 @@ export const getCategories = async (req, res) => {
 // @route   POST /api/categories
 // @access  Private/Admin
 export const createCategory = async (req, res) => {
-    const { name, slug, icon, image, sort_order } = req.body;
+    const { name, slug, icon, image, sort_order, parent } = req.body;
 
     const category = new Category({
         name,
@@ -20,6 +20,7 @@ export const createCategory = async (req, res) => {
         icon,
         image,
         sort_order,
+        parent: parent || null
     });
 
     const createdCategory = await category.save();
@@ -30,7 +31,7 @@ export const createCategory = async (req, res) => {
 // @route   PUT /api/categories/:id
 // @access  Private/Admin
 export const updateCategory = async (req, res) => {
-    const { name, slug, icon, image, sort_order } = req.body;
+    const { name, slug, icon, image, sort_order, parent } = req.body;
 
     const category = await Category.findById(req.params.id);
 
@@ -40,6 +41,7 @@ export const updateCategory = async (req, res) => {
         category.icon = icon || category.icon;
         category.image = image !== undefined ? image : category.image;
         category.sort_order = sort_order !== undefined ? sort_order : category.sort_order;
+        category.parent = parent !== undefined ? (parent || null) : category.parent;
 
         const updatedCategory = await category.save();
         res.json(updatedCategory);

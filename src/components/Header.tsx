@@ -23,6 +23,7 @@ export function Header() {
   const [ageOpen, setAgeOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLDivElement>(null);
@@ -230,36 +231,98 @@ export function Header() {
           
           <div ref={catRef} className="relative border-r border-[#E43E3D]/20 pr-4">
             <button
-              onClick={() => { setCatOpen((v) => !v); setAgeOpen(false); setProfileOpen(false); }}
+              onClick={() => { 
+                setCatOpen((v) => !v); 
+                setAgeOpen(false); 
+                setProfileOpen(false); 
+                // Preselect first root cat if opening and none selected
+                if (!catOpen && categories.length > 0) {
+                  const root = categories.find(c => !c.parent_id);
+                  if (root) setActiveCatId(root.id);
+                }
+              }}
               className="flex items-center gap-2 uppercase"
             >
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-0 mt-4 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
-                <div className="p-2 max-h-96 overflow-auto grid grid-cols-2 gap-1">
-                  {categories.length === 0 && (
-                    <div className="col-span-2 text-sm text-muted-foreground p-3 text-center">Loading...</div>
+              <div className="absolute left-0 mt-4 w-[640px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
+                <div className="flex min-h-[360px] max-h-[500px]">
+                  {categories.length === 0 ? (
+                    <div className="text-sm text-muted-foreground p-3 text-center w-full flex items-center justify-center">Loading...</div>
+                  ) : (
+                    <>
+                      {/* Left Pane: Categories */}
+                      <div className="w-5/12 bg-muted/30 border-r border-border py-2 overflow-y-auto custom-scrollbar flex flex-col">
+                        {categories.filter(cat => !cat.parent_id).map((parent) => (
+                          <Link
+                            key={parent.id}
+                            to="/subcategories/$slug"
+                            params={{ slug: parent.slug } as never}
+                            onMouseEnter={() => setActiveCatId(parent.id)}
+                            onClick={() => setCatOpen(false)}
+                            className={`flex items-center gap-2 px-4 py-3 text-left transition-colors border-l-4 ${activeCatId === parent.id ? 'bg-surface text-primary font-bold border-primary' : 'hover:bg-surface/50 border-transparent text-foreground/80 font-medium'}`}
+                          >
+                            <span className="text-lg">{parent.icon ?? "🎁"}</span>
+                            <span className="text-sm uppercase tracking-wider truncate">{parent.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Right Pane: Subcategories */}
+                      <div className="w-7/12 bg-surface p-4 overflow-y-auto custom-scrollbar">
+                        {activeCatId ? (
+                          <div>
+                            <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-2">
+                              <span className="text-sm font-bold uppercase text-muted-foreground tracking-wider">
+                                {categories.find(c => c.id === activeCatId)?.name} Subcategories
+                              </span>
+                              <Link 
+                                to="/subcategories/$slug" 
+                                params={{ slug: categories.find(c => c.id === activeCatId)?.slug } as never} 
+                                onClick={() => setCatOpen(false)}
+                                className="text-xs text-primary hover:underline font-bold"
+                              >
+                                View All →
+                              </Link>
+                            </div>
+                            <div className="grid grid-cols-1 gap-1">
+                              {categories.filter(cat => cat.parent_id === activeCatId).length > 0 ? (
+                                categories
+                                  .filter(cat => cat.parent_id === activeCatId)
+                                  .map(child => (
+                                    <Link
+                                      key={child.id}
+                                      to="/products"
+                                      search={{ category: child.slug } as never}
+                                      onClick={() => setCatOpen(false)}
+                                      className="px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2"
+                                    >
+                                      <span className="opacity-50">↳</span> {child.name}
+                                    </Link>
+                                  ))
+                              ) : (
+                                <div className="py-8 text-center text-muted-foreground text-sm italic">
+                                  No specific sub-categories found
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-muted-foreground italic text-sm">
+                            Select a category to view subcategories
+                          </div>
+                        )}
+                      </div>
+                    </>
                   )}
-                  {categories.map((c) => (
-                    <Link
-                      key={c._id}
-                      to="/products"
-                      search={{ category: c.slug } as never}
-                      onClick={() => setCatOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium"
-                    >
-                      <span className="text-lg">{c.icon ?? "🎁"}</span>
-                      <span>{c.name}</span>
-                    </Link>
-                  ))}
                 </div>
                 <Link
                   to="/products"
                   onClick={() => setCatOpen(false)}
-                  className="block border-t border-border p-2.5 text-center text-sm font-semibold text-primary"
+                  className="block border-t border-border bg-muted/20 p-2.5 text-center text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors"
                 >
-                  View all products →
+                  VIEW ALL PRODUCTS
                 </Link>
               </div>
             )}
@@ -302,7 +365,7 @@ export function Header() {
               {ageOpen && (
                 <div className="absolute left-0 mt-4 w-48 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
                   <div className="p-2 flex flex-col gap-1">
-                    {["0-2 years", "3-5 years", "6-8 years", "9-12 years", "13+ years"].map((age) => (
+                    {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
                       <Link
                         key={age}
                         to="/products"

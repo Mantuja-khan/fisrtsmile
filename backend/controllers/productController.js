@@ -39,6 +39,13 @@ export const createProduct = async (req, res) => {
         age_range,
         in_stock,
         show_in_hero,
+        show_in_popup,
+        offer_starts_at,
+        offer_expires_at,
+        weight,
+        length,
+        breadth,
+        height,
     } = req.body;
 
     const finalMrp = mrp ? Number(mrp) : Number(price);
@@ -58,7 +65,14 @@ export const createProduct = async (req, res) => {
         brand,
         age_range,
         in_stock,
-        show_in_hero,
+        show_in_hero: show_in_hero || false,
+        show_in_popup: show_in_popup || false,
+        offer_starts_at,
+        offer_expires_at,
+        weight: weight ? Number(weight) : undefined,
+        length: length ? Number(length) : undefined,
+        breadth: breadth ? Number(breadth) : undefined,
+        height: height ? Number(height) : undefined,
     });
 
     const createdProduct = await product.save();
@@ -82,6 +96,13 @@ export const updateProduct = async (req, res) => {
         age_range,
         in_stock,
         show_in_hero,
+        show_in_popup,
+        offer_starts_at,
+        offer_expires_at,
+        weight,
+        length,
+        breadth,
+        height,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -105,6 +126,13 @@ export const updateProduct = async (req, res) => {
         product.age_range = age_range !== undefined ? age_range : product.age_range;
         product.in_stock = in_stock !== undefined ? in_stock : product.in_stock;
         product.show_in_hero = show_in_hero !== undefined ? show_in_hero : product.show_in_hero;
+        product.show_in_popup = show_in_popup !== undefined ? show_in_popup : product.show_in_popup;
+        product.offer_starts_at = offer_starts_at !== undefined ? offer_starts_at : product.offer_starts_at;
+        product.offer_expires_at = offer_expires_at !== undefined ? offer_expires_at : product.offer_expires_at;
+        product.weight = weight ? Number(weight) : (weight === "" ? undefined : product.weight);
+        product.length = length ? Number(length) : (length === "" ? undefined : product.length);
+        product.breadth = breadth ? Number(breadth) : (breadth === "" ? undefined : product.breadth);
+        product.height = height ? Number(height) : (height === "" ? undefined : product.height);
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);

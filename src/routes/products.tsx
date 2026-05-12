@@ -105,26 +105,7 @@ function ProductListPage() {
         </div>
       </div>
 
-      <div>
-        <h3 className="font-bold mb-2 text-sm uppercase tracking-wider text-muted-foreground mt-2">Brands</h3>
-        <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
-          <button
-            onClick={() => { update({ brand: undefined }); setMobileFiltersOpen(false); }}
-            className={`block text-sm w-full text-left px-2 py-1 rounded-md hover:bg-muted ${!search.brand ? "font-bold text-primary bg-primary/5" : "text-muted-foreground"}`}
-          >
-            All Brands
-          </button>
-          {BRANDS.map((b) => (
-            <button
-              key={b}
-              onClick={() => { update({ brand: b }); setMobileFiltersOpen(false); }}
-              className={`block text-sm w-full text-left px-2 py-1 rounded-md hover:bg-muted ${search.brand === b ? "font-bold text-primary bg-primary/5" : "text-muted-foreground"}`}
-            >
-              {b}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       <div>
         <h3 className="font-bold mb-2 text-sm uppercase tracking-wider text-muted-foreground mt-2">Age Range</h3>
@@ -135,7 +116,7 @@ function ProductListPage() {
           >
             All Ages
           </button>
-          {["0-2 years", "3-5 years", "6-8 years", "9-12 years", "13+ years"].map((age) => (
+          {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
             <button
               key={age}
               onClick={() => { update({ age }); setMobileFiltersOpen(false); }}

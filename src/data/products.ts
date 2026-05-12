@@ -37,6 +37,13 @@ export type Product = {
   ageRange: string;
   offerPct: number;
   brand?: string | null;
+  offerStartsAt?: string | null;
+  offerExpiresAt?: string | null;
+  showInPopup?: boolean;
+  weight?: number;
+  length?: number;
+  breadth?: number;
+  height?: number;
 };
 
 export type Category = {
@@ -44,6 +51,8 @@ export type Category = {
   slug: string;
   name: string;
   icon: string | null;
+  image: string | null;
+  parent_id: string | null;
   sort_order: number;
 };
 

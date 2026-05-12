@@ -19,7 +19,6 @@ const importData = async () => {
             password: process.env.ADMIN_PASSWORD,
             role: 'admin',
         };
-
         await User.create(adminUser);
 
         console.log('Admin User Imported!');

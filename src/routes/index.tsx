@@ -11,6 +11,22 @@ import under399 from "@/assets/shopbyprice/under399.png";
 import under699 from "@/assets/shopbyprice/under699.png";
 import under999 from "@/assets/shopbyprice/under999.png";
 
+import age0_2 from "@/assets/0_2.png";
+import age2_4 from "@/assets/2_4.png";
+import age4_7 from "@/assets/4_7.png";
+import age7_9 from "@/assets/7_9.png";
+import age9_12 from "@/assets/9_12.png";
+import age12Plus from "@/assets/12+.png";
+
+const AGE_RANGES = [
+  { label: "0-2 years", value: "0-2 years", image: age0_2 },
+  { label: "2-4 years", value: "2-4 years", image: age2_4 },
+  { label: "4-7 years", value: "4-7 years", image: age4_7 },
+  { label: "7-9 years", value: "7-9 years", image: age7_9 },
+  { label: "9-12 years", value: "9-12 years", image: age9_12 },
+  { label: "12+ years", value: "12+ years", image: age12Plus },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -36,6 +52,9 @@ function HomePage() {
   const promoBanners = banners.filter(b => b.position === 'promo').slice(0, 2);
 
   const [heroIdx, setHeroIdx] = useState(0);
+
+  // Pre-filter for performance
+  const rootCats = categories.filter(c => !c.parent_id);
 
   useEffect(() => {
     if (heroBanners.length < 2) return;
@@ -143,7 +162,7 @@ function HomePage() {
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative">
-              {offers.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
+              {offers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
         </section>
@@ -167,37 +186,74 @@ function HomePage() {
         </section>
       )}
 
-      {/* Categories (Circular below Featured Toys) */}
+      {/* Categories Section */}
       <section className="container mx-auto px-4 py-8">
         <div className="text-center mb-6">
-          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
+          <h2 className="font-display text-3xl md:text-4xl text-foreground">
+            Shop by Category
+          </h2>
         </div>
-        <div className="flex overflow-x-auto no-scrollbar gap-4 md:gap-6 pb-4 justify-start md:justify-center">
-          {categories.map((c) => (
+        
+        <div className="flex overflow-x-auto no-scrollbar gap-6 md:gap-10 pb-4 justify-start md:justify-center">
+          {rootCats.map((c) => (
             <Link
-              key={c.slug}
-              to="/products"
-              search={{ category: c.slug } as never}
-              className="group flex flex-col items-center shrink-0 w-20 md:w-28 text-center"
+              key={c.id}
+              to="/subcategories/$slug"
+              params={{ slug: c.slug } as never}
+              className="group flex flex-col items-center shrink-0 w-24 md:w-32 text-center"
             >
-              <div className="size-16 md:size-24 rounded-full bg-muted flex items-center justify-center shadow-sm mb-2 overflow-hidden border border-border/50">
+              <div className="w-full aspect-square flex items-center justify-center mb-3 overflow-hidden relative transition-transform group-hover:-translate-y-1">
                 {c.image ? (
                   <img 
                     src={resolveImage(c.image)} 
                     alt={c.name} 
-                    className="w-full h-full object-cover scale-110 transition-transform duration-300 group-hover:scale-125" 
+                    className="w-full h-full object-contain" 
                   />
                 ) : (
-                  <span className="text-3xl md:text-4xl group-hover:scale-110 transition-transform duration-300">{c.icon ?? "🎁"}</span>
+                  <span className="text-4xl md:text-5xl group-hover:scale-105 transition-transform duration-300">{c.icon ?? "🎁"}</span>
                 )}
               </div>
-              <div className="text-xs md:text-sm font-semibold text-foreground/90 line-clamp-2 leading-tight">
+              <div className="text-xs md:text-sm font-bold text-foreground/90 line-clamp-2 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors">
                 {c.name}
               </div>
             </Link>
           ))}
         </div>
       </section>
+      {/* Shop by Age (New Section) */}
+      <section className="container mx-auto px-4 py-8 bg-slate-50/50 border-y border-slate-100">
+        <div className="text-center mb-8">
+          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
+          <p className="text-sm text-muted-foreground mt-1">Find perfect toys suited for every stage</p>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0">
+          {AGE_RANGES.map((age, i) => (
+            <Link
+              key={i}
+              to="/products"
+              search={{ age_range: age.value } as never}
+              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+            >
+              <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
+                <img 
+                  src={age.image} 
+                  alt={age.label} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              
+              {/* The Rectangular Box Text below - matching user design */}
+              <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
+                <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap">
+                  {age.label}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
 
       {/* Shop by Price */}
       <section className="container mx-auto px-4 py-4 mb-8">
