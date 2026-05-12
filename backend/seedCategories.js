@@ -1,4 +1,11 @@
-import Category from '../models/Category.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import Category from './models/Category.js';
+import connectDB from './config/db.js';
+
+dotenv.config();
+
+connectDB();
 
 function slugify(text, parentSlug = '') {
     const base = text.toString().toLowerCase().trim()
@@ -86,27 +93,27 @@ const categoriesData = [
     }
 ];
 
-// @desc    Fetch all categories
-// @route   GET /api/categories
-// @access  Public
-export const getCategories = async (req, res) => {
-    let categories = await Category.find({}).populate('parent').sort({ sort_order: 1 });
-
-    // Trigger seeding if requested via query param OR if collection is completely empty
-    if (req.query.seed === 'true' || categories.length === 0) {
-        console.log('Seeding categories data matrix...');
+const seedCategories = async () => {
+    try {
+        console.log('Clearing existing categories...');
         await Category.deleteMany({});
-        
+
         let sortOrder = 1;
+
         for (const catData of categoriesData) {
             const parentSlug = slugify(catData.name);
+            
+            // Create parent category
             const parentCat = await Category.create({
                 name: catData.name,
                 slug: parentSlug,
                 sort_order: sortOrder++
             });
 
+            console.log(`Created Parent Category: ${parentCat.name}`);
+
             let subSortOrder = 1;
+            // Create unique subcategories using Set to avoid duplicate string values in same subs array
             const uniqueSubs = [...new Set(catData.subs)];
             for (const subName of uniqueSubs) {
                 const subSlug = slugify(subName, parentSlug);
@@ -118,65 +125,13 @@ export const getCategories = async (req, res) => {
                 });
             }
         }
-        // Refetch after seeding
-        categories = await Category.find({}).populate('parent').sort({ sort_order: 1 });
-    }
 
-    res.json(categories);
-};
-
-// @desc    Create a category
-// @route   POST /api/categories
-// @access  Private/Admin
-export const createCategory = async (req, res) => {
-    const { name, slug, icon, image, sort_order, parent } = req.body;
-
-    const category = new Category({
-        name,
-        slug,
-        icon,
-        image,
-        sort_order,
-        parent: parent || null
-    });
-
-    const createdCategory = await category.save();
-    res.status(201).json(createdCategory);
-};
-
-// @desc    Update a category
-// @route   PUT /api/categories/:id
-// @access  Private/Admin
-export const updateCategory = async (req, res) => {
-    const { name, slug, icon, image, sort_order, parent } = req.body;
-
-    const category = await Category.findById(req.params.id);
-
-    if (category) {
-        category.name = name || category.name;
-        category.slug = slug || category.slug;
-        category.icon = icon || category.icon;
-        category.image = image !== undefined ? image : category.image;
-        category.sort_order = sort_order !== undefined ? sort_order : category.sort_order;
-        category.parent = parent !== undefined ? (parent || null) : category.parent;
-
-        const updatedCategory = await category.save();
-        res.json(updatedCategory);
-    } else {
-        res.status(404).json({ message: 'Category not found' });
+        console.log('All categories and subcategories successfully seeded!');
+        process.exit(0);
+    } catch (error) {
+        console.error('Error seeding categories:', error);
+        process.exit(1);
     }
 };
 
-// @desc    Delete a category
-// @route   DELETE /api/categories/:id
-// @access  Private/Admin
-export const deleteCategory = async (req, res) => {
-    const category = await Category.findById(req.params.id);
-
-    if (category) {
-        await category.deleteOne();
-        res.json({ message: 'Category removed' });
-    } else {
-        res.status(404).json({ message: 'Category not found' });
-    }
-};
+seedCategories();
