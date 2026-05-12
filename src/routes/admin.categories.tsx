@@ -105,17 +105,39 @@ function AdminCategories() {
     }
   };
 
+  const seedMatrix = async () => {
+    if (!confirm("Reset and seed all default matrix categories and subcategories? Existing custom categories will be cleared.")) return;
+    try {
+        await api.get('/categories?seed=true');
+        toast.success("Categories matrix seeded successfully!");
+        qc.invalidateQueries({ queryKey: ["admin-categories"] });
+        qc.invalidateQueries({ queryKey: ["categories"] });
+    } catch (error: any) {
+        toast.error("Failed to seed categories matrix");
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-bold text-lg">Categories</h2>
-        <button
-          onClick={() => { setEditing(null); setShowForm(true); setPresetParentId(""); }}
-          className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
-        >
-          <Plus className="size-4" /> New Category
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={seedMatrix}
+            className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-md text-sm font-semibold transition"
+            title="Populate the complete standard categories and subcategories matrix"
+          >
+            ⚡ Seed Matrix Data
+          </button>
+          <button
+            onClick={() => { setEditing(null); setShowForm(true); setPresetParentId(""); }}
+            className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
+          >
+            <Plus className="size-4" /> New Category
+          </button>
+        </div>
       </div>
+
 
       {showForm && (
         <form onSubmit={save} className="bg-surface rounded-xl shadow-card p-4 space-y-3 relative">

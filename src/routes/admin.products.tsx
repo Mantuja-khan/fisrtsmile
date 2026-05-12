@@ -45,6 +45,7 @@ function AdminProducts() {
   const [offerOpen, setOfferOpen] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [parentCatId, setParentCatId] = useState<string>("");
+  const [subCatId, setSubCatId] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["admin-products"],
@@ -68,8 +69,10 @@ function AdminProducts() {
       const cat = categories.find(c => c._id === (editing.category._id || editing.category));
       if (cat?.parent) {
         setParentCatId(cat.parent._id || cat.parent);
+        setSubCatId(cat._id);
       } else if (cat) {
         setParentCatId(cat._id);
+        setSubCatId(cat._id);
       }
     }
   });
@@ -78,10 +81,13 @@ function AdminProducts() {
     const catObj = categories.find(c => c._id === (p.category?._id || p.category));
     if (catObj?.parent) {
       setParentCatId(catObj.parent._id || catObj.parent);
+      setSubCatId(catObj._id);
     } else if (catObj) {
       setParentCatId(catObj._id);
+      setSubCatId(catObj._id);
     } else {
       setParentCatId("");
+      setSubCatId("");
     }
     setEditing(p);
     setShowForm(true);
@@ -91,6 +97,7 @@ function AdminProducts() {
   const handleNew = () => {
     setEditing(null);
     setParentCatId("");
+    setSubCatId("");
     setShowForm(true);
   };
 
@@ -265,8 +272,12 @@ function AdminProducts() {
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Main Category</label>
               <select 
                 value={parentCatId} 
-                onChange={(e) => setParentCatId(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-input rounded"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setParentCatId(val);
+                  setSubCatId(val); // default subcategory to parent itself
+                }}
+                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
               >
                 <option value="">— Select Parent —</option>
                 {categories
@@ -280,7 +291,12 @@ function AdminProducts() {
 
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Subcategory <span className="text-[10px] italic font-normal">(Optional)</span></label>
-              <select name="category" defaultValue={editing?.category?._id || editing?.category || ""} className="w-full px-3 py-2 text-sm border border-input rounded">
+              <select 
+                name="category" 
+                value={subCatId} 
+                onChange={(e) => setSubCatId(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
+              >
                 <option value={parentCatId}>— Same as Main —</option>
                 {parentCatId && categories
                   .filter(c => (c.parent?._id === parentCatId || c.parent === parentCatId))

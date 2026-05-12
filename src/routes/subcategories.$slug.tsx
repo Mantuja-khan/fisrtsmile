@@ -34,12 +34,6 @@ function SubCategoriesPage() {
 
   const children = categories.filter((c) => c.parent_id === parent.id);
 
-  // Fallback redirection could go here, but explicit view is safer
-  if (children.length === 0) {
-     // Just automatically push them towards products? Or show one link.
-     // Let's just show direct products link
-  }
-
   return (
     <div className="min-h-[60vh] bg-slate-50 py-12">
       <div className="container mx-auto px-4">
@@ -63,27 +57,25 @@ function SubCategoriesPage() {
              </Link>
            </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {children.map((cat) => (
               <Link
                 key={cat.id}
                 to="/products"
                 search={{ category: cat.slug } as never}
-                className="group bg-white border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden p-4 transition-all hover:shadow-md hover:-translate-y-1 flex flex-col items-center text-center"
+                className="group bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md overflow-hidden p-5 transition-all hover:-translate-y-1 flex flex-col justify-center items-center text-center min-h-[100px]"
               >
-                <div className="w-full aspect-square rounded-xl overflow-hidden mb-4 flex items-center justify-center bg-slate-50">
-                  {cat.image ? (
+                {/* Image block is coded for when you add images inside the category item later */}
+                {cat.image && (
+                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-3 flex items-center justify-center bg-slate-50">
                     <img 
                       src={resolveImage(cat.image)} 
                       alt={cat.name} 
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
-                  ) : (
-                    <span className="text-4xl md:text-5xl group-hover:scale-110 transition-transform duration-300">{cat.icon ?? "📦"}</span>
-                  )}
-                </div>
-                <h3 className="font-bold text-slate-800 text-sm md:text-base group-hover:text-primary transition-colors uppercase tracking-wide">{cat.name}</h3>
-                <span className="text-[10px] font-bold text-muted-foreground mt-1 group-hover:text-slate-500 underline decoration-dotted">VIEW COLLECTION</span>
+                  </div>
+                )}
+                <h3 className="font-bold text-slate-900 text-sm md:text-base group-hover:text-primary transition-colors uppercase tracking-wider">{cat.name}</h3>
               </Link>
             ))}
           </div>

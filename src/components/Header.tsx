@@ -229,13 +229,24 @@ export function Header() {
       <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#E43E3D] shadow-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 text-sm font-bold">
           
-          <div ref={catRef} className="relative border-r border-[#E43E3D]/20 pr-4">
+          <div 
+            ref={catRef} 
+            className="relative border-r border-[#E43E3D]/20 pr-4"
+            onMouseEnter={() => {
+              setCatOpen(true);
+              setAgeOpen(false);
+              setProfileOpen(false);
+              if (categories.length > 0 && !activeCatId) {
+                const root = categories.find(c => !c.parent_id);
+                if (root) setActiveCatId(root.id);
+              }
+            }}
+          >
             <button
               onClick={() => { 
                 setCatOpen((v) => !v); 
                 setAgeOpen(false); 
                 setProfileOpen(false); 
-                // Preselect first root cat if opening and none selected
                 if (!catOpen && categories.length > 0) {
                   const root = categories.find(c => !c.parent_id);
                   if (root) setActiveCatId(root.id);
