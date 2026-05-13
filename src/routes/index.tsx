@@ -5,6 +5,7 @@ import { useProducts, useCategories, useBanners } from "@/hooks/useCatalog";
 import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import { resolveImage } from "@/data/products";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 
 import under199 from "@/assets/shopbyprice/under199.png";
 import under399 from "@/assets/shopbyprice/under399.png";
@@ -45,22 +46,34 @@ function HomePage() {
   const { data: banners = [] } = useBanners();
   const { isAdmin } = useAuth();
 
-  const offers = products.filter((p) => p.badge === "Flash Deal");
+  const offers = products.filter((p) => p.isSale);
+  const offerProducts = products.filter((p) => p.mrp > p.price || p.offerPct > 0);
   const featured = products.slice(0, 8);
 
   const heroBanners = banners.filter(b => b.position !== 'promo');
   const promoBanners = banners.filter(b => b.position === 'promo').slice(0, 2);
 
+  const [api, setApi] = useState<CarouselApi>();
   const [heroIdx, setHeroIdx] = useState(0);
 
   // Pre-filter for performance
   const rootCats = categories.filter(c => !c.parent_id);
 
   useEffect(() => {
-    if (heroBanners.length < 2) return;
-    const t = setInterval(() => setHeroIdx((i) => (i + 1) % heroBanners.length), 3500);
+    if (!api || heroBanners.length < 2) return;
+    const t = setInterval(() => {
+      api.scrollNext();
+    }, 3500);
     return () => clearInterval(t);
-  }, [heroBanners.length]);
+  }, [api, heroBanners.length]);
+
+  useEffect(() => {
+    if (!api) return;
+    setHeroIdx(api.selectedScrollSnap());
+    api.on("select", () => {
+      setHeroIdx(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   return (
     <div>
@@ -68,16 +81,24 @@ function HomePage() {
       <section className="bg-surface relative overflow-hidden">
         {heroBanners.length > 0 ? (
           <div className="relative w-full overflow-hidden group">
-            <Link to="/products" search={heroBanners[heroIdx].category?.slug ? { category: heroBanners[heroIdx].category.slug } : undefined} className="block w-full">
-              <img src={resolveImage(heroBanners[heroIdx].image)} alt="Hero Banner" className="w-full h-auto min-h-[150px] object-cover animate-fade-in" />
-            </Link>
+            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+              <CarouselContent className="-ml-0">
+                {heroBanners.map((b, i) => (
+                  <CarouselItem key={i} className="pl-0">
+                    <Link to="/products" search={b.category?.slug ? { category: b.category.slug } : undefined} className="block w-full cursor-grab active:cursor-grabbing">
+                      <img src={resolveImage(b.image)} alt="Hero Banner" className="w-full h-auto min-h-[150px] object-cover select-none" />
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
             {heroBanners.length > 1 && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
                 {heroBanners.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => setHeroIdx(i)}
-                    className={`h-2 rounded-full shadow-sm ${i === heroIdx ? "w-8 bg-primary" : "w-2 bg-white/70"}`}
+                    onClick={() => api?.scrollTo(i)}
+                    className={`h-2 rounded-full shadow-sm transition-all duration-300 ${i === heroIdx ? "w-8 bg-primary" : "w-2 bg-white/70"}`}
                   />
                 ))}
               </div>
@@ -116,26 +137,7 @@ function HomePage() {
       </div>
 
       {/* Trust strip */}
-      <section className="bg-surface border-b border-border">
-        <div className="container mx-auto px-4 py-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          {[
-            { icon: Truck, t: "Free Shipping", s: "On prepaid orders" },
-            { icon: ShieldCheck, t: "100% Genuine", s: "Trusted brands only" },
-            { icon: RotateCcw, t: "Easy Exchange", s: "Same product, 1 per order" },
-            { icon: Headphones, t: "24h Support", s: "Email & WhatsApp" },
-          ].map((f) => (
-            <div key={f.t} className="flex items-center gap-3 group">
-              <div className="size-12 grid place-items-center rounded-2xl bg-accent text-primary">
-                <f.icon className="size-5" />
-              </div>
-              <div>
-                <div className="font-semibold">{f.t}</div>
-                <div className="text-xs text-muted-foreground">{f.s}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Flash sale / offers */}
       {offers.length > 0 && (
@@ -156,13 +158,34 @@ function HomePage() {
                     <Plus className="size-3.5" /> Add Product
                   </Link>
                 )}
-                <Link to="/products" search={{ badge: "Flash Deal" } as never} className="text-sm font-semibold underline">
+                <Link to="/products" search={{ sale: true } as never} className="text-sm font-semibold underline">
                   View all →
                 </Link>
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative">
               {offers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Special Offers Section */}
+      {offerProducts.length > 0 && (
+        <section className="container mx-auto px-4 py-4">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-3xl shadow-card p-5 md:p-8 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="size-6 text-purple-600 animate-spin-slow" />
+                  <h2 className="font-display text-3xl md:text-4xl text-purple-950">Special Offers</h2>
+                </div>
+                <p className="text-xs md:text-sm text-purple-800 mt-1">Unbeatable discounts on top quality toys</p>
+              </div>
+              <Link to="/products" className="text-sm font-semibold text-purple-700 hover:underline">View all offers →</Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {offerProducts.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
         </section>
@@ -194,9 +217,9 @@ function HomePage() {
           </h2>
           <p className="text-sm text-muted-foreground mt-1">Explore our wide selection of premium toys</p>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
-          {rootCats.slice(0, 12).map((c) => (
+          {rootCats.map((c) => (
             <Link
               key={c.id}
               to="/subcategories/$slug"
@@ -205,16 +228,16 @@ function HomePage() {
             >
               <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
                 {c.image ? (
-                  <img 
-                    src={resolveImage(c.image)} 
-                    alt={c.name} 
-                    className="w-full h-full object-contain" 
+                  <img
+                    src={resolveImage(c.image)}
+                    alt={c.name}
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <span className="text-5xl sm:text-6xl group-hover:scale-110 transition-transform duration-300">{c.icon ?? "🎁"}</span>
                 )}
               </div>
-              
+
               {/* Rectangular Box Text matching Shop by Age design */}
               <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
                 <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap truncate block">
@@ -231,7 +254,7 @@ function HomePage() {
           <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
           <p className="text-sm text-muted-foreground mt-1">Find perfect toys suited for every stage</p>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0">
           {AGE_RANGES.map((age, i) => (
             <Link
@@ -241,13 +264,13 @@ function HomePage() {
               className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
               <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
-                <img 
-                  src={age.image} 
-                  alt={age.label} 
+                <img
+                  src={age.image}
+                  alt={age.label}
                   className="w-full h-full object-contain"
                 />
               </div>
-              
+
               {/* The Rectangular Box Text below - matching user design */}
               <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
                 <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap">

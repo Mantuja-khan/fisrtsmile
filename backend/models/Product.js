@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema({
     in_stock: { type: Boolean, default: true },
     show_in_hero: { type: Boolean, default: false },
     show_in_popup: { type: Boolean, default: false }, // New field for direct promotions
+    is_sale: { type: Boolean, default: false }, // For the dedicated Sale area
     rating: { type: Number, default: 0 },
     rating_count: { type: Number, default: 0 },
     weight: { type: Number, default: 0.5 }, // in kg

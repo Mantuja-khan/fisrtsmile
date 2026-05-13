@@ -40,6 +40,7 @@ export type Product = {
   offerStartsAt?: string | null;
   offerExpiresAt?: string | null;
   showInPopup?: boolean;
+  isSale?: boolean;
   weight?: number;
   length?: number;
   breadth?: number;

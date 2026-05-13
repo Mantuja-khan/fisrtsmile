@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Megaphone } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Zap, Upload, Loader2, FileSpreadsheet } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
 import { BRANDS } from "@/data/brands";
@@ -29,7 +29,7 @@ type ProductRow = {
   age_range: string | null;
   offer_pct: number;
   show_in_hero: boolean;
-  show_in_popup?: boolean;
+  is_sale?: boolean;
   offer_starts_at?: string | null;
   offer_expires_at?: string | null;
   weight?: number;
@@ -46,6 +46,126 @@ function AdminProducts() {
   const [uploading, setUploading] = useState(false);
   const [parentCatId, setParentCatId] = useState<string>("");
   const [subCatId, setSubCatId] = useState<string>("");
+  
+  const [excelImporting, setExcelImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState("");
+  const [previewRows, setPreviewRows] = useState<any[] | null>(null);
+
+  const loadXLSX = (): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).XLSX) return resolve((window as any).XLSX);
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+      script.onload = () => resolve((window as any).XLSX);
+      script.onerror = () => reject(new Error("Failed to load Excel Parser"));
+      document.head.appendChild(script);
+    });
+  };
+
+  const handleExcelImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setImportProgress("Loading parser...");
+      setExcelImporting(true);
+      const XLSX = await loadXLSX();
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const bstr = evt.target?.result;
+          const wb = XLSX.read(bstr, { type: "binary" });
+          const wsname = wb.SheetNames[0];
+          const ws = wb.Sheets[wsname];
+          const rawRows = XLSX.utils.sheet_to_json(ws);
+
+          if (!rawRows.length) {
+            toast.error("No rows found in spreadsheet!");
+            setExcelImporting(false);
+            return;
+          }
+
+          const getVal = (row: any, keys: string[]) => {
+            const keysInRow = Object.keys(row);
+            for (const k of keys) {
+              const match = keysInRow.find(kr => kr.toLowerCase().replace(/[^a-z0-9]/g, '') === k.toLowerCase().replace(/[^a-z0-9]/g, ''));
+              if (match !== undefined) return row[match];
+            }
+            return undefined;
+          };
+
+          const mapped = rawRows.map((r: any) => {
+            const catName = String(getVal(r, ['category', 'cat', 'parentcategory', 'maincategory', 'subcategory']) || '').trim();
+            const categoryMatch = categories.find((c: any) => c.name.toLowerCase() === catName.toLowerCase());
+            
+            return {
+              name: String(getVal(r, ['name', 'productname', 'item', 'title']) || '').trim(),
+              description: String(getVal(r, ['description', 'desc', 'about', 'detail']) || ''),
+              price: Number(getVal(r, ['price', 'sellingprice', 'rate']) || 0),
+              mrp: Number(getVal(r, ['mrp', 'originalprice', 'marketprice', 'retailprice']) || 0),
+              image: String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || ''),
+              brand: String(getVal(r, ['brand', 'company', 'make']) || ''),
+              age_range: String(getVal(r, ['agerange', 'age', 'years']) || ''),
+              category: categoryMatch ? categoryMatch._id : null,
+              categoryName: catName,
+              in_stock: true
+            };
+          }).filter((item: any) => !!item.name);
+
+          if (!mapped.length) {
+            toast.error("No products parsed successfully (Name header required).");
+            setExcelImporting(false);
+          } else {
+            setPreviewRows(mapped);
+            setExcelImporting(false);
+            setImportProgress("");
+          }
+        } catch (err: any) {
+          toast.error("Failed parsing file: " + err.message);
+          setExcelImporting(false);
+        }
+      };
+      reader.readAsBinaryString(file);
+      e.target.value = ""; 
+    } catch (err: any) {
+      toast.error(err.message);
+      setExcelImporting(false);
+    }
+  };
+
+  const confirmImport = async () => {
+    if (!previewRows) return;
+    setExcelImporting(true);
+    setPreviewRows(null);
+    
+    let count = 0;
+    for (let i = 0; i < previewRows.length; i++) {
+      const row = previewRows[i];
+      setImportProgress(`Importing ${i + 1} of ${previewRows.length}: ${row.name}`);
+      try {
+        await api.post("/products", {
+          name: row.name,
+          description: row.description,
+          price: row.price,
+          mrp: row.mrp || row.price,
+          image: row.image,
+          category: row.category,
+          brand: row.brand,
+          age_range: row.age_range,
+          in_stock: true
+        });
+        count++;
+      } catch (error) {
+        console.error("Failed importing: ", row.name, error);
+      }
+    }
+
+    setExcelImporting(false);
+    setImportProgress("");
+    toast.success(`Imported ${count} products successfully!`);
+    invalidate();
+  };
 
   const { data: products = [] } = useQuery({
     queryKey: ["admin-products"],
@@ -127,7 +247,7 @@ function AdminProducts() {
       age_range: String(fd.get("age_range") || ""),
       in_stock: fd.get("in_stock") === "on",
       show_in_hero: fd.get("show_in_hero") === "on",
-      show_in_popup: fd.get("show_in_popup") === "on",
+      is_sale: fd.get("is_sale") === "on",
       offer_starts_at: fd.get("offer_starts_at") ? String(fd.get("offer_starts_at")) : null,
       offer_expires_at: fd.get("offer_expires_at") ? String(fd.get("offer_expires_at")) : null,
       weight: fd.get("weight") ? Number(fd.get("weight")) : null,
@@ -233,10 +353,10 @@ function AdminProducts() {
     }
   };
 
-  const togglePopup = async (id: string, currentVal?: boolean) => {
+  const toggleSale = async (id: string, currentVal?: boolean) => {
     try {
-      await api.put(`/products/${id}`, { show_in_popup: !currentVal });
-      toast.success(!currentVal ? "Added to Popup broadcast" : "Removed from Popup broadcast");
+      await api.put(`/products/${id}`, { is_sale: !currentVal });
+      toast.success(!currentVal ? "Added to Flash/Sale Area" : "Removed from Flash/Sale Area");
       invalidate();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update product");
@@ -245,14 +365,31 @@ function AdminProducts() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="font-bold text-lg">Products ({products.length})</h2>
-        <button
-          onClick={handleNew}
-          className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
-        >
-          <Plus className="size-4" /> Add Product
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <input 
+            type="file" 
+            id="excel-import-input" 
+            accept=".xlsx, .xls, .csv" 
+            className="hidden" 
+            onChange={handleExcelImport} 
+          />
+          <button
+            onClick={() => document.getElementById("excel-import-input")?.click()}
+            disabled={excelImporting}
+            className="inline-flex items-center gap-1.5 border border-emerald-600 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-2 rounded-md text-sm font-semibold transition-colors cursor-pointer"
+          >
+            <FileSpreadsheet className="size-4" /> Import Excel
+          </button>
+          <button
+            onClick={handleNew}
+            disabled={excelImporting}
+            className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
+          >
+            <Plus className="size-4" /> Add Product
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -400,8 +537,8 @@ function AdminProducts() {
               <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
                 <input type="checkbox" name="show_in_hero" defaultChecked={editing?.show_in_hero ?? false} className="size-4" /> Show in Hero
               </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4 text-purple-600 font-medium">
-                <input type="checkbox" name="show_in_popup" defaultChecked={editing?.show_in_popup ?? false} className="size-4" /> Broadcast in Popup
+              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4 text-emerald-600 font-medium">
+                <input type="checkbox" name="is_sale" defaultChecked={editing?.is_sale ?? false} className="size-4" /> Add to Flash / Sale Area
               </label>
             </div>
 
@@ -471,6 +608,7 @@ function AdminProducts() {
                   <br className="lg:hidden" />
                   <span className="lg:ml-2 text-success font-bold">{p.offer_pct}% OFF</span>
                   {!p.in_stock && <span className="ml-2 text-destructive font-bold uppercase text-[10px]">· Sold Out</span>}
+                  {p.is_sale && <span className="ml-2 bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold uppercase text-[9px]">Flash / Sale Area</span>}
                 </div>
               </div>
             </div>
@@ -499,8 +637,8 @@ function AdminProducts() {
                 <button onClick={() => toggleHero(p._id, p.show_in_hero)} className="p-2 hover:bg-warning/10 rounded-full transition" title="Toggle Hero Section">
                   <Star className={`size-4 ${p.show_in_hero ? 'fill-warning text-warning' : 'text-muted-foreground'}`} />
                 </button>
-                <button onClick={() => togglePopup(p._id, p.show_in_popup)} className="p-2 hover:bg-purple-100 rounded-full transition" title="Broadcast in Account Popup">
-                  <Megaphone className={`size-4 ${p.show_in_popup ? 'fill-purple-600 text-purple-600' : 'text-muted-foreground'}`} />
+                <button onClick={() => toggleSale(p._id, p.is_sale)} className="p-2 hover:bg-emerald-100 rounded-full transition" title="Toggle Flash / Sale Area">
+                  <Zap className={`size-4 ${p.is_sale ? 'fill-emerald-600 text-emerald-600 scale-110' : 'text-muted-foreground'}`} />
                 </button>
               </div>
               <div className="flex items-center gap-1">
@@ -516,6 +654,82 @@ function AdminProducts() {
         ))}
         {products.length === 0 && <div className="p-12 text-center text-sm text-muted-foreground">Your store is currently empty</div>}
       </div>
+
+      {/* Excel Parsing/Importing Dialog Overlay */}
+      {excelImporting && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+          <div className="bg-surface text-foreground rounded-xl shadow-2xl max-w-md w-full p-6 text-center space-y-4">
+            <Loader2 className="size-12 text-emerald-600 animate-spin mx-auto" />
+            <div className="space-y-2">
+              <h3 className="font-bold text-lg text-emerald-800">Processing Spreadsheet</h3>
+              <p className="text-sm text-muted-foreground">{importProgress || "Working on it..."}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Products Excel Preview Grid Modal */}
+      {previewRows && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9998] p-4 overflow-y-auto">
+          <div className="bg-surface text-foreground rounded-xl shadow-2xl max-w-5xl w-full flex flex-col max-h-[90vh]">
+            <div className="p-4 md:p-6 border-b border-border flex items-center justify-between bg-emerald-50 rounded-t-xl">
+              <div>
+                <h3 className="font-extrabold text-xl text-emerald-900 flex items-center gap-2">
+                  <FileSpreadsheet className="size-5" /> Spreadsheet Preview
+                </h3>
+                <p className="text-xs text-emerald-700 mt-0.5">Found {previewRows.length} products. Review and map below.</p>
+              </div>
+              <button onClick={() => setPreviewRows(null)} className="p-1.5 bg-white/80 hover:bg-white rounded-full transition text-emerald-800 border border-emerald-200">
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-auto p-4">
+              <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[800px]">
+                <thead>
+                  <tr className="bg-muted border-b border-border font-bold text-muted-foreground">
+                    <th className="p-2.5">Product Name</th>
+                    <th className="p-2.5">Category</th>
+                    <th className="p-2.5">Brand</th>
+                    <th className="p-2.5 text-right">Selling Price</th>
+                    <th className="p-2.5 text-right">MRP</th>
+                    <th className="p-2.5">Image Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/50 font-medium text-foreground">
+                  {previewRows.map((r, idx) => (
+                    <tr key={idx} className="hover:bg-muted/30 transition-colors">
+                      <td className="p-2.5 text-foreground font-bold">{r.name}</td>
+                      <td className="p-2.5">
+                        {r.category ? (
+                          <span className="text-success text-[11px] bg-success/10 px-1.5 py-0.5 rounded font-bold">{r.categoryName || "Matched"}</span>
+                        ) : (
+                          <span className="text-amber-600 text-[11px] bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-bold italic">
+                            No match: "{r.categoryName || "General"}"
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-2.5 text-muted-foreground">{r.brand || "—"}</td>
+                      <td className="p-2.5 text-right font-bold">₹{r.price.toLocaleString()}</td>
+                      <td className="p-2.5 text-right text-muted-foreground">₹{r.mrp.toLocaleString()}</td>
+                      <td className="p-2.5 text-muted-foreground italic truncate max-w-[120px]">{r.image ? "✓ Provided" : "— No image"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="p-4 border-t border-border flex items-center justify-end gap-3 bg-muted/10 rounded-b-xl">
+              <button onClick={() => setPreviewRows(null)} className="px-4 py-2 rounded-lg border border-input hover:bg-white transition font-semibold text-sm text-muted-foreground">
+                Cancel
+              </button>
+              <button onClick={confirmImport} className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 transition text-white font-bold text-sm shadow-sm flex items-center gap-2">
+                <Upload className="size-4" /> Confirm & Import Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -28,6 +28,7 @@ type DbRow = {
   offer_starts_at?: string | null;
   offer_expires_at?: string | null;
   show_in_popup?: boolean;
+  is_sale?: boolean;
   weight?: number;
   length?: number;
   breadth?: number; 
@@ -59,6 +60,7 @@ const mapRow = (r: DbRow): Product => {
     offerStartsAt: r.offer_starts_at,
     offerExpiresAt: r.offer_expires_at,
     showInPopup: r.show_in_popup,
+    isSale: r.is_sale,
     weight: r.weight ?? 0.5,
     length: r.length ?? 10,
     breadth: r.breadth ?? 10,

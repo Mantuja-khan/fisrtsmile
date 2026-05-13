@@ -10,6 +10,7 @@ type Search = {
   brand?: string;
   badge?: string;
   age?: string;
+  sale?: boolean;
   minPrice?: number;
   maxPrice?: number;
   rating?: number;
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/products")({
     brand: typeof s.brand === "string" ? s.brand : undefined,
     badge: typeof s.badge === "string" ? s.badge : undefined,
     age: typeof s.age === "string" ? s.age : undefined,
+    sale: s.sale === true || s.sale === "true" ? true : undefined,
     minPrice: typeof s.minPrice === "number" ? s.minPrice : undefined,
     maxPrice: typeof s.maxPrice === "number" ? s.maxPrice : undefined,
     rating: typeof s.rating === "number" ? s.rating : undefined,
@@ -57,6 +59,7 @@ function ProductListPage() {
     if (search.brand) list = list.filter((p) => p.brand === search.brand);
     if (search.badge) list = list.filter((p) => p.badge === search.badge);
     if (search.age) list = list.filter((p) => p.ageRange === search.age);
+    if (search.sale) list = list.filter((p) => p.isSale);
     if (search.minPrice !== undefined) list = list.filter((p) => p.price >= search.minPrice!);
     if (search.maxPrice !== undefined) list = list.filter((p) => p.price <= search.maxPrice!);
     if (search.rating) list = list.filter((p) => p.rating >= search.rating!);
@@ -79,6 +82,7 @@ function ProductListPage() {
           <div className="text-sm font-medium flex items-center gap-2">
             <span className="bg-muted px-2 py-0.5 rounded font-bold">{filtered.length}</span> products
             {activeCategoryName && <span className="text-muted-foreground hidden sm:inline"> · {activeCategoryName}</span>}
+            {search.sale && <span className="text-emerald-600 font-bold hidden sm:inline"> · Sale Area</span>}
           </div>
           
           <div className="flex items-center gap-2 ml-auto">

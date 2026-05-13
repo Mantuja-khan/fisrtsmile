@@ -40,6 +40,7 @@ export const createProduct = async (req, res) => {
         in_stock,
         show_in_hero,
         show_in_popup,
+        is_sale,
         offer_starts_at,
         offer_expires_at,
         weight,
@@ -67,6 +68,7 @@ export const createProduct = async (req, res) => {
         in_stock,
         show_in_hero: show_in_hero || false,
         show_in_popup: show_in_popup || false,
+        is_sale: is_sale || false,
         offer_starts_at,
         offer_expires_at,
         weight: weight ? Number(weight) : undefined,
@@ -97,6 +99,7 @@ export const updateProduct = async (req, res) => {
         in_stock,
         show_in_hero,
         show_in_popup,
+        is_sale,
         offer_starts_at,
         offer_expires_at,
         weight,
@@ -127,6 +130,7 @@ export const updateProduct = async (req, res) => {
         product.in_stock = in_stock !== undefined ? in_stock : product.in_stock;
         product.show_in_hero = show_in_hero !== undefined ? show_in_hero : product.show_in_hero;
         product.show_in_popup = show_in_popup !== undefined ? show_in_popup : product.show_in_popup;
+        product.is_sale = is_sale !== undefined ? is_sale : product.is_sale;
         product.offer_starts_at = offer_starts_at !== undefined ? offer_starts_at : product.offer_starts_at;
         product.offer_expires_at = offer_expires_at !== undefined ? offer_expires_at : product.offer_expires_at;
         product.weight = weight ? Number(weight) : (weight === "" ? undefined : product.weight);

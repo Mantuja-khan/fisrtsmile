@@ -256,88 +256,65 @@ export function Header() {
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-0 mt-4 w-[85vw] max-w-4xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
-                <div className="flex min-h-[360px] max-h-[550px]">
+              <div className="absolute left-0 top-full mt-0 w-[95vw] max-w-7xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
+                <div className="p-6 md:p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
                   {categories.length === 0 ? (
                     <div className="text-sm text-muted-foreground p-3 text-center w-full flex items-center justify-center">Loading...</div>
                   ) : (
-                    <>
-                      {/* Left Pane: Main Categories */}
-                      <div className="w-5/12 md:w-4/12 bg-muted/20 border-r border-border py-2 overflow-y-auto custom-scrollbar flex flex-col">
-                        {categories.filter(cat => !cat.parent_id).map((parent) => (
-                          <Link
-                            key={parent.id}
-                            to="/subcategories/$slug"
-                            params={{ slug: parent.slug } as never}
-                            onMouseEnter={() => setActiveCatId(parent.id)}
-                            onClick={() => setCatOpen(false)}
-                            className={`flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors border-l-4 ${activeCatId === parent.id ? 'bg-surface text-primary font-bold border-primary' : 'hover:bg-surface/60 border-transparent text-foreground/80 font-medium'}`}
-                          >
-                            <span className="shrink-0 flex items-center justify-center w-6 h-6 overflow-hidden">
-                              {parent.image ? (
-                                <img src={resolveImage(parent.image)} alt={parent.name} className="w-full h-full object-contain" />
-                              ) : (
-                                <span className="text-base">{parent.icon ?? "🎁"}</span>
-                              )}
-                            </span>
-                            <span className="text-xs md:text-sm uppercase tracking-wider truncate leading-tight">{parent.name}</span>
-                          </Link>
-                        ))}
-                      </div>
-
-                      {/* Right Pane: Subcategories Grid */}
-                      <div className="w-7/12 md:w-8/12 bg-surface p-5 overflow-y-auto custom-scrollbar">
-                        {activeCatId ? (
-                          <div>
-                            <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-2">
-                              <span className="text-xs md:text-sm font-bold uppercase text-foreground tracking-wider">
-                                {categories.find(c => c.id === activeCatId)?.name} Subcategories
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
+                      {categories.filter(cat => !cat.parent_id).map((parent) => {
+                        const children = categories.filter(c => c.parent_id === parent.id);
+                        return (
+                          <div key={parent.id} className="flex flex-col">
+                            {/* Column Header: Parent Category */}
+                            <Link
+                              to="/subcategories/$slug"
+                              params={{ slug: parent.slug } as never}
+                              onClick={() => setCatOpen(false)}
+                              className="flex items-center gap-2 pb-2 border-b border-border/60 group hover:opacity-80 transition-all mb-2.5"
+                            >
+                              <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded overflow-hidden bg-muted/10">
+                                {parent.image ? (
+                                  <img src={resolveImage(parent.image)} alt={parent.name} className="w-full h-full object-contain" />
+                                ) : (
+                                  <span className="text-base">{parent.icon ?? "🎁"}</span>
+                                )}
                               </span>
-                              <Link
-                                to="/subcategories/$slug"
-                                params={{ slug: categories.find(c => c.id === activeCatId)?.slug } as never}
-                                onClick={() => setCatOpen(false)}
-                                className="text-xs text-primary hover:underline font-bold shrink-0 ml-2"
-                              >
-                                View Page →
-                              </Link>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              {categories.filter(cat => cat.parent_id === activeCatId).length > 0 ? (
-                                categories
-                                  .filter(cat => cat.parent_id === activeCatId)
-                                  .map(child => (
-                                    <Link
-                                      key={child.id}
-                                      to="/products"
-                                      search={{ category: child.slug } as never}
-                                      onClick={() => setCatOpen(false)}
-                                      className="p-2 rounded-lg text-xs md:text-sm font-medium text-foreground hover:bg-primary/5 hover:text-primary border border-transparent hover:border-border/50 transition-all flex items-center gap-2.5 truncate"
-                                    >
-                                      <span className="shrink-0 flex items-center justify-center w-6 h-6 overflow-hidden">
-                                        {child.image ? (
-                                          <img src={resolveImage(child.image)} alt={child.name} className="w-full h-full object-contain" />
-                                        ) : (
-                                          <span className="opacity-40 text-muted-foreground text-xs">↳</span>
-                                        )}
-                                      </span>
-                                      <span className="truncate">{child.name}</span>
-                                    </Link>
-                                  ))
+                              <span className="text-[13px] font-extrabold uppercase tracking-wider text-foreground group-hover:text-primary leading-tight line-clamp-1">
+                                {parent.name}
+                              </span>
+                            </Link>
+
+                            {/* Subcategories List */}
+                            <div className="flex flex-col gap-2 pl-0.5">
+                              {children.length > 0 ? (
+                                children.map(child => (
+                                  <Link
+                                    key={child.id}
+                                    to="/products"
+                                    search={{ category: child.slug } as never}
+                                    onClick={() => setCatOpen(false)}
+                                    className="text-xs font-semibold text-muted-foreground hover:text-[#E43E3D] hover:translate-x-1 transition-all flex items-center gap-2 leading-snug group/item"
+                                  >
+                                    <span className="opacity-50 text-[9px] shrink-0 group-hover/item:opacity-100">•</span>
+                                    <span className="truncate">{child.name}</span>
+                                  </Link>
+                                ))
                               ) : (
-                                <div className="col-span-2 py-8 text-center text-muted-foreground text-xs md:text-sm italic">
-                                  No specific subcategories listed
-                                </div>
+                                <Link
+                                  to="/subcategories/$slug"
+                                  params={{ slug: parent.slug } as never}
+                                  onClick={() => setCatOpen(false)}
+                                  className="text-xs font-medium italic text-muted-foreground/50 hover:text-primary pl-4 transition-colors"
+                                >
+                                  Browse Category
+                                </Link>
                               )}
                             </div>
                           </div>
-                        ) : (
-                          <div className="h-full flex items-center justify-center text-muted-foreground italic text-xs md:text-sm">
-                            Hover over a category to browse subcategories
-                          </div>
-                        )}
-                      </div>
-                    </>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
                 <Link
@@ -370,7 +347,7 @@ export function Header() {
                 BRANDS <ChevronDown className={`size-4 transition ${brandOpen ? "rotate-180" : ""}`} />
               </button>
               {brandOpen && (
-                <div className="absolute left-0 mt-4 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+                <div className="absolute left-0 top-full mt-0 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
                   <div className="p-2 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
                     {BRANDS.map((b) => (
                       <Link
@@ -406,7 +383,7 @@ export function Header() {
                 SHOP BY AGE <ChevronDown className={`size-4 transition ${ageOpen ? "rotate-180" : ""}`} />
               </button>
               {ageOpen && (
-                <div className="absolute left-0 mt-4 w-48 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
+                <div className="absolute left-0 top-full mt-0 w-48 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
                   <div className="p-2 flex flex-col gap-1">
                     {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
                       <Link
@@ -424,6 +401,7 @@ export function Header() {
               )}
             </div>
 
+            <Link to="/products" search={{ sale: true } as never} className="uppercase tracking-wide font-extrabold text-emerald-600">SALE</Link>
             <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>
             <Link to="/coupons" className="uppercase tracking-wide text-[#E43E3D]">COUPONS</Link>
             <Link to="/account" className="uppercase tracking-wide">MY PROFILE</Link>
