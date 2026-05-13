@@ -71,9 +71,11 @@ function AdminCategories() {
     setUploading(true);
     try {
        const base64 = await compressImage(file, 600, 0.8); 
+       const isTransparent = file.type.includes('png') || file.type.includes('webp') || file.type.includes('gif');
+       const ext = isTransparent ? 'png' : 'jpg';
        const { data } = await api.post("/upload", { 
            image: base64, 
-           name: `cat-${file.name.replace(/\.[^/.]+$/, "")}.jpg` 
+           name: `cat-${file.name.replace(/\.[^/.]+$/, "")}.${ext}` 
        });
        const inputElement = document.getElementById("cat_image_input") as HTMLInputElement;
        if (inputElement) {

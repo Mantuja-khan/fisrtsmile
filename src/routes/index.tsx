@@ -188,21 +188,22 @@ function HomePage() {
 
       {/* Categories Section */}
       <section className="container mx-auto px-4 py-8">
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <h2 className="font-display text-3xl md:text-4xl text-foreground">
             Shop by Category
           </h2>
+          <p className="text-sm text-muted-foreground mt-1">Explore our wide selection of premium toys</p>
         </div>
         
-        <div className="flex overflow-x-auto no-scrollbar gap-6 md:gap-10 pb-4 justify-start md:justify-center">
-          {rootCats.map((c) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+          {rootCats.slice(0, 12).map((c) => (
             <Link
               key={c.id}
               to="/subcategories/$slug"
               params={{ slug: c.slug } as never}
-              className="group flex flex-col items-center shrink-0 w-24 md:w-32 text-center"
+              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
-              <div className="w-full aspect-square flex items-center justify-center mb-3 overflow-hidden relative transition-transform group-hover:-translate-y-1">
+              <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
                 {c.image ? (
                   <img 
                     src={resolveImage(c.image)} 
@@ -210,11 +211,15 @@ function HomePage() {
                     className="w-full h-full object-contain" 
                   />
                 ) : (
-                  <span className="text-4xl md:text-5xl group-hover:scale-105 transition-transform duration-300">{c.icon ?? "🎁"}</span>
+                  <span className="text-5xl sm:text-6xl group-hover:scale-110 transition-transform duration-300">{c.icon ?? "🎁"}</span>
                 )}
               </div>
-              <div className="text-xs md:text-sm font-bold text-foreground/90 line-clamp-2 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors">
-                {c.name}
+              
+              {/* Rectangular Box Text matching Shop by Age design */}
+              <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
+                <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap truncate block">
+                  {c.name}
+                </span>
               </div>
             </Link>
           ))}

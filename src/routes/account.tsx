@@ -1,20 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
-import { User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, Building2, Map as MapIcon, Lock, Mail, ChevronRight } from "lucide-react";
+import { 
+  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, 
+  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard 
+} from "lucide-react";
 import { redirectToPayU } from "@/utils/payu";
 import { useAuth } from "@/store/auth";
 import api from "@/services/api";
 import { toast } from "sonner";
 import { z } from "zod";
 import loginBg from "@/assets/loginsignup.png";
-import logoImg from "@/assets/firstsmile_logo.png";
-import heroImg from "@/assets/hero-toys.jpg";
-import loginHereImg from "@/assets/loginhere.png";
 import signupHereImg from "@/assets/signuphere.png";
-import offersGetImg from "@/assets/offerget.png";
+import loginHereImg from "@/assets/loginhere.png";
 
 const searchSchema = z.object({
-  view: z.enum(["profile", "orders", "addresses"]).optional(),
+  view: z.enum(["profile", "orders", "addresses", "password", "notifications"]).optional(),
 });
 
 export const Route = createFileRoute("/account")({
@@ -38,26 +38,28 @@ const signupSchema = z.object({
   phone: z.string().trim().min(10, "Invalid phone number").max(15),
   otp: z.string().length(6, "OTP must be 6 digits"),
 });
+
 const resetPasswordSchema = z.object({
   email: z.string().trim().email("Invalid email address"),
   otp: z.string().length(6, "OTP must be 6 digits"),
   newPassword: strongPassword,
 });
+
 const loginSchema = z.object({
   email: z.string().trim().email("Invalid email address").max(255),
   password: z.string().min(1, "Password required").max(72),
 });
 
 function AccountPage() {
-  const { user, isAdmin, signIn, signUp, signOut, loading, updateProfile } = useAuth();
+  const { user, isAdmin, signIn, signUp, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { view: searchView } = Route.useSearch();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
-  const [view, setView] = useState<"profile" | "orders" | "addresses">(searchView || "profile");
+  const [view, setView] = useState<"profile" | "orders" | "addresses" | "password" | "notifications">(searchView || "profile");
 
   useEffect(() => {
     if (searchView && searchView !== view) {
-      setView(searchView);
+      setView(searchView as any);
     }
   }, [searchView]);
 
@@ -73,114 +75,129 @@ function AccountPage() {
   const [otpBusy, setOtpBusy] = useState(false);
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Loading...</div>;
+    return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground font-medium">Loading your profile interface...</div>;
   }
 
   if (user) {
     const name = user.full_name || user.email?.split("@")[0] || "User";
     return (
-      <div className="min-h-[calc(100vh-140px)] bg-slate-50 py-8 md:py-12">
-        <div className="container mx-auto px-4 max-w-6xl">
+      <div className="min-h-[calc(100vh-140px)] bg-[#F8F9FC] py-6 md:py-10">
+        <div className="container mx-auto px-4 max-w-7xl">
           
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
             
-            {/* Professional Responsive Sidebar Navigation */}
-            <aside className="w-full lg:w-1/3 xl:w-1/4 space-y-6 shrink-0 lg:sticky lg:top-24 transition-all">
+            {/* Premium Sidebar Pane */}
+            <aside className="w-full lg:w-72 xl:w-80 shrink-0 space-y-6">
               
-              {/* High-End User Header */}
-              <div className="bg-white border border-slate-200/60 rounded-2xl shadow-sm p-6 flex items-center gap-4 relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#E43E3D] via-[#802a8f] to-[#E43E3D]"></div>
-                <div className="size-16 rounded-2xl bg-gradient-to-br from-rose-500 to-[#E43E3D] text-white grid place-items-center font-bold text-2xl uppercase shadow-md group-hover:scale-105 transition-transform shrink-0">
+              {/* User Identity Container */}
+              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF4B4B] to-[#D82D2D] text-white flex items-center justify-center font-bold text-xl uppercase shadow-md shrink-0">
                   {name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-slate-400 font-bold tracking-wider uppercase">Hello,</p>
-                  <h2 className="font-bold text-xl text-slate-800 truncate leading-tight">{name}</h2>
-                  {isAdmin && (
-                    <div className="mt-1.5 text-[10px] bg-violet-100 text-[#802a8f] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 border border-violet-200">
-                      <Shield className="size-3" /> ADMIN
+                  <h2 className="font-bold text-base text-slate-900 truncate">{name}</h2>
+                  {isAdmin ? (
+                    <div className="mt-1 inline-flex items-center gap-1 bg-purple-50 text-[#802a8f] font-bold text-[10px] px-2.5 py-0.5 rounded-full border border-purple-100">
+                      <Shield className="w-3 h-3" /> ADMIN
                     </div>
+                  ) : (
+                    <p className="text-xs text-slate-400 truncate">{user.email}</p>
                   )}
                 </div>
               </div>
 
-              {/* Glassy Smooth Navigation */}
-              <nav className="bg-white border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-2 space-y-1">
-                  
-                  <button 
-                    onClick={() => setView("orders")} 
-                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
-                      view === "orders" 
-                        ? "bg-[#E43E3D] text-white shadow-md" 
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    <Package className={`size-5 ${view === "orders" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
-                    <span className="font-bold text-sm flex-1 text-left">My Orders</span>
-                    <ChevronRight className={`size-4 opacity-50 ${view === "orders" ? "rotate-0" : "-rotate-0"}`} />
-                  </button>
-
-                  <div className="pt-4 pb-2 px-4 flex items-center gap-2">
-                    <div className="h-px bg-slate-100 flex-1"></div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Settings</span>
-                    <div className="h-px bg-slate-100 flex-1"></div>
+              {/* Navigation Menu Links */}
+              <div className="bg-white rounded-3xl py-4 shadow-sm border border-slate-100 space-y-1">
+                
+                {/* Orders Tab */}
+                <button 
+                  onClick={() => setView("orders")}
+                  className={`w-full flex items-center justify-between px-6 py-3 font-semibold text-sm transition ${
+                    view === "orders" 
+                      ? "text-[#E43E3D] bg-red-50/50" 
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <Package className={`w-4 h-4 ${view === "orders" ? "text-[#E43E3D]" : "text-slate-400"}`} />
+                    <span>My Orders</span>
                   </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300" />
+                </button>
 
+                {/* Section Divider: SETTINGS */}
+                <div className="pt-5 pb-2 px-6">
+                  <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Settings</span>
+                </div>
+
+                {/* Profile Information Tab */}
+                <div className="px-3">
                   <button 
-                    onClick={() => setView("profile")} 
-                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
+                    onClick={() => setView("profile")}
+                    className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "profile" 
-                        ? "bg-[#E43E3D] text-white shadow-md" 
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-[#FFF0F0] text-[#E43E3D]" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     }`}
                   >
-                    <User className={`size-5 ${view === "profile" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
-                    <span className="font-bold text-sm flex-1 text-left">Profile Information</span>
-                  </button>
-
-                  <button 
-                    onClick={() => setView("addresses")} 
-                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
-                      view === "addresses" 
-                        ? "bg-[#E43E3D] text-white shadow-md" 
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    <MapPin className={`size-5 ${view === "addresses" ? "text-white" : "text-slate-400 group-hover:text-[#E43E3D]"}`} />
-                    <span className="font-bold text-sm flex-1 text-left">Manage Addresses</span>
-                  </button>
-
-                  <div className="h-px bg-slate-100 my-2 mx-2"></div>
-
-                  {isAdmin && (
-                    <button
-                      onClick={() => navigate({ to: "/admin" })}
-                      className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-violet-700 font-bold hover:bg-violet-50 hover:text-violet-900 transition-colors duration-200"
-                    >
-                      <Shield className="size-5 text-violet-400" /> 
-                      <span className="text-sm flex-1 text-left uppercase tracking-wide">Admin Panel</span>
-                    </button>
-                  )}
-
-                  <button 
-                    onClick={signOut} 
-                    className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-rose-600 font-bold hover:bg-rose-50 transition-colors duration-200"
-                  >
-                    <LogOut className="size-5 text-rose-400" /> 
-                    <span className="text-sm flex-1 text-left">Sign Out</span>
+                    <User className={`w-4 h-4 ${view === "profile" ? "text-[#E43E3D]" : "text-slate-400"}`} />
+                    <span>Profile Information</span>
                   </button>
                 </div>
-              </nav>
+
+                {/* Manage Addresses Tab */}
+                <div className="px-3">
+                  <button 
+                    onClick={() => setView("addresses")}
+                    className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold text-sm transition ${
+                      view === "addresses" 
+                        ? "bg-[#FFF0F0] text-[#E43E3D]" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    <MapPin className={`w-4 h-4 ${view === "addresses" ? "text-[#E43E3D]" : "text-slate-400"}`} />
+                    <span>Manage Addresses</span>
+                  </button>
+                </div>
+
+                {/* Section Divider: ADMIN */}
+                {isAdmin && (
+                  <>
+                    <div className="pt-5 pb-2 px-6">
+                      <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Admin</span>
+                    </div>
+                    <div className="px-3">
+                      <button 
+                        onClick={() => navigate({ to: "/admin" })}
+                        className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-bold text-sm text-[#802a8f] hover:bg-purple-50 transition"
+                      >
+                        <Shield className="w-4 h-4 text-[#802a8f]" />
+                        <span>Admin Panel</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {/* Bottom Logout Button */}
+                <div className="pt-3 px-3 border-t border-slate-50 mt-2">
+                  <button 
+                    onClick={signOut}
+                    className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-bold text-sm text-rose-600 hover:bg-rose-50 transition"
+                  >
+                    <LogOut className="w-4 h-4 text-rose-500" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+
+              </div>
+
             </aside>
 
-            {/* Content Engine Pane */}
-            <main className="w-full lg:flex-1 bg-white border border-slate-200/60 rounded-2xl shadow-sm min-h-[500px] overflow-hidden relative animate-in fade-in slide-in-from-right-4 duration-500">
-              <div className="p-6 md:p-8">
-                {view === "profile" && <ProfileDetails />}
-                {view === "orders" && <MyOrders />}
-                {view === "addresses" && <Addresses />}
-              </div>
+            {/* Main Information Dynamic Screen Area */}
+            <main className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden min-h-[580px]">
+              {view === "profile" && <ProfileDetailsEngine />}
+              {view === "orders" && <MyOrdersEngine />}
+              {view === "addresses" && <AddressesEngine />}
             </main>
 
           </div>
@@ -271,175 +288,152 @@ function AccountPage() {
   };
 
   return (
-    <>
-      <div
-        className="min-h-[calc(100vh-140px)] w-full bg-cover bg-center bg-no-repeat relative flex items-center justify-center p-4 md:p-8"
-        style={{ backgroundImage: `url(${loginBg})` }}
-      >
-        <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+    <div
+      className="min-h-[calc(100vh-140px)] w-full bg-cover bg-center bg-no-repeat relative flex items-center justify-center p-4 md:p-8"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
 
-        <div className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${(mode === "login" || mode === "forgot") ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/80 md:bg-white backdrop-blur-md md:backdrop-blur-none transition-all duration-500 ease-in-out`} key={mode}>
+      <div className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${(mode === "login" || mode === "forgot") ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/90 md:bg-white backdrop-blur-md transition-all duration-500`} key={mode}>
+        {/* Side - Image for Desktop */}
+        <div
+          className="hidden md:block md:w-1/2 relative bg-cover bg-top min-h-[500px]"
+          style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
+        />
 
-          {/* Mobile Background */}
-          <div
-            className="md:hidden absolute inset-0 bg-cover bg-top opacity-60 blur-sm pointer-events-none"
-            style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
-          ></div>
-
-          {/* Side - Image for Desktop */}
-          <div
-            className="hidden md:block md:w-1/2 relative bg-cover bg-top min-h-[500px] animate-in fade-in slide-in-from-bottom duration-500"
-            style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
-          >
+        {/* Side - Form */}
+        <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/60 md:bg-white">
+          <div className="text-center mb-8">
+            <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
+              {mode === "login" ? "USER LOGIN" : mode === "signup" ? "CREATE ACCOUNT" : "RESET PASSWORD"}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1">Welcome to First Smile</p>
           </div>
 
-          {/* Side - Form */}
-          <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/40 md:bg-white animate-in fade-in slide-in-from-top duration-500">
-            <div className="text-center mb-8">
-              <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
-                {mode === "login" ? "USER LOGIN" : mode === "signup" ? "CREATE ACCOUNT" : "RESET PASSWORD"}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1">Welcome to the website</p>
-            </div>
-
-            <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
-              {mode === "signup" && (
-                <div className="space-y-4">
-                  <div className="relative flex items-center">
-                    <User className="absolute left-4 size-4 text-[#802a8f]/60" />
-                    <input
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                      placeholder="Username"
-                    />
-                  </div>
-                  <div className="relative flex items-center">
-                    <Phone className="absolute left-4 size-4 text-[#802a8f]/60" />
-                    <input
-                      required
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                      placeholder="Mobile Number"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {(!otpSent || mode !== "forgot") && (
+          <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
+            {mode === "signup" && (
+              <div className="space-y-4">
                 <div className="relative flex items-center">
-                  <Mail className="absolute left-4 size-4 text-[#802a8f]/60" />
+                  <User className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
                   <input
                     required
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                    placeholder="Email Address"
+                    placeholder="Full Name"
                   />
                 </div>
-              )}
-
-              {(mode !== "forgot" || otpVerified) && (
-                <div className="mt-4 flex flex-col">
-                  <div className="relative flex items-center">
-                    <Lock className="absolute left-4 size-4 text-[#802a8f]/60" />
-                    <input
-                      required
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                      placeholder={mode === "forgot" ? "New Password" : "Password"}
-                    />
-                  </div>
-                  {(mode === "signup" || (mode === "forgot" && otpVerified)) && (
-                    <div className="mt-2 text-[10px] text-muted-foreground px-4 grid grid-cols-2 gap-1 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        {/[A-Z]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Capital letter
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {/[a-z]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Small letter
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {/\d/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Number
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {/[@$!%*?&#]/.test(password) ? <span className="text-green-500 font-bold text-xs">✓</span> : <span>○</span>} 1 Special symbol
-                      </div>
-                    </div>
-                  )}
+                <div className="relative flex items-center">
+                  <Phone className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+                  <input
+                    required
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                    placeholder="Mobile Number"
+                  />
                 </div>
-              )}
+              </div>
+            )}
 
-              {mode === "forgot" && otpVerified && (
-                <div className="relative flex items-center mt-4">
-                  <Lock className="absolute left-4 size-4 text-[#802a8f]/60" />
+            {(!otpSent || mode !== "forgot") && (
+              <div className="relative flex items-center">
+                <Mail className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+                <input
+                  required
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                  placeholder="Email Address"
+                />
+              </div>
+            )}
+
+            {(mode !== "forgot" || otpVerified) && (
+              <div className="mt-4 flex flex-col">
+                <div className="relative flex items-center">
+                  <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
                   <input
                     required
                     type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                    placeholder="Confirm New Password"
+                    placeholder={mode === "forgot" ? "New Password" : "Password"}
                   />
                 </div>
-              )}
-
-              {otpSent && (!otpVerified || mode === "signup") && (
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300 mt-4">
-                  <div className="flex justify-between px-2">
-                    <label className="text-[11px] font-bold text-[#802a8f] uppercase">Enter 6-Digit OTP</label>
-                    <button type="button" onClick={sendOtpRequest} className="text-[10px] text-[#802a8f] hover:underline">Resend?</button>
-                  </div>
-                  <input
-                    required
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    className="w-full px-4 py-3 text-center text-lg font-bold tracking-[0.5em] bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition text-[#802a8f]"
-                    placeholder="000000"
-                  />
-                </div>
-              )}
-
-              {mode === "login" && (
-                <div className="flex justify-between items-center px-2 text-[11px] font-medium text-muted-foreground mt-2">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" className="accent-[#802a8f]" /> Remember
-                  </label>
-                  <button type="button" onClick={() => { setMode("forgot"); setOtpSent(false); setOtpVerified(false); }} className="hover:text-[#802a8f] transition">Forgot password?</button>
-                </div>
-              )}
-
-              <button disabled={busy || otpBusy} className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6">
-                {busy || otpBusy ? "Please wait..." : (
-                  mode === "login" ? "Login" :
-                    mode === "forgot" ? (
-                      otpVerified ? "Set Password" :
-                        otpSent ? "Verify OTP" : "Send OTP"
-                    ) :
-                      otpSent ? "Confirm & Register" : "Send OTP"
-                )}
-              </button>
-
-              <div className="text-center mt-6">
-                <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setOtpSent(false); }} className="text-xs text-muted-foreground hover:text-[#802a8f] transition">
-                  {mode === "login" ? "Create Account" : "Back to Login"}
-                </button>
               </div>
-            </form>
-          </div>
+            )}
+
+            {mode === "forgot" && otpVerified && (
+              <div className="relative flex items-center mt-4">
+                <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+                <input
+                  required
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                  placeholder="Confirm New Password"
+                />
+              </div>
+            )}
+
+            {otpSent && (!otpVerified || mode === "signup") && (
+              <div className="space-y-2 mt-4">
+                <div className="flex justify-between px-2">
+                  <label className="text-[11px] font-bold text-[#802a8f] uppercase">Enter 6-Digit OTP</label>
+                  <button type="button" onClick={sendOtpRequest} className="text-[10px] text-[#802a8f] hover:underline">Resend?</button>
+                </div>
+                <input
+                  required
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  className="w-full px-4 py-3 text-center text-lg font-bold tracking-[0.5em] bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition text-[#802a8f]"
+                  placeholder="000000"
+                />
+              </div>
+            )}
+
+            {mode === "login" && (
+              <div className="flex justify-between items-center px-2 text-[11px] font-medium text-muted-foreground mt-2">
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" className="accent-[#802a8f]" /> Remember
+                </label>
+                <button type="button" onClick={() => { setMode("forgot"); setOtpSent(false); setOtpVerified(false); }} className="hover:text-[#802a8f] transition">Forgot password?</button>
+              </div>
+            )}
+
+            <button disabled={busy || otpBusy} className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6">
+              {busy || otpBusy ? "Please wait..." : (
+                mode === "login" ? "Login" :
+                  mode === "forgot" ? (
+                    otpVerified ? "Set Password" :
+                      otpSent ? "Verify OTP" : "Send OTP"
+                  ) :
+                    otpSent ? "Confirm & Register" : "Send OTP"
+              )}
+            </button>
+
+            <div className="text-center mt-6">
+              <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setOtpSent(false); }} className="text-xs text-muted-foreground hover:text-[#802a8f] transition">
+                {mode === "login" ? "Create Account" : "Back to Login"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
-function ProfileDetails() {
+/* =======================================================================
+   1. Profile Information Component Engine (Matching Premium Screen Mockup)
+   ======================================================================= */
+function ProfileDetailsEngine() {
   const { user, updateProfile } = useAuth();
   const [busy, setBusy] = useState(false);
 
@@ -452,126 +446,97 @@ function ProfileDetails() {
     setBusy(true);
     const { error } = await updateProfile({ full_name: name, phone });
     setBusy(false);
-    if (!error) toast.success("Profile updated!");
+    if (!error) toast.success("Profile updated successfully!");
   };
 
   return (
-    <div className="p-6 md:p-8">
-      <div className="mb-6 pb-4 border-b border-border">
-        <h2 className="text-xl font-bold">Profile Information</h2>
-      </div>
-      <form onSubmit={save} className="max-w-md space-y-6">
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Full Name</label>
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-          />
+    <div className="p-6 md:p-10">
+      
+      {/* Top Banner Identity Area */}
+      <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
+        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
+          <User className="w-6 h-6 stroke-[1.5]" />
         </div>
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email Address</label>
-          <input
-            value={user?.email}
-            disabled
-            className="w-full px-4 py-2.5 text-sm border border-input rounded bg-muted/30 text-muted-foreground cursor-not-allowed outline-none"
-          />
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 leading-tight">Profile Information</h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Update your personal details and contact information.</p>
         </div>
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone Number</label>
-          <input
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-          />
-        </div>
-        <button disabled={busy} className="bg-primary text-primary-foreground font-semibold px-10 py-2.5 rounded shadow-sm hover:brightness-110 disabled:opacity-50 transition">
-          {busy ? "Saving..." : "Save Changes"}
-        </button>
-      </form>
-    </div>
-  );
-}
-
-function Addresses() {
-  const { user, updateProfile } = useAuth();
-  const [busy, setBusy] = useState(false);
-
-  const [addr, setAddr] = useState(user?.address || "");
-  const [city, setCity] = useState(user?.city || "");
-  const [state, setState] = useState(user?.state || "");
-  const [pin, setPin] = useState(user?.pincode || "");
-
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!updateProfile) return;
-    setBusy(true);
-    const { error } = await updateProfile({ address: addr, city, state, pincode: pin });
-    setBusy(false);
-    if (!error) toast.success("Address saved!");
-  };
-
-  return (
-    <div className="p-6 md:p-8">
-      <div className="mb-6 pb-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-xl font-bold">Manage Addresses</h2>
       </div>
 
-      <form onSubmit={save} className="max-w-2xl border border-border p-6 rounded bg-muted/10 space-y-5">
-        <h3 className="font-semibold text-sm text-primary uppercase tracking-wide mb-2">Edit Default Address</h3>
-
+      <form onSubmit={save} className="max-w-xl space-y-6">
+        
+        {/* Input Block: Full Name */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Street Address / Area</label>
-          <textarea
-            required
-            value={addr}
-            onChange={e => setAddr(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary min-h-[80px]"
-            placeholder="Flat No, Wing, Apartment name, Landmark..."
-          />
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">City / Town</label>
+          <label className="text-xs font-bold text-slate-700 block">Full Name</label>
+          <div className="relative flex items-center">
             <input
-              required
-              value={city}
-              onChange={e => setCity(e.target.value)}
-              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Full Name"
+              className="w-full pl-4 pr-11 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">State</label>
-            <input
-              required
-              value={state}
-              onChange={e => setState(e.target.value)}
-              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pincode</label>
-            <input
-              required
-              type="number"
-              value={pin}
-              onChange={e => setPin(e.target.value)}
-              className="w-full px-4 py-2.5 text-sm border border-input rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
+            <User className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
         </div>
 
+        {/* Input Block: Email Address */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 block">Email Address</label>
+          <div className="relative flex items-center">
+            <input
+              value={user?.email || ""}
+              disabled
+              placeholder="Email Address"
+              className="w-full pl-4 pr-11 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-500 outline-none cursor-not-allowed font-medium"
+            />
+            <Mail className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Input Block: Phone Number */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 block">Phone Number</label>
+          <div className="relative flex items-center">
+            <input
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="Enter your phone number"
+              className="w-full pl-4 pr-11 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            />
+            <Phone className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Beautiful Purple Alert Block */}
+        <div className="bg-[#F6F4FB] rounded-2xl p-4 md:p-5 flex gap-4 mt-8 border border-purple-100/50">
+          <Shield className="w-5 h-5 text-[#802a8f] shrink-0 mt-0.5 stroke-[2]" />
+          <div>
+            <h4 className="text-xs md:text-sm font-bold text-[#802a8f]">Keep your information up to date</h4>
+            <p className="text-[11px] md:text-xs text-slate-600 mt-1 leading-relaxed">
+              Ensure your contact information is accurate so we can reach you when needed.
+            </p>
+          </div>
+        </div>
+
+        {/* Gradient Action Save Button */}
         <div className="pt-2">
-          <button disabled={busy} className="bg-primary text-primary-foreground font-semibold px-8 py-2.5 rounded shadow-sm hover:brightness-110 disabled:opacity-50 transition">
-            {busy ? "Saving..." : "Save Address"}
+          <button 
+            disabled={busy} 
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            <span>{busy ? "Saving Changes..." : "Save Changes"}</span>
           </button>
         </div>
+
       </form>
     </div>
   );
 }
 
+/* =======================================================================
+   2. Orders View Engine
+   ======================================================================= */
 type MyOrder = {
   _id: string;
   order_number: string;
@@ -580,16 +545,17 @@ type MyOrder = {
   createdAt: string;
   payment_method: string;
   isPaid?: boolean;
-  refund_status?: string; // NEW FIELD
+  refund_status?: string;
   items: { name: string; quantity: number; price: number; image?: string; product: string }[];
 };
 
-function MyOrders() {
+function MyOrdersEngine() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<MyOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const payOnline = async (o: MyOrder) => {
     setPayingId(o._id);
@@ -623,7 +589,7 @@ function MyOrders() {
     setCancellingId(id);
     try {
       await api.put(`/orders/${id}/cancel`);
-      toast.success("Order cancelled. Refund (if prepaid) in 4–10 working days.");
+      toast.success("Order cancelled successfully.");
       load();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to cancel order");
@@ -646,139 +612,357 @@ function MyOrders() {
     }
   };
 
-  if (loading) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading orders...</div>;
+  if (loading) return <div className="p-16 text-center text-slate-400 font-medium">Loading your orders...</div>;
+  
   if (orders.length === 0) {
     return (
-      <div className="p-12 text-center">
-        <div className="size-16 rounded-full bg-muted mx-auto grid place-items-center mb-4"><Package className="size-8 text-muted-foreground/50" /></div>
-        <h3 className="font-bold text-lg">No orders yet</h3>
-        <p className="text-sm text-muted-foreground mb-6">Looks like you haven't started your joy journey yet.</p>
-        <Link to="/products" className="bg-primary text-primary-foreground font-bold px-6 py-2.5 rounded-full shadow-card hover:brightness-110">Start Shopping</Link>
+      <div className="p-16 text-center">
+        <div className="w-16 h-16 rounded-full bg-slate-50 mx-auto flex items-center justify-center mb-4 border border-slate-100">
+          <Package className="w-8 h-8 text-slate-300" />
+        </div>
+        <h3 className="font-bold text-lg text-slate-800">No orders placed yet</h3>
+        <p className="text-xs text-slate-400 mt-1 mb-6">Explore our curated collections to start your journey.</p>
+        <Link to="/products" className="inline-block bg-[#E43E3D] text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:opacity-90 transition">
+          Browse Products
+        </Link>
       </div>
     );
   }
 
   const statusBadge = (s: MyOrder["status"], refund_status?: string) => {
     const map: Record<string, string> = {
-      placed: "bg-primary/20 text-primary border-primary/20",
-      processing: "bg-warning/20 text-warning-foreground border-warning/20",
-      shipped: "bg-secondary/20 text-secondary-foreground border-secondary/20",
-      delivered: "bg-discount/20 text-discount border-discount/20",
-      cancelled: "bg-destructive/20 text-destructive border-destructive/20",
-      "return requested": "bg-purple-100 text-purple-700 border-purple-200",
-      "returned": "bg-slate-200 text-slate-700 border-slate-300",
+      placed: "bg-blue-50 text-blue-700 border-blue-100",
+      processing: "bg-amber-50 text-amber-700 border-amber-100",
+      shipped: "bg-purple-50 text-purple-700 border-purple-100",
+      delivered: "bg-emerald-50 text-emerald-700 border-emerald-100",
+      cancelled: "bg-rose-50 text-rose-700 border-rose-100",
+      "return requested": "bg-indigo-50 text-indigo-700 border-indigo-100",
+      "returned": "bg-slate-100 text-slate-700 border-slate-200",
     };
     const key = s.toLowerCase() as keyof typeof map;
     return (
-      <div className="flex flex-col items-end gap-1">
-        <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border tracking-wider uppercase ${map[key] || "bg-muted text-muted-foreground"}`}>{s}</span>
+      <div className="flex flex-col items-end gap-1.5">
+        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border tracking-wide uppercase ${map[key] || "bg-slate-50 text-slate-600"}`}>
+          {s}
+        </span>
         {refund_status && (
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 uppercase">Refund: {refund_status}</span>
+          <span className="text-[9px] font-semibold px-2 py-0.5 rounded bg-slate-50 text-slate-500 border border-slate-100 uppercase">
+            Refund: {refund_status}
+          </span>
         )}
       </div>
     );
   };
 
   return (
-    <div>
+    <div className="divide-y divide-slate-100">
+      <div className="p-6 md:px-8 border-b border-slate-100">
+        <h2 className="text-xl font-bold text-slate-900">My Orders</h2>
+        <p className="text-xs text-slate-500 mt-0.5">Track, manage, or return your purchased items.</p>
+      </div>
+
       {orders.map((o) => {
         const lstatus = o.status.toLowerCase();
         const isCancelled = lstatus === "cancelled";
         const isDelivered = lstatus === "delivered";
-        
-        // 4-day window condition
         const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         const withinFourDays = diffDays <= 4;
         const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned";
 
         return (
-          <div key={o._id} className="border-b border-border last:border-0 hover:bg-muted/10 transition group">
+          <div key={o._id} className="p-6 md:px-8 hover:bg-slate-50/50 transition">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-50 text-xs text-slate-500">
+              <div>
+                <span className="font-bold text-slate-800 block md:inline">Order #{o.order_number}</span>
+                <span className="hidden md:inline mx-2">•</span>
+                <span>Placed on {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {!o.isPaid && lstatus !== "cancelled" && lstatus !== "returned" && (
+                  <button
+                    onClick={() => payOnline(o)}
+                    disabled={payingId === o._id}
+                    className="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition"
+                  >
+                    {payingId === o._id ? "Connecting..." : "Pay Online"}
+                  </button>
+                )}
+                {canRequestReturn && (
+                  <button
+                    onClick={() => requestReturn(o._id)}
+                    disabled={cancellingId === o._id}
+                    className="border border-purple-200 text-purple-700 font-bold px-3 py-1.5 rounded-lg hover:bg-purple-50 transition"
+                  >
+                    Request Return
+                  </button>
+                )}
+                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && (
+                  <button
+                    onClick={() => cancel(o._id)}
+                    disabled={cancellingId === o._id}
+                    className="border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
+                  >
+                    {cancellingId === o._id ? "Wait..." : "Cancel"}
+                  </button>
+                )}
+              </div>
+            </div>
+
             {o.items?.map((it, idx) => (
-              <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 cursor-pointer border-t border-border first:border-0" onClick={() => navigate({ to: "/track", search: { orderId: o.order_number } as any })}>
-                {/* Product Image */}
-                <div className="shrink-0 w-24 h-24 sm:w-28 sm:h-28 bg-muted rounded overflow-hidden">
-                  <img src={it.image || "https://placehold.co/100x100?text=No+Image"} alt={it.name} className="w-full h-full object-cover" />
+              <div key={idx} className="flex items-center gap-4 py-3 cursor-pointer" onClick={() => navigate({ to: "/track", search: { orderId: o.order_number } as any })}>
+                <img src={it.image || "https://placehold.co/100x100?text=Toy"} alt={it.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-sm text-slate-800 truncate">{it.name}</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">Qty: {it.quantity} × ₹{Number(it.price).toLocaleString("en-IN")}</p>
                 </div>
-
-                {/* Details */}
-                <div className="flex-1 min-w-0 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-semibold text-base sm:text-lg truncate group-hover:text-primary transition">{it.name}</h3>
-                    <div className="text-sm text-muted-foreground mt-1 space-x-3">
-                      <span>Qty: {it.quantity}</span>
-                      <span>₹{Number(it.price).toLocaleString("en-IN")}</span>
-                    </div>
-                  </div>
-
-                  {/* Status & Actions Mobile */}
-                  <div className="mt-3 sm:hidden">
-                    {statusBadge(o.status, o.refund_status)}
-                  </div>
-                </div>
-
-                {/* Status & Actions Desktop */}
-                <div className="hidden sm:flex flex-col items-end text-right w-64 shrink-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold">₹{(it.quantity * it.price).toLocaleString("en-IN")}</span>
-                  </div>
+                <div className="shrink-0 text-right">
+                  <span className="font-bold text-sm text-slate-900 block mb-1">₹{(it.quantity * it.price).toLocaleString("en-IN")}</span>
                   {statusBadge(o.status, o.refund_status)}
                 </div>
               </div>
             ))}
-
-            {/* Order Action Bar */}
-            <div className="px-4 sm:px-6 py-3 bg-muted/20 flex flex-wrap items-center justify-between gap-4 text-sm border-t border-border">
-              <div className="flex items-center gap-4 text-muted-foreground">
-                <span className="font-medium">Order #{o.order_number}</span>
-                <span className="hidden sm:inline">Ordered on {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                {!o.isPaid && lstatus !== "cancelled" && lstatus !== "returned" && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); payOnline(o); }}
-                    disabled={payingId === o._id}
-                    className="px-3 py-1 bg-primary text-white rounded font-semibold hover:brightness-110 disabled:opacity-50 text-xs"
-                  >
-                    {payingId === o._id ? "Connecting PayU..." : "Pay Online"}
-                  </button>
-                )}
-
-                {canRequestReturn && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); requestReturn(o._id); }}
-                    disabled={cancellingId === o._id}
-                    className="px-3 py-1 border border-purple-500 text-purple-600 hover:bg-purple-50 rounded font-medium transition text-xs"
-                  >
-                     Request Return
-                  </button>
-                )}
-                {isDelivered && !withinFourDays && lstatus !== "returned" && lstatus !== "return requested" && (
-                  <span className="text-[10px] text-muted-foreground italic px-2 border border-dashed border-muted rounded">Return window closed</span>
-                )}
-
-                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); cancel(o._id); }}
-                    disabled={cancellingId === o._id}
-                    className="px-3 py-1 border border-destructive text-destructive hover:bg-destructive/5 rounded font-medium transition text-xs"
-                  >
-                    {cancellingId === o._id ? "Processing..." : "Cancel"}
-                  </button>
-                )}
-                
-                <Link
-                  to="/track"
-                  search={{ orderId: o.order_number } as any}
-                  className="font-semibold text-primary hover:underline"
-                >
-                  Track Order
-                </Link>
-              </div>
-            </div>
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/* =======================================================================
+   3. Manage Addresses Engine
+   ======================================================================= */
+function AddressesEngine() {
+  const { user, updateProfile } = useAuth();
+  const [busy, setBusy] = useState(false);
+
+  const [addr, setAddr] = useState(user?.address || "");
+  const [city, setCity] = useState(user?.city || "");
+  const [state, setState] = useState(user?.state || "");
+  const [pin, setPin] = useState(user?.pincode || "");
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!updateProfile) return;
+    setBusy(true);
+    const { error } = await updateProfile({ address: addr, city, state, pincode: pin });
+    setBusy(false);
+    if (!error) toast.success("Address information saved successfully!");
+  };
+
+  return (
+    <div className="p-6 md:p-10">
+      <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
+        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
+          <MapPin className="w-6 h-6 stroke-[1.5]" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 leading-tight">Manage Addresses</h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Configure your primary delivery endpoint details.</p>
+        </div>
+      </div>
+
+      <form onSubmit={save} className="max-w-xl space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 block">Street Address / Area</label>
+          <textarea
+            required
+            value={addr}
+            onChange={e => setAddr(e.target.value)}
+            rows={3}
+            placeholder="Flat No, Wing, Apartment name, Landmark..."
+            className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium resize-none"
+          />
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-700 block">City</label>
+            <input
+              required
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              placeholder="City"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-700 block">State</label>
+            <input
+              required
+              value={state}
+              onChange={e => setState(e.target.value)}
+              placeholder="State"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-700 block">Pincode</label>
+            <input
+              required
+              type="number"
+              value={pin}
+              onChange={e => setPin(e.target.value)}
+              placeholder="Pincode"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            />
+          </div>
+        </div>
+
+        <div className="pt-2">
+          <button 
+            disabled={busy} 
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            <span>{busy ? "Saving Address..." : "Save Address"}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* =======================================================================
+   4. Change Password Engine
+   ======================================================================= */
+function PasswordEngine() {
+  const [oldPass, setOldPass] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!oldPass || !newPass) {
+      toast.error("Please enter both current and new passwords");
+      return;
+    }
+    setBusy(true);
+    try {
+      await api.put("/auth/update-password", { currentPassword: oldPass, newPassword: newPass });
+      toast.success("Password successfully updated!");
+      setOldPass("");
+      setNewPass("");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to update password");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="p-6 md:p-10">
+      <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
+        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
+          <Lock className="w-6 h-6 stroke-[1.5]" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 leading-tight">Change Password</h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Secure your identity with a robust passphrase credential.</p>
+        </div>
+      </div>
+
+      <form onSubmit={save} className="max-w-xl space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 block">Current Password</label>
+          <input
+            type="password"
+            required
+            value={oldPass}
+            onChange={e => setOldPass(e.target.value)}
+            placeholder="Current Password"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 block">New Password</label>
+          <input
+            type="password"
+            required
+            value={newPass}
+            onChange={e => setNewPass(e.target.value)}
+            placeholder="New robust password"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+          />
+        </div>
+
+        <div className="pt-2">
+          <button 
+            disabled={busy} 
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            <span>{busy ? "Updating Passphrase..." : "Update Passphrase"}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* =======================================================================
+   5. Notification Settings Engine
+   ======================================================================= */
+function NotificationsEngine() {
+  const [emailNotif, setEmailNotif] = useState(true);
+  const [smsNotif, setSmsNotif] = useState(true);
+
+  const save = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Notification dispatch priorities synchronized.");
+  };
+
+  return (
+    <div className="p-6 md:p-10">
+      <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
+        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
+          <Bell className="w-6 h-6 stroke-[1.5]" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 leading-tight">Notification Settings</h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Control how automated event handoffs alert your channels.</p>
+        </div>
+      </div>
+
+      <form onSubmit={save} className="max-w-xl space-y-6">
+        <div className="space-y-4">
+          <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+            <input 
+              type="checkbox" 
+              checked={emailNotif} 
+              onChange={e => setEmailNotif(e.target.checked)} 
+              className="w-4 h-4 accent-[#802a8f] rounded"
+            />
+            <div>
+              <span className="font-bold text-sm text-slate-800 block">Email Broadcasts</span>
+              <span className="text-xs text-slate-400">Receive order progression details and periodic tailored offers.</span>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+            <input 
+              type="checkbox" 
+              checked={smsNotif} 
+              onChange={e => setSmsNotif(e.target.checked)} 
+              className="w-4 h-4 accent-[#802a8f] rounded"
+            />
+            <div>
+              <span className="font-bold text-sm text-slate-800 block">SMS / WhatsApp Notifications</span>
+              <span className="text-xs text-slate-400">Instant tracking dispatches and delivery fulfillment timestamps.</span>
+            </div>
+          </label>
+        </div>
+
+        <div className="pt-2">
+          <button 
+            type="submit"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition"
+          >
+            <Save className="w-4 h-4" />
+            <span>Save Settings</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

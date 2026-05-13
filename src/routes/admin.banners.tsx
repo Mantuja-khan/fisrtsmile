@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, X, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Image as ImageIcon } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
 
@@ -23,6 +23,7 @@ function AdminBanners() {
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
 
   const { data: allBanners = [] } = useQuery({
     queryKey: ["admin-banners"],
@@ -38,8 +39,16 @@ function AdminBanners() {
     queryKey: ["admin-categories"],
     queryFn: async () => {
       const { data } = await api.get("/categories");
-      return data as { _id: string; name: string }[];
+      return data as { _id: string; name: string; parent?: any; slug: string }[];
     },
+  });
+
+  const sortedCategories = [...categories].sort((a, b) => {
+    const pA = a.parent ? (typeof a.parent === 'object' ? a.parent.name : 'Sub') : '';
+    const pB = b.parent ? (typeof b.parent === 'object' ? b.parent.name : 'Sub') : '';
+    const labelA = pA ? `${pA} > ${a.name}` : a.name;
+    const labelB = pB ? `${pB} > ${b.name}` : b.name;
+    return labelA.localeCompare(labelB);
   });
 
   const invalidate = () => {
@@ -53,15 +62,16 @@ function AdminBanners() {
     
     setUploading(true);
     try {
-       // Compresses browser-side to around 300kb-600kb 
        const base64 = await compressImage(file, 1920, 0.8); 
+       const isTransparent = file.type.includes('png') || file.type.includes('webp') || file.type.includes('gif');
+       const ext = isTransparent ? 'png' : 'jpg';
        
        const { data } = await api.post("/upload", { 
            image: base64, 
-           name: file.name.replace(/\.[^/.]+$/, "") + ".jpg" 
+           name: `${file.name.replace(/\.[^/.]+$/, "")}.${ext}` 
        });
        const relativePath = data.url;
-       setImagePreview(relativePath); // Store relative path
+       setImagePreview(relativePath);
        toast.success("Image uploaded!");
     } catch (error) {
        toast.error("Failed to upload image");
@@ -84,14 +94,27 @@ function AdminBanners() {
     if (!payload.category) return toast.error("Category required");
 
     try {
-      await api.post("/banners", payload);
-      toast.success("Banner added");
+      if (editingBanner) {
+        await api.put(`/banners/${editingBanner._id}`, payload);
+        toast.success("Banner updated");
+      } else {
+        await api.post("/banners", payload);
+        toast.success("Banner added");
+      }
       setShowForm(false);
       setImagePreview("");
+      setEditingBanner(null);
       invalidate();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to save banner");
     }
+  };
+
+  const startEdit = (b: Banner) => {
+    setEditingBanner(b);
+    setImagePreview(b.image);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const remove = async (id: string) => {
@@ -110,7 +133,7 @@ function AdminBanners() {
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-lg">Hero Banners ({banners.length})</h2>
         <button
-          onClick={() => { setShowForm(true); setImagePreview(""); }}
+          onClick={() => { setEditingBanner(null); setShowForm(true); setImagePreview(""); }}
           className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold"
         >
           <Plus className="size-4" /> Add Banner
@@ -119,17 +142,21 @@ function AdminBanners() {
 
       {showForm && (
         <form onSubmit={save} className="bg-surface rounded-xl shadow-card p-4 space-y-3 relative">
-          <button type="button" onClick={() => { setShowForm(false); }} className="absolute top-3 right-3 text-muted-foreground">
+          <button type="button" onClick={() => { setShowForm(false); setEditingBanner(null); }} className="absolute top-3 right-3 text-muted-foreground">
             <X className="size-4" />
           </button>
-          <h3 className="font-semibold text-lg">New Banner</h3>
+          <h3 className="font-semibold text-lg">{editingBanner ? "Edit Banner" : "New Banner"}</h3>
           
           <div className="grid gap-3">
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Link Category</label>
-              <select name="category" required className="w-full px-3 py-2 text-sm border border-input rounded">
-                <option value="">— Select category to open on click —</option>
-                {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Link Category / Subcategory</label>
+              <select name="category" defaultValue={editingBanner?.category?._id || ""} required className="w-full px-3 py-2 text-sm border border-input rounded bg-white">
+                <option value="">— Select category/subcategory to open on click —</option>
+                {sortedCategories.map((c) => {
+                  const parentName = c.parent ? (typeof c.parent === 'object' ? c.parent.name : 'Subcategory') : '';
+                  const label = parentName ? `${parentName} > ${c.name}` : c.name;
+                  return <option key={c._id} value={c._id}>{label}</option>;
+                })}
               </select>
             </div>
 
@@ -159,9 +186,9 @@ function AdminBanners() {
 
           <div className="flex gap-2 pt-2">
             <button disabled={uploading} className="bg-primary text-primary-foreground px-6 py-2.5 rounded font-bold text-sm shadow-sm hover:brightness-110 disabled:opacity-50">
-              Save Banner
+              {editingBanner ? "Update Banner" : "Save Banner"}
             </button>
-            <button type="button" onClick={() => { setShowForm(false); }} className="bg-muted px-4 py-2.5 rounded font-semibold text-sm hover:bg-muted/80">
+            <button type="button" onClick={() => { setShowForm(false); setEditingBanner(null); }} className="bg-muted px-4 py-2.5 rounded font-semibold text-sm hover:bg-muted/80">
               Cancel
             </button>
           </div>
@@ -178,7 +205,10 @@ function AdminBanners() {
               <div className="font-bold text-sm md:text-base line-clamp-1">Link: {b.category?.name || 'Unknown Category'}</div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => remove(b._id)} className="p-2 hover:bg-destructive/10 rounded-full transition">
+              <button onClick={() => startEdit(b)} className="p-2 hover:bg-primary/10 rounded-full transition" title="Edit Banner">
+                <Pencil className="size-4 text-primary" />
+              </button>
+              <button onClick={() => remove(b._id)} className="p-2 hover:bg-destructive/10 rounded-full transition" title="Delete Banner">
                 <Trash2 className="size-4 text-destructive" />
               </button>
             </div>

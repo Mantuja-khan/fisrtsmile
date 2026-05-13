@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Package, MapPin, LogOut, Headphones, Heart } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
@@ -14,7 +14,8 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   const { cartCount } = useShop();
-  const { user, isAdmin, signOut } = useAuth();
+
+  const { user, signOut } = useAuth();
   const { data: categories = [] } = useCategories();
   const { data: products = [] } = useProducts();
 
@@ -29,7 +30,6 @@ export function Header() {
   const ageRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -39,9 +39,7 @@ export function Header() {
       if (brandRef.current && !brandRef.current.contains(target)) setBrandOpen(false);
       if (ageRef.current && !ageRef.current.contains(target)) setAgeOpen(false);
       if (profileRef.current && !profileRef.current.contains(target)) setProfileOpen(false);
-      if (
-        searchRef.current && !searchRef.current.contains(target)
-      ) setSearchOpen(false);
+      if (searchRef.current && !searchRef.current.contains(target)) setSearchOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -116,7 +114,7 @@ export function Header() {
       {/* Top Red Bar */}
       <div className="bg-[#E43E3D] text-white relative z-50">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 md:py-4">
-          
+
           <Link to="/" className="flex items-center shrink-0">
             <img src={logo} alt="First Smile" className="h-8 md:h-12 w-auto object-contain brightness-0 invert" />
           </Link>
@@ -171,7 +169,7 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile search bar (Full width overlay when open) */}
+        {/* Mobile search bar */}
         {searchOpen && (
           <div className="md:hidden px-4 py-3 bg-[#E43E3D] border-t border-white/20 relative z-50">
             <form onSubmit={onSearch} className="w-full flex relative">
@@ -191,15 +189,15 @@ export function Header() {
             </form>
             {q.trim() && (
               <div className="absolute top-full left-4 right-4 mt-0.5 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50 max-h-64 overflow-y-auto border border-border">
-                 {searchResults.length === 0 ? (
+                {searchResults.length === 0 ? (
                   <div className="p-3 text-sm text-muted-foreground">No results found</div>
                 ) : (
                   searchResults.map(p => (
                     <Link key={p.id} to="/product/$id" params={{ id: p.id }} onClick={() => setSearchOpen(false)} className="flex items-center gap-3 p-2 border-b border-border last:border-0">
-                       <img src={resolveImage(p.image)} className="w-10 h-10 object-cover rounded" />
-                       <span className="text-sm font-semibold truncate flex-1">
-                         <HighlightText text={p.name} highlight={q} />
-                       </span>
+                      <img src={resolveImage(p.image)} className="w-10 h-10 object-cover rounded" />
+                      <span className="text-sm font-semibold truncate flex-1">
+                        <HighlightText text={p.name} highlight={q} />
+                      </span>
                     </Link>
                   ))
                 )}
@@ -207,19 +205,19 @@ export function Header() {
             )}
           </div>
         )}
-        
+
         {/* Mobile Menu Content */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-surface text-foreground border-t border-border absolute w-full z-50 shadow-pop">
             <div className="flex flex-col">
-               <Link to="/products" className="p-4 border-b border-border flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                 <Grid3x3 className="size-5 text-primary" /> <span className="font-semibold">All Categories</span>
-               </Link>
-               <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Age</Link>
-               <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Brand</Link>
-               <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#E43E3D]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
-               <Link to="/about" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
-               <Link to="/contact" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
+              <Link to="/products" className="p-4 border-b border-border flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                <Grid3x3 className="size-5 text-primary" /> <span className="font-semibold">All Categories</span>
+              </Link>
+              <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Age</Link>
+              <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Brand</Link>
+              <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#E43E3D]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
+              <Link to="/about" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+              <Link to="/contact" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
             </div>
           </div>
         )}
@@ -228,9 +226,9 @@ export function Header() {
       {/* Bottom White Bar */}
       <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#E43E3D] shadow-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 text-sm font-bold">
-          
-          <div 
-            ref={catRef} 
+
+          <div
+            ref={catRef}
             className="relative border-r border-[#E43E3D]/20 pr-4"
             onMouseEnter={() => {
               setCatOpen(true);
@@ -241,12 +239,13 @@ export function Header() {
                 if (root) setActiveCatId(root.id);
               }
             }}
+            onMouseLeave={() => setCatOpen(false)}
           >
             <button
-              onClick={() => { 
-                setCatOpen((v) => !v); 
-                setAgeOpen(false); 
-                setProfileOpen(false); 
+              onClick={() => {
+                setCatOpen((v) => !v);
+                setAgeOpen(false);
+                setProfileOpen(false);
                 if (!catOpen && categories.length > 0) {
                   const root = categories.find(c => !c.parent_id);
                   if (root) setActiveCatId(root.id);
@@ -257,14 +256,14 @@ export function Header() {
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-0 mt-4 w-[640px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
-                <div className="flex min-h-[360px] max-h-[500px]">
+              <div className="absolute left-0 mt-4 w-[85vw] max-w-4xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
+                <div className="flex min-h-[360px] max-h-[550px]">
                   {categories.length === 0 ? (
                     <div className="text-sm text-muted-foreground p-3 text-center w-full flex items-center justify-center">Loading...</div>
                   ) : (
                     <>
-                      {/* Left Pane: Categories */}
-                      <div className="w-5/12 bg-muted/30 border-r border-border py-2 overflow-y-auto custom-scrollbar flex flex-col">
+                      {/* Left Pane: Main Categories */}
+                      <div className="w-5/12 md:w-4/12 bg-muted/20 border-r border-border py-2 overflow-y-auto custom-scrollbar flex flex-col">
                         {categories.filter(cat => !cat.parent_id).map((parent) => (
                           <Link
                             key={parent.id}
@@ -272,32 +271,38 @@ export function Header() {
                             params={{ slug: parent.slug } as never}
                             onMouseEnter={() => setActiveCatId(parent.id)}
                             onClick={() => setCatOpen(false)}
-                            className={`flex items-center gap-2 px-4 py-3 text-left transition-colors border-l-4 ${activeCatId === parent.id ? 'bg-surface text-primary font-bold border-primary' : 'hover:bg-surface/50 border-transparent text-foreground/80 font-medium'}`}
+                            className={`flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors border-l-4 ${activeCatId === parent.id ? 'bg-surface text-primary font-bold border-primary' : 'hover:bg-surface/60 border-transparent text-foreground/80 font-medium'}`}
                           >
-                            <span className="text-lg">{parent.icon ?? "🎁"}</span>
-                            <span className="text-sm uppercase tracking-wider truncate">{parent.name}</span>
+                            <span className="shrink-0 flex items-center justify-center w-6 h-6 overflow-hidden">
+                              {parent.image ? (
+                                <img src={resolveImage(parent.image)} alt={parent.name} className="w-full h-full object-contain" />
+                              ) : (
+                                <span className="text-base">{parent.icon ?? "🎁"}</span>
+                              )}
+                            </span>
+                            <span className="text-xs md:text-sm uppercase tracking-wider truncate leading-tight">{parent.name}</span>
                           </Link>
                         ))}
                       </div>
 
-                      {/* Right Pane: Subcategories */}
-                      <div className="w-7/12 bg-surface p-4 overflow-y-auto custom-scrollbar">
+                      {/* Right Pane: Subcategories Grid */}
+                      <div className="w-7/12 md:w-8/12 bg-surface p-5 overflow-y-auto custom-scrollbar">
                         {activeCatId ? (
                           <div>
                             <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-2">
-                              <span className="text-sm font-bold uppercase text-muted-foreground tracking-wider">
+                              <span className="text-xs md:text-sm font-bold uppercase text-foreground tracking-wider">
                                 {categories.find(c => c.id === activeCatId)?.name} Subcategories
                               </span>
-                              <Link 
-                                to="/subcategories/$slug" 
-                                params={{ slug: categories.find(c => c.id === activeCatId)?.slug } as never} 
+                              <Link
+                                to="/subcategories/$slug"
+                                params={{ slug: categories.find(c => c.id === activeCatId)?.slug } as never}
                                 onClick={() => setCatOpen(false)}
-                                className="text-xs text-primary hover:underline font-bold"
+                                className="text-xs text-primary hover:underline font-bold shrink-0 ml-2"
                               >
-                                View All →
+                                View Page →
                               </Link>
                             </div>
-                            <div className="grid grid-cols-1 gap-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {categories.filter(cat => cat.parent_id === activeCatId).length > 0 ? (
                                 categories
                                   .filter(cat => cat.parent_id === activeCatId)
@@ -307,21 +312,28 @@ export function Header() {
                                       to="/products"
                                       search={{ category: child.slug } as never}
                                       onClick={() => setCatOpen(false)}
-                                      className="px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2"
+                                      className="p-2 rounded-lg text-xs md:text-sm font-medium text-foreground hover:bg-primary/5 hover:text-primary border border-transparent hover:border-border/50 transition-all flex items-center gap-2.5 truncate"
                                     >
-                                      <span className="opacity-50">↳</span> {child.name}
+                                      <span className="shrink-0 flex items-center justify-center w-6 h-6 overflow-hidden">
+                                        {child.image ? (
+                                          <img src={resolveImage(child.image)} alt={child.name} className="w-full h-full object-contain" />
+                                        ) : (
+                                          <span className="opacity-40 text-muted-foreground text-xs">↳</span>
+                                        )}
+                                      </span>
+                                      <span className="truncate">{child.name}</span>
                                     </Link>
                                   ))
                               ) : (
-                                <div className="py-8 text-center text-muted-foreground text-sm italic">
-                                  No specific sub-categories found
+                                <div className="col-span-2 py-8 text-center text-muted-foreground text-xs md:text-sm italic">
+                                  No specific subcategories listed
                                 </div>
                               )}
                             </div>
                           </div>
                         ) : (
-                          <div className="h-full flex items-center justify-center text-muted-foreground italic text-sm">
-                            Select a category to view subcategories
+                          <div className="h-full flex items-center justify-center text-muted-foreground italic text-xs md:text-sm">
+                            Hover over a category to browse subcategories
                           </div>
                         )}
                       </div>
@@ -331,16 +343,26 @@ export function Header() {
                 <Link
                   to="/products"
                   onClick={() => setCatOpen(false)}
-                  className="block border-t border-border bg-muted/20 p-2.5 text-center text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors"
+                  className="block border-t border-border bg-muted/10 p-2.5 text-center text-xs md:text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors uppercase tracking-wider"
                 >
-                  VIEW ALL PRODUCTS
+                  View All Products
                 </Link>
               </div>
             )}
           </div>
 
           <div className="flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
-            <div ref={brandRef} className="relative">
+            <div
+              ref={brandRef}
+              className="relative pb-2 -mb-2"
+              onMouseEnter={() => {
+                setBrandOpen(true);
+                setAgeOpen(false);
+                setCatOpen(false);
+                setProfileOpen(false);
+              }}
+              onMouseLeave={() => setBrandOpen(false)}
+            >
               <button
                 onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); setProfileOpen(false); }}
                 className="uppercase tracking-wide flex items-center gap-1 font-bold text-[#E43E3D] hover:opacity-80 transition"
@@ -366,7 +388,17 @@ export function Header() {
               )}
             </div>
 
-            <div ref={ageRef} className="relative">
+            <div
+              ref={ageRef}
+              className="relative pb-2 -mb-2"
+              onMouseEnter={() => {
+                setAgeOpen(true);
+                setBrandOpen(false);
+                setCatOpen(false);
+                setProfileOpen(false);
+              }}
+              onMouseLeave={() => setAgeOpen(false)}
+            >
               <button
                 onClick={() => { setAgeOpen((v) => !v); setCatOpen(false); setProfileOpen(false); }}
                 className="uppercase tracking-wide flex items-center gap-1"
@@ -391,7 +423,7 @@ export function Header() {
                 </div>
               )}
             </div>
-            
+
             <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>
             <Link to="/coupons" className="uppercase tracking-wide text-[#E43E3D]">COUPONS</Link>
             <Link to="/account" className="uppercase tracking-wide">MY PROFILE</Link>

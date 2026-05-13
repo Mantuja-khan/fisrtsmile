@@ -38,4 +38,22 @@ router.delete('/:id', protect, admin, async (req, res) => {
     }
 });
 
+router.put('/:id', protect, admin, async (req, res) => {
+    try {
+        const { image, category, position } = req.body;
+        const banner = await Banner.findById(req.params.id);
+        if (banner) {
+            if (image) banner.image = image;
+            if (category) banner.category = category;
+            if (position) banner.position = position;
+            await banner.save();
+            res.json(banner);
+        } else {
+            res.status(404).json({ message: 'Banner not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 export default router;

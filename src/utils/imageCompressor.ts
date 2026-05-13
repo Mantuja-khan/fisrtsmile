@@ -31,11 +31,14 @@ export const compressImage = (file: File, maxWidth = 1200, quality = 0.7): Promi
 
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Export as optimized JPEG
-                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Preserve transparency for png, webp, gif
+                const isTransparent = file.type.includes('png') || file.type.includes('webp') || file.type.includes('gif');
+                const mimeType = isTransparent ? 'image/png' : 'image/jpeg';
+                const dataUrl = canvas.toDataURL(mimeType, quality);
                 resolve(dataUrl);
             };
             img.onerror = (err) => reject(err);
         };
     });
 };
+

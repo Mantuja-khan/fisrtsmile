@@ -34,6 +34,13 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
+import { Route as SubcategoriesSlugRouteImport } from './routes/subcategories.$slug'
+
+const SubcategoriesSlugRoute = SubcategoriesSlugRouteImport.update({
+  id: '/subcategories/$slug',
+  path: '/subcategories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -336,9 +343,10 @@ export interface RootRouteChildren {
   CouponsRoute: typeof CouponsRoute
   PoliciesRoute: typeof PoliciesRouteWithChildren
   ProductsRoute: typeof ProductsRoute
-  TrackRoute: typeof TrackRoute
+  TrackRoute: TrackRoute
   WishlistRoute: typeof WishlistRoute
   ProductIdRoute: typeof ProductIdRoute
+  SubcategoriesSlugRoute: typeof SubcategoriesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -518,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/subcategories/$slug': {
+      id: '/subcategories/$slug'
+      path: '/subcategories/$slug'
+      fullPath: '/subcategories/$slug'
+      preLoaderRoute: typeof SubcategoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -577,6 +592,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrackRoute: TrackRoute,
   WishlistRoute: WishlistRoute,
   ProductIdRoute: ProductIdRoute,
+  SubcategoriesSlugRoute: SubcategoriesSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
