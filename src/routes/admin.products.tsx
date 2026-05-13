@@ -96,8 +96,21 @@ function AdminProducts() {
           };
 
           const mapped = rawRows.map((r: any) => {
-            const catName = String(getVal(r, ['category', 'cat', 'parentcategory', 'maincategory', 'subcategory']) || '').trim();
-            const categoryMatch = categories.find((c: any) => c.name.toLowerCase() === catName.toLowerCase());
+            const subcatName = String(getVal(r, ['subcategory', 'subcat', 'childcategory', 'childcat']) || '').trim();
+            const maincatName = String(getVal(r, ['category', 'cat', 'parentcategory', 'maincategory']) || '').trim();
+            
+            let matchedCat = null;
+            if (subcatName) {
+              matchedCat = categories.find((c: any) => c.name.toLowerCase() === subcatName.toLowerCase());
+            }
+            
+            if (!matchedCat && maincatName) {
+              matchedCat = categories.find((c: any) => c.name.toLowerCase() === maincatName.toLowerCase());
+            }
+
+            const displayCatName = subcatName 
+              ? (maincatName ? `${maincatName} > ${subcatName}` : subcatName)
+              : maincatName;
             
             return {
               name: String(getVal(r, ['name', 'productname', 'item', 'title']) || '').trim(),
@@ -107,8 +120,8 @@ function AdminProducts() {
               image: String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || ''),
               brand: String(getVal(r, ['brand', 'company', 'make']) || ''),
               age_range: String(getVal(r, ['agerange', 'age', 'years']) || ''),
-              category: categoryMatch ? categoryMatch._id : null,
-              categoryName: catName,
+              category: matchedCat ? matchedCat._id : null,
+              categoryName: displayCatName || "None",
               in_stock: true
             };
           }).filter((item: any) => !!item.name);
@@ -700,14 +713,42 @@ function AdminProducts() {
                   {previewRows.map((r, idx) => (
                     <tr key={idx} className="hover:bg-muted/30 transition-colors">
                       <td className="p-2.5 text-foreground font-bold">{r.name}</td>
-                      <td className="p-2.5">
-                        {r.category ? (
-                          <span className="text-success text-[11px] bg-success/10 px-1.5 py-0.5 rounded font-bold">{r.categoryName || "Matched"}</span>
-                        ) : (
-                          <span className="text-amber-600 text-[11px] bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-bold italic">
-                            No match: "{r.categoryName || "General"}"
-                          </span>
-                        )}
+                      <td className="p-2.5 min-w-[220px]">
+                        <div className="space-y-1">
+                          <select
+                            value={r.category || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const updated = [...previewRows];
+                              updated[idx] = { ...updated[idx], category: val || null };
+                              setPreviewRows(updated);
+                            }}
+                            className={`w-full text-[11px] font-bold p-1.5 border rounded-md outline-none cursor-pointer bg-white shadow-sm ${
+                              r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
+                            }`}
+                          >
+                            <option value="">— Uncategorized —</option>
+                            {categories
+                              .filter((c: any) => !c.parent)
+                              .map((parent: any) => (
+                                <optgroup key={parent._id} label={parent.name}>
+                                  <option value={parent._id}>{parent.name} (Main)</option>
+                                  {categories
+                                    .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
+                                    .map((child: any) => (
+                                      <option key={child._id} value={child._id}>↳ {child.name}</option>
+                                    ))
+                                  }
+                                </optgroup>
+                              ))
+                            }
+                          </select>
+                          {r.categoryName && r.categoryName !== "None" && (
+                            <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
+                              Found: "{r.categoryName}"
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="p-2.5 text-muted-foreground">{r.brand || "—"}</td>
                       <td className="p-2.5 text-right font-bold">₹{r.price.toLocaleString()}</td>
