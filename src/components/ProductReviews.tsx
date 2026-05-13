@@ -82,6 +82,7 @@ export function ProductReviews({ productId }: { productId: string }) {
   const counts = [0, 0, 0, 0, 0];
   reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) counts[5 - Math.floor(r.rating)]++; });
   const maxCount = Math.max(...counts) || 1;
+  const avg = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
 
   const [showForm, setShowForm] = useState(false);
 
