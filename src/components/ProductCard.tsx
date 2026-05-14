@@ -56,9 +56,9 @@ export function ProductCard({ product }: { product: Product }) {
           toggleWishlist(product.id);
           toast(wished ? "Removed from wishlist" : "Added to wishlist ❤️");
         }}
-        className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 p-1 text-gray-400 hover:text-[#1D4ED8] transition-colors hover:scale-110"
+        className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 p-1 text-gray-400 hover:text-[#DC2626] transition-colors hover:scale-110"
       >
-        <Heart className={`size-4 sm:size-5 ${wished ? "fill-[#1D4ED8] text-[#1D4ED8]" : ""}`} />
+        <Heart className={`size-4 sm:size-5 ${wished ? "fill-[#DC2626] text-[#DC2626]" : ""}`} />
       </button>
 
       {/* Image Container - Optimized square aspect */}

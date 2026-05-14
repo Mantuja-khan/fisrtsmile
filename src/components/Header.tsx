@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones, Heart } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
@@ -122,7 +122,7 @@ export function Header() {
           </Link>
 
           {/* Center Search */}
-          <div className="flex-1 max-w-[48rem] hidden md:flex items-center relative ml-6">
+          <div className="flex-1 max-w-[40rem] hidden md:flex items-center relative ml-6">
             <div ref={searchRef} className="flex-1 relative">
               <form onSubmit={onSearch} className="w-full flex">
                 <input
@@ -142,10 +142,14 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-6 ml-auto">
-            {/* About & Contact Links */}
+            {/* About, Contact & Wishlist Links */}
             <div className="hidden md:flex items-center gap-4 border-r border-white/20 pr-5 shrink-0">
               <Link to="/about" className="font-bold text-sm text-white hover:text-[#FFC107] transition-colors">About</Link>
               <Link to="/contact" className="font-bold text-sm text-white hover:text-[#FFC107] transition-colors">Contact</Link>
+              <Link to="/wishlist" className="font-bold text-sm text-white hover:text-[#FFC107] transition-colors flex items-center gap-1">
+                <Heart className="size-4 fill-[#FFC107] text-[#FFC107]" />
+                Wishlist
+              </Link>
             </div>
 
             {/* Cart */}
