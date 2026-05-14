@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/policies/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — ToyKart" }] }),
+  head: () => ({ meta: [{ title: "Privacy Policy — First Smile" }] }),
   component: () => (
     <>
       <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/policies/privacy")({
       <p className="text-sm">We use cookies to keep your cart, wishlist, and login session. You can disable cookies in your browser at any time.</p>
 
       <h2 className="font-bold text-lg mt-5 mb-2">Your rights</h2>
-      <p className="text-sm">Email firstsmile19@gmail.com to access, update, or delete your data.</p>
+      <p className="text-sm">Email support@toyhaat.com to access, update, or delete your data.</p>
     </>
   ),
 });

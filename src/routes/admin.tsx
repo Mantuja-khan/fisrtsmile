@@ -139,7 +139,7 @@ function AdminLayout() {
         <div className="p-4 border-t border-slate-50 mt-auto">
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs text-[#E43E3D] hover:bg-red-50/50 transition-all tracking-wide cursor-pointer"
+            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs text-[#1D4ED8] hover:bg-blue-50 transition-all tracking-wide cursor-pointer"
           >
             <LogOut className="size-4 stroke-[2.5] shrink-0" />
             <span>Logout</span>
@@ -165,14 +165,14 @@ function AdminLayout() {
             {/* Bell notification badge matching reference UI */}
             <div className="relative cursor-pointer hover:opacity-80 p-1">
               <Bell className="size-4 text-slate-600" />
-              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#E43E3D] text-white rounded-full flex items-center justify-center text-[8px] font-black shadow-xs">
+              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#1D4ED8] text-white rounded-full flex items-center justify-center text-[8px] font-black shadow-xs">
                 3
               </span>
             </div>
 
             {/* Admin Avatar Profile block */}
             <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
-              <div className="w-8 h-8 rounded-full bg-[#E43E3D] text-white font-black text-xs flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-[#1D4ED8] text-white font-black text-xs flex items-center justify-center shadow-xs">
                 {user?.email?.[0]?.toUpperCase() || "A"}
               </div>
               <div className="hidden sm:flex items-center gap-1.5 cursor-pointer">

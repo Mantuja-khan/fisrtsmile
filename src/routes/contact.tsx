@@ -4,8 +4,8 @@ import { Mail, MessageCircle, Instagram, Phone, Clock } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact & Support — ToyKart" },
-      { name: "description", content: "Reach ToyKart support via email, WhatsApp or Instagram. Response within 24 hours." },
+      { title: "Contact & Support — First Smile" },
+      { name: "description", content: "Reach First Smile support via email, WhatsApp or Instagram. Response within 24 hours." },
     ],
   }),
   component: ContactPage,
@@ -19,9 +19,9 @@ function ContactPage() {
 
       <div className="grid md:grid-cols-2 gap-4 mt-6">
         {[
-          { icon: Mail, title: "Email", value: "firstsmile19@gmail.com", href: "mailto:firstsmile19@gmail.com", note: "Best for order issues" },
+          { icon: Mail, title: "Email", value: "support@toyhaat.com", href: "mailto:support@toyhaat.com", note: "Best for order issues" },
           { icon: MessageCircle, title: "WhatsApp", value: "Messages only · 10 AM – 7 PM", note: "General queries" },
-          { icon: Instagram, title: "Instagram", value: "@toykart", note: "DM us anytime" },
+          { icon: Instagram, title: "Instagram", value: "@toyhaat", note: "DM us anytime" },
           { icon: Phone, title: "Call", value: "Falls back to WhatsApp", note: "Please message us instead" },
         ].map((c) => (
           <div key={c.title} className="bg-surface rounded-xl shadow-card p-5 flex gap-4">

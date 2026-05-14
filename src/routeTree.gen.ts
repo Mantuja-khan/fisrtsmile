@@ -13,6 +13,8 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PoliciesRouteImport } from './routes/policies'
+import { Route as PaymentSuccessRouteImport } from './routes/payment-success'
+import { Route as PaymentFailedRouteImport } from './routes/payment-failed'
 import { Route as CouponsRouteImport } from './routes/coupons'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -22,6 +24,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SubcategoriesSlugRouteImport } from './routes/subcategories.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PoliciesTermsRouteImport } from './routes/policies.terms'
 import { Route as PoliciesShippingRouteImport } from './routes/policies.shipping'
@@ -30,17 +33,11 @@ import { Route as PoliciesPrivacyRouteImport } from './routes/policies.privacy'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminPromoRouteImport } from './routes/admin.promo'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminPasswordRouteImport } from './routes/admin.password'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
-import { Route as SubcategoriesSlugRouteImport } from './routes/subcategories.$slug'
-
-const SubcategoriesSlugRoute = SubcategoriesSlugRouteImport.update({
-  id: '/subcategories/$slug',
-  path: '/subcategories/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -60,6 +57,16 @@ const ProductsRoute = ProductsRouteImport.update({
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment-success',
+  path: '/payment-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentFailedRoute = PaymentFailedRouteImport.update({
+  id: '/payment-failed',
+  path: '/payment-failed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CouponsRoute = CouponsRouteImport.update({
@@ -107,6 +114,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const SubcategoriesSlugRoute = SubcategoriesSlugRouteImport.update({
+  id: '/subcategories/$slug',
+  path: '/subcategories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -147,6 +159,11 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPasswordRoute = AdminPasswordRouteImport.update({
+  id: '/password',
+  path: '/password',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -177,6 +194,8 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/payment-failed': typeof PaymentFailedRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
   '/products': typeof ProductsRoute
   '/track': typeof TrackRoute
@@ -185,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/password': typeof AdminPasswordRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
@@ -193,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/policies/shipping': typeof PoliciesShippingRoute
   '/policies/terms': typeof PoliciesTermsRoute
   '/product/$id': typeof ProductIdRoute
+  '/subcategories/$slug': typeof SubcategoriesSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -203,6 +224,8 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/payment-failed': typeof PaymentFailedRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
   '/products': typeof ProductsRoute
   '/track': typeof TrackRoute
@@ -211,6 +234,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/password': typeof AdminPasswordRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
@@ -219,6 +243,7 @@ export interface FileRoutesByTo {
   '/policies/shipping': typeof PoliciesShippingRoute
   '/policies/terms': typeof PoliciesTermsRoute
   '/product/$id': typeof ProductIdRoute
+  '/subcategories/$slug': typeof SubcategoriesSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -231,6 +256,8 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/payment-failed': typeof PaymentFailedRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
   '/products': typeof ProductsRoute
   '/track': typeof TrackRoute
@@ -239,6 +266,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/password': typeof AdminPasswordRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
@@ -247,6 +275,7 @@ export interface FileRoutesById {
   '/policies/shipping': typeof PoliciesShippingRoute
   '/policies/terms': typeof PoliciesTermsRoute
   '/product/$id': typeof ProductIdRoute
+  '/subcategories/$slug': typeof SubcategoriesSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -260,6 +289,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/payment-failed'
+    | '/payment-success'
     | '/policies'
     | '/products'
     | '/track'
@@ -268,6 +299,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/password'
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
@@ -276,6 +308,7 @@ export interface FileRouteTypes {
     | '/policies/shipping'
     | '/policies/terms'
     | '/product/$id'
+    | '/subcategories/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -286,6 +319,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/payment-failed'
+    | '/payment-success'
     | '/policies'
     | '/products'
     | '/track'
@@ -294,6 +329,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/password'
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
@@ -302,6 +338,7 @@ export interface FileRouteTypes {
     | '/policies/shipping'
     | '/policies/terms'
     | '/product/$id'
+    | '/subcategories/$slug'
     | '/admin'
   id:
     | '__root__'
@@ -313,6 +350,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/payment-failed'
+    | '/payment-success'
     | '/policies'
     | '/products'
     | '/track'
@@ -321,6 +360,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/password'
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
@@ -329,6 +369,7 @@ export interface FileRouteTypes {
     | '/policies/shipping'
     | '/policies/terms'
     | '/product/$id'
+    | '/subcategories/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -341,9 +382,11 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   CouponsRoute: typeof CouponsRoute
+  PaymentFailedRoute: typeof PaymentFailedRoute
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
   PoliciesRoute: typeof PoliciesRouteWithChildren
   ProductsRoute: typeof ProductsRoute
-  TrackRoute: TrackRoute
+  TrackRoute: typeof TrackRoute
   WishlistRoute: typeof WishlistRoute
   ProductIdRoute: typeof ProductIdRoute
   SubcategoriesSlugRoute: typeof SubcategoriesSlugRoute
@@ -377,6 +420,20 @@ declare module '@tanstack/react-router' {
       path: '/policies'
       fullPath: '/policies'
       preLoaderRoute: typeof PoliciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-success': {
+      id: '/payment-success'
+      path: '/payment-success'
+      fullPath: '/payment-success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-failed': {
+      id: '/payment-failed'
+      path: '/payment-failed'
+      fullPath: '/payment-failed'
+      preLoaderRoute: typeof PaymentFailedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coupons': {
@@ -442,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/subcategories/$slug': {
+      id: '/subcategories/$slug'
+      path: '/subcategories/$slug'
+      fullPath: '/subcategories/$slug'
+      preLoaderRoute: typeof SubcategoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -498,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/password': {
+      id: '/admin/password'
+      path: '/password'
+      fullPath: '/admin/password'
+      preLoaderRoute: typeof AdminPasswordRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
@@ -526,13 +597,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/subcategories/$slug': {
-      id: '/subcategories/$slug'
-      path: '/subcategories/$slug'
-      fullPath: '/subcategories/$slug'
-      preLoaderRoute: typeof SubcategoriesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -541,6 +605,7 @@ interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPasswordRoute: typeof AdminPasswordRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminPromoRoute: typeof AdminPromoRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -552,6 +617,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminPasswordRoute: AdminPasswordRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminPromoRoute: AdminPromoRoute,
   AdminUsersRoute: AdminUsersRoute,
@@ -587,6 +653,8 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   CouponsRoute: CouponsRoute,
+  PaymentFailedRoute: PaymentFailedRoute,
+  PaymentSuccessRoute: PaymentSuccessRoute,
   PoliciesRoute: PoliciesRouteWithChildren,
   ProductsRoute: ProductsRoute,
   TrackRoute: TrackRoute,

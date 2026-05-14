@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { XCircle } from "lucide-react";
 
-export const Route = createFileRoute("/payment-failed" as never)({
+export const Route = createFileRoute("/payment-failed")({
   component: PaymentFailed,
 });
 

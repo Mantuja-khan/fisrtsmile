@@ -46,7 +46,6 @@ function CouponsPage() {
     const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
     saved.push({ code, discount: 5, active: true, phone: claimPhone });
     localStorage.setItem("firstsmile_coupons", JSON.stringify(saved));
-    localStorage.setItem("firstsmile_coupons", JSON.stringify(saved));
 
     setIsOfferClaimed(true);
     loadCoupons();

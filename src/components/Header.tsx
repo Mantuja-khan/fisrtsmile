@@ -25,6 +25,8 @@ export function Header() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCatId, setActiveCatId] = useState<string | null>(null);
+  const [mobileAgeOpen, setMobileAgeOpen] = useState(false);
+  const [mobileBrandOpen, setMobileBrandOpen] = useState(false);
   const catRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLDivElement>(null);
@@ -111,8 +113,8 @@ export function Header() {
 
   return (
     <header className="flex flex-col w-full">
-      {/* Top Red Bar */}
-      <div className="bg-[#E43E3D] text-white relative z-50">
+      {/* Top Royal Blue Bar */}
+      <div className="bg-[#1D4ED8] text-white relative z-50">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 md:py-4">
 
           <Link to="/" className="flex items-center shrink-0">
@@ -120,26 +122,45 @@ export function Header() {
           </Link>
 
           {/* Center Search */}
-          <div ref={searchRef} className="flex-1 max-w-2xl hidden md:flex relative">
-            <form onSubmit={onSearch} className="w-full flex">
-              <input
-                value={q}
-                onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }}
-                onFocus={() => setSearchOpen(true)}
-                placeholder="Search the store"
-                className="w-full px-5 py-2.5 text-sm text-black bg-white rounded-l-full outline-none"
-              />
-              <button type="submit" className="px-6 bg-[#FFC107] text-[#E43E3D] rounded-r-full flex items-center justify-center">
-                <Search className="size-5 font-bold" />
-              </button>
-            </form>
-            {renderResults()}
+          <div className="flex-1 max-w-[48rem] hidden md:flex items-center relative ml-6">
+            <div ref={searchRef} className="flex-1 relative">
+              <form onSubmit={onSearch} className="w-full flex">
+                <input
+                  value={q}
+                  onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }}
+                  onFocus={() => setSearchOpen(true)}
+                  placeholder="Search the store"
+                  className="w-full px-5 py-2.5 text-sm text-black bg-white rounded-l-full outline-none"
+                />
+                <button type="submit" className="px-6 bg-[#FFC107] text-[#1D4ED8] rounded-r-full flex items-center justify-center">
+                  <Search className="size-5 font-bold" />
+                </button>
+              </form>
+              {renderResults()}
+            </div>
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-6 ml-auto">
+            {/* About & Contact Links */}
+            <div className="hidden md:flex items-center gap-4 border-r border-white/20 pr-5 shrink-0">
+              <Link to="/about" className="font-bold text-sm text-white hover:text-[#FFC107] transition-colors">About</Link>
+              <Link to="/contact" className="font-bold text-sm text-white hover:text-[#FFC107] transition-colors">Contact</Link>
+            </div>
+
+            {/* Cart */}
+            <Link to="/cart" className="relative flex flex-col items-center justify-center gap-1 shrink-0">
+              <div className="relative">
+                <ShoppingCart className="size-7" />
+                <span className="absolute -top-1.5 -right-2 bg-white text-[#1D4ED8] text-[11px] font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center border border-[#1D4ED8]">
+                  {cartCount}
+                </span>
+              </div>
+              <span className="text-[11px] font-semibold hidden md:block opacity-0 h-0">Cart</span>
+            </Link>
+
             {/* User Login/Account */}
-            <div className="relative hidden md:block">
+            <div className="relative hidden md:block shrink-0">
               <Link to="/account" className="flex flex-col items-center justify-center gap-1">
                 <User className="size-6" />
                 <span className="text-[11px] font-semibold">{user ? name : "Sign In"}</span>
@@ -151,17 +172,6 @@ export function Header() {
               <Search className="size-6" />
             </button>
 
-            {/* Cart */}
-            <Link to="/cart" className="relative flex flex-col items-center justify-center gap-1">
-              <div className="relative">
-                <ShoppingCart className="size-7" />
-                <span className="absolute -top-1.5 -right-2 bg-white text-[#E43E3D] text-[11px] font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center border border-[#E43E3D]">
-                  {cartCount}
-                </span>
-              </div>
-              <span className="text-[11px] font-semibold hidden md:block opacity-0">Cart</span>
-            </Link>
-
             {/* Mobile Menu Toggle */}
             <button className="md:hidden p-2 text-white" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <Menu className="size-6" />
@@ -171,7 +181,7 @@ export function Header() {
 
         {/* Mobile search bar */}
         {searchOpen && (
-          <div className="md:hidden px-4 py-3 bg-[#E43E3D] border-t border-white/20 relative z-50">
+          <div className="md:hidden px-4 py-3 bg-[#1D4ED8] border-t border-white/20 relative z-50">
             <form onSubmit={onSearch} className="w-full flex relative">
               <input
                 value={q}
@@ -180,7 +190,7 @@ export function Header() {
                 autoFocus
                 className="w-full px-4 py-2.5 text-sm text-black bg-white rounded-full outline-none"
               />
-              <button type="submit" className="absolute right-12 top-1 bottom-1 px-3 text-[#E43E3D] flex items-center justify-center">
+              <button type="submit" className="absolute right-12 top-1 bottom-1 px-3 text-[#1D4ED8] flex items-center justify-center">
                 <Search className="size-5" />
               </button>
               <button type="button" onClick={() => setSearchOpen(false)} className="absolute right-2 top-1 bottom-1 px-3 text-muted-foreground flex items-center justify-center font-bold">
@@ -208,14 +218,65 @@ export function Header() {
 
         {/* Mobile Menu Content */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-surface text-foreground border-t border-border absolute w-full z-50 shadow-pop">
+          <div className="md:hidden bg-surface text-foreground border-t border-border absolute w-full z-50 shadow-pop max-h-[80vh] overflow-y-auto">
             <div className="flex flex-col">
               <Link to="/products" className="p-4 border-b border-border flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <Grid3x3 className="size-5 text-primary" /> <span className="font-semibold">All Categories</span>
               </Link>
-              <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Age</Link>
-              <Link to="/products" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Shop by Brand</Link>
-              <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#E43E3D]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
+
+              {/* Shop by Age collapsible */}
+              <div className="border-b border-border flex flex-col">
+                <button 
+                  onClick={() => setMobileAgeOpen(!mobileAgeOpen)}
+                  className="w-full p-4 flex items-center justify-between font-semibold text-left"
+                >
+                  <span>Shop by Age</span>
+                  <ChevronDown className={`size-4 text-muted-foreground transition-transform ${mobileAgeOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileAgeOpen && (
+                  <div className="bg-slate-50/60 border-t border-border/50 flex flex-col pl-8 pr-4 py-2 gap-2.5">
+                    {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map(age => (
+                      <Link 
+                        key={age}
+                        to="/products" 
+                        search={{ age } as never}
+                        className="py-1 text-sm text-slate-600 hover:text-primary transition-colors font-medium"
+                        onClick={() => { setMobileMenuOpen(false); setMobileAgeOpen(false); }}
+                      >
+                        {age}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Shop by Brand collapsible */}
+              <div className="border-b border-border flex flex-col">
+                <button 
+                  onClick={() => setMobileBrandOpen(!mobileBrandOpen)}
+                  className="w-full p-4 flex items-center justify-between font-semibold text-left"
+                >
+                  <span>Shop by Brand</span>
+                  <ChevronDown className={`size-4 text-muted-foreground transition-transform ${mobileBrandOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileBrandOpen && (
+                  <div className="bg-slate-50/60 border-t border-border/50 grid grid-cols-2 pl-8 pr-4 py-3 gap-x-4 gap-y-2.5">
+                    {BRANDS.map(brand => (
+                      <Link 
+                        key={brand}
+                        to="/products" 
+                        search={{ brand } as never}
+                        className="py-1 text-sm text-slate-600 hover:text-primary transition-colors font-medium truncate"
+                        onClick={() => { setMobileMenuOpen(false); setMobileBrandOpen(false); }}
+                      >
+                        {brand}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Link to="/coupons" className="p-4 border-b border-border font-semibold text-[#1D4ED8]" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
               <Link to="/about" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
               <Link to="/contact" className="p-4 border-b border-border font-semibold" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
             </div>
@@ -224,12 +285,12 @@ export function Header() {
       </div>
 
       {/* Bottom White Bar */}
-      <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#E43E3D] shadow-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3 text-sm font-bold">
+      <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#1D4ED8] shadow-sm">
+        <div className="container mx-auto flex items-center justify-center gap-6 xl:gap-8 px-4 py-3 text-sm font-bold">
 
           <div
             ref={catRef}
-            className="relative border-r border-[#E43E3D]/20 pr-4"
+            className="relative pb-2 -mb-2"
             onMouseEnter={() => {
               setCatOpen(true);
               setAgeOpen(false);
@@ -251,7 +312,7 @@ export function Header() {
                   if (root) setActiveCatId(root.id);
                 }
               }}
-              className="flex items-center gap-2 uppercase"
+              className="flex items-center gap-2 uppercase tracking-wide font-bold text-[#1D4ED8] hover:opacity-80 transition"
             >
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
@@ -294,7 +355,7 @@ export function Header() {
                                     to="/products"
                                     search={{ category: child.slug } as never}
                                     onClick={() => setCatOpen(false)}
-                                    className="text-xs font-semibold text-muted-foreground hover:text-[#E43E3D] hover:translate-x-1 transition-all flex items-center gap-2 leading-snug group/item"
+                                    className="text-xs font-semibold text-muted-foreground hover:text-[#1D4ED8] hover:translate-x-1 transition-all flex items-center gap-2 leading-snug group/item"
                                   >
                                     <span className="opacity-50 text-[9px] shrink-0 group-hover/item:opacity-100">•</span>
                                     <span className="truncate">{child.name}</span>
@@ -328,7 +389,6 @@ export function Header() {
             )}
           </div>
 
-          <div className="flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
             <div
               ref={brandRef}
               className="relative pb-2 -mb-2"
@@ -342,7 +402,7 @@ export function Header() {
             >
               <button
                 onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); setProfileOpen(false); }}
-                className="uppercase tracking-wide flex items-center gap-1 font-bold text-[#E43E3D] hover:opacity-80 transition"
+                className="uppercase tracking-wide flex items-center gap-1 font-bold text-[#1D4ED8] hover:opacity-80 transition"
               >
                 BRANDS <ChevronDown className={`size-4 transition ${brandOpen ? "rotate-180" : ""}`} />
               </button>
@@ -402,21 +462,9 @@ export function Header() {
             </div>
 
             <Link to="/products" search={{ sale: true } as never} className="uppercase tracking-wide font-extrabold text-emerald-600">SALE</Link>
-            <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>
-            <Link to="/coupons" className="uppercase tracking-wide text-[#E43E3D]">COUPONS</Link>
-            <Link to="/account" className="uppercase tracking-wide">MY PROFILE</Link>
-          </div>
+            {user && <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>}
+            <Link to="/coupons" className="uppercase tracking-wide text-[#1D4ED8]">COUPONS</Link>
 
-          <div className="flex items-center gap-4 border-l border-[#E43E3D]/20 pl-4">
-            <Link to="/about" className="capitalize font-semibold text-sm">
-              About Us
-            </Link>
-            <div className="border-l border-[#E43E3D]/20 h-5"></div>
-            <Link to="/contact" className="flex items-center gap-1.5">
-              <Headphones className="size-5" />
-              <span className="capitalize font-semibold text-sm">Contact Us</span>
-            </Link>
-          </div>
 
         </div>
       </div>

@@ -10,7 +10,7 @@ import { effectivePrice, resolveImage } from "@/data/products";
 import { redirectToPayU } from "@/utils/payu";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — ToyKart" }] }),
+  head: () => ({ meta: [{ title: "Checkout — First Smile" }] }),
   component: CheckoutPage,
 });
 

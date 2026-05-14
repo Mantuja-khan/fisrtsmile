@@ -13,6 +13,7 @@ import bannerRoutes from './routes/bannerRoutes.js';
 import path from 'path';
 
 // Load env vars
+
 dotenv.config();
 
 // Connect DB
@@ -21,21 +22,32 @@ connectDB();
 const app = express();
 
 // Body parser
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 
 // Global Preflight & CORS Override Layer
+const allowedOrigins = [
+    'https://toyhaat.com',
+    'https://www.toyhaat.com',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000'
+];
+
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (origin) {
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else if (origin && origin.includes('toyhaat.com')) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     } else {
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        // Fallback to a default explicit origin if origin is not set or unknown
+        res.setHeader('Access-Control-Allow-Origin', 'https://toyhaat.com');
     }
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    
+
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -45,7 +57,11 @@ app.use((req, res, next) => {
 // Dynamic CORS Configuration fallback
 const corsOptions = {
     origin: function (origin, callback) {
-        callback(null, true);
+        if (!origin || allowedOrigins.includes(origin) || origin.includes('toyhaat.com')) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

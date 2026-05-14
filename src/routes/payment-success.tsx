@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle } from "lucide-react";
 
-export const Route = createFileRoute("/payment-success" as never)({
+export const Route = createFileRoute("/payment-success")({
   component: PaymentSuccess,
 });
 

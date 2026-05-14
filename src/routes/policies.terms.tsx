@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/policies/terms")({
-  head: () => ({ meta: [{ title: "Terms & Conditions — ToyKart" }] }),
+  head: () => ({ meta: [{ title: "Terms & Conditions — First Smile" }] }),
   component: () => (
     <>
       <h1 className="text-2xl font-bold mb-4">Terms & Conditions</h1>

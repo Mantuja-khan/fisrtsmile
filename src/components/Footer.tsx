@@ -40,9 +40,9 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-3 text-secondary">Reach Us</h4>
           <ul className="space-y-2 text-sm opacity-80">
-            <li className="flex items-center gap-2"><Mail className="size-4" /> firstsmile19@gmail.com</li>
+            <li className="flex items-center gap-2"><Mail className="size-4" /> support@toyhaat.com</li>
             <li className="flex items-center gap-2"><MessageCircle className="size-4" /> WhatsApp (10 AM – 7 PM)</li>
-            <li className="flex items-center gap-2"><Instagram className="size-4" /> @toykart</li>
+            <li className="flex items-center gap-2"><Instagram className="size-4" /> @toyhaat</li>
             <li className="flex items-center gap-2"><Phone className="size-4" /> Calls fall back to WhatsApp</li>
           </ul>
         </div>

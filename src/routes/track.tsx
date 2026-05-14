@@ -19,7 +19,7 @@ type OrderRow = {
 export const Route = createFileRoute("/track")({
   validateSearch: (s: Record<string, unknown>): { orderId?: string } =>
     typeof s.orderId === "string" ? { orderId: s.orderId } : {},
-  head: () => ({ meta: [{ title: "Track Order — ToyKart" }] }),
+  head: () => ({ meta: [{ title: "Track Order — First Smile" }] }),
   component: TrackPage,
 });
 
@@ -190,8 +190,8 @@ function TrackPage() {
           )}
 
           <p className="mt-4 text-xs text-muted-foreground border-t border-border pt-3">
-            You'll receive WhatsApp & email updates at every stage. Need help? Email{" "}
-            <a className="text-primary font-semibold" href="mailto:firstsmile19@gmail.com">firstsmile19@gmail.com</a>.
+            Need help? Email{" "}
+            <a className="text-primary font-semibold" href="mailto:support@toyhaat.com">support@toyhaat.com</a>.
           </p>
         </div>
       )}

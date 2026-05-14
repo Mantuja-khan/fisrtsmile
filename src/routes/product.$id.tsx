@@ -6,12 +6,12 @@ import { discountPct, effectivePrice, type Product, resolveImage } from "@/data/
 import { ProductCard } from "@/components/ProductCard";
 import { ProductReviews } from "@/components/ProductReviews";
 import { useShop } from "@/store/shop";
-import { Heart, ShoppingCart, Zap, Truck, RotateCcw, ShieldCheck, Star } from "lucide-react";
+import { Heart, ShoppingCart, Zap, Truck, RotateCcw, ShieldCheck, Star, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$id")({
   head: () => ({
-    meta: [{ title: "Product — ToyKart" }],
+    meta: [{ title: "Product — First Smile" }],
   }),
   component: ProductPage,
 });
@@ -24,6 +24,7 @@ function ProductPage() {
   const navigate = useNavigate();
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
+  const [isEnlarged, setIsEnlarged] = useState(false);
 
   if (isLoading) {
     return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">Loading product...</div>;
@@ -61,7 +62,10 @@ function ProductPage() {
             </div>
             {/* Main image — top on mobile, right on desktop */}
             <div className="flex-1 order-1 md:order-2">
-              <div className="aspect-square rounded-xl overflow-hidden bg-muted group">
+              <div 
+                className="aspect-square rounded-xl overflow-hidden bg-muted group cursor-zoom-in"
+                onClick={() => setIsEnlarged(true)}
+              >
                 <img
                   src={resolveImage(product.images[activeImg])}
                   alt={product.name}
@@ -115,11 +119,11 @@ function ProductPage() {
             <span className="text-3xl font-bold">₹{finalPrice.toLocaleString("en-IN")}</span>
             <span className="text-base text-muted-foreground line-through">₹{product.mrp.toLocaleString("en-IN")}</span>
             <span className="text-sm font-semibold text-discount">{off}% off</span>
-            {product.offerPct > 0 && (
-              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-destructive text-destructive-foreground flex items-center gap-1">
-                <Zap className="size-3 fill-current" /> Flash Offer {product.offerPct}%
+            {product.badge && String(product.badge).split(",").filter(Boolean).map((b) => (
+              <span key={b} className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-amber-100 text-amber-800 flex items-center gap-1 border border-amber-200 shadow-xs">
+                <Sparkles className="size-3 fill-current text-amber-500 animate-pulse" /> {b.trim()}
               </span>
-            )}
+            ))}
           </div>
 
           {/* Dynamic Expiry Timer if product is NOT already expired */}
@@ -156,7 +160,18 @@ function ProductPage() {
                </div>
             </div>
           )}
-          <div className="mt-2 text-xs text-muted-foreground">Recommended age: {product.ageRange}</div>
+          {product.ageRange && (
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Recommended Age Range</span>
+              <div className="flex flex-wrap gap-2">
+                {String(product.ageRange).split(",").filter(Boolean).map((age) => (
+                  <span key={age} className="text-xs font-bold bg-indigo-50 text-[#1D4ED8] px-3 py-1 rounded-full border border-indigo-100 shadow-xs uppercase tracking-wide">
+                    {age.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="mt-4 flex items-center gap-3">
             <span className="text-sm font-semibold">Quantity</span>
@@ -217,6 +232,42 @@ function ProductPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {related.map((p: Product) => <ProductCard key={p.id} product={p} />)}
             </div>
+          </div>
+        </div>
+      )}
+      {isEnlarged && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-[10000] flex items-center justify-center select-none" onClick={() => setIsEnlarged(false)}>
+          <button 
+            onClick={() => setIsEnlarged(false)} 
+            className="absolute top-4 right-4 text-white/80 hover:text-white p-2 bg-white/10 rounded-full transition hover:bg-white/20 z-50"
+          >
+            <X className="size-8" />
+          </button>
+          
+          {product.images.length > 1 && (
+            <>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setActiveImg((activeImg - 1 + product.images.length) % product.images.length); }}
+                className="absolute left-4 text-white/80 hover:text-white p-3 bg-white/10 rounded-full transition hover:bg-white/20 md:left-8 z-50"
+              >
+                <ChevronLeft className="size-8" />
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setActiveImg((activeImg + 1) % product.images.length); }}
+                className="absolute right-4 text-white/80 hover:text-white p-3 bg-white/10 rounded-full transition hover:bg-white/20 md:right-8 z-50"
+              >
+                <ChevronRight className="size-8" />
+              </button>
+            </>
+          )}
+
+          <div className="w-full h-full flex items-center justify-center p-6 md:p-12">
+            <img 
+              src={resolveImage(product.images[activeImg])} 
+              alt={product.name} 
+              className="max-w-full max-h-[90vh] object-contain cursor-zoom-out animate-in zoom-in-95 duration-300"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>
       )}

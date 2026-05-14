@@ -255,9 +255,9 @@ function AdminProducts() {
       mrp: fd.get("mrp") ? Number(fd.get("mrp")) : null,
       image: String(fd.get("image") || "") || null,
       images: images,
-      badge: (fd.get("badge") as string) || null,
+      badge: fd.getAll("badge").filter(Boolean).join(",") || null,
       brand: (fd.get("brand") as string) || null,
-      age_range: String(fd.get("age_range") || ""),
+      age_range: fd.getAll("age_range").filter(Boolean).join(","),
       in_stock: fd.get("in_stock") === "on",
       show_in_hero: fd.get("show_in_hero") === "on",
       is_sale: fd.get("is_sale") === "on",
@@ -457,14 +457,19 @@ function AdminProducts() {
               </select>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Badge</label>
-              <select name="badge" defaultValue={editing?.badge ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded">
-                <option value="">No badge</option>
-                <option value="Best Seller">Best Seller</option>
-                <option value="New">New</option>
-                <option value="Flash Deal">Flash Deal</option>
-              </select>
+            <div className="md:col-span-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Badges (Select Multiple)</label>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 p-2.5 border border-input rounded bg-slate-50/50">
+                {["Best Seller", "New", "Flash Deal", "Trending", "Top Rated"].map((b) => {
+                  const isChecked = editing?.badge?.split(",").includes(b) ?? false;
+                  return (
+                    <label key={b} className="flex items-center gap-1.5 text-sm cursor-pointer font-medium text-slate-700">
+                      <input type="checkbox" name="badge" value={b} defaultChecked={isChecked} className="size-4 accent-primary" />
+                      {b}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
             <div>
@@ -485,17 +490,19 @@ function AdminProducts() {
               </select>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Age Range</label>
-              <select name="age_range" defaultValue={editing?.age_range ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded">
-                <option value="">— Select age range —</option>
-                <option value="0-2 years">0-2 years</option>
-                <option value="2-4 years">2-4 years</option>
-                <option value="4-7 years">4-7 years</option>
-                <option value="7-9 years">7-9 years</option>
-                <option value="9-12 years">9-12 years</option>
-                <option value="12+ years">12+ years</option>
-              </select>
+            <div className="md:col-span-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Age Ranges (Select Multiple)</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-2 p-2.5 border border-input rounded bg-slate-50/50">
+                {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => {
+                  const isChecked = editing?.age_range?.split(",").includes(age) ?? false;
+                  return (
+                    <label key={age} className="flex items-center gap-1.5 text-sm cursor-pointer font-medium text-slate-700">
+                      <input type="checkbox" name="age_range" value={age} defaultChecked={isChecked} className="size-4 accent-primary" />
+                      {age}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 md:col-span-1">

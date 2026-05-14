@@ -29,7 +29,6 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboardScreen() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-
   const { data: stats, isLoading } = useQuery({
     queryKey: ["admin-dashboard-analytics", startDate, endDate],
     queryFn: async () => {

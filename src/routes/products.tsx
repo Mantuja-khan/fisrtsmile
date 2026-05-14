@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts, useCategories } from "@/hooks/useCatalog";
-import { resolveImage } from "@/data/products";
+import { resolveImage, effectivePrice } from "@/data/products";
 
 type Search = {
   q?: string;
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/products")({
   }),
   head: () => ({
     meta: [
-      { title: "All Toys — Shop Online | ToyKart" },
+      { title: "All Toys — Shop Online | First Smile" },
       { name: "description", content: "Browse our complete toy catalog." },
     ],
   }),
@@ -57,15 +57,20 @@ function ProductListPage() {
     }
     if (search.category) list = list.filter((p) => p.category_slug === search.category);
     if (search.brand) list = list.filter((p) => p.brand === search.brand);
-    if (search.badge) list = list.filter((p) => p.badge === search.badge);
+    if (search.badge) {
+      const qBadge = search.badge.toLowerCase().trim();
+      list = list.filter((p) => 
+        p.badge && p.badge.toLowerCase().split(",").map(b => b.trim()).includes(qBadge)
+      );
+    }
     if (search.age) list = list.filter((p) => p.ageRange === search.age);
     if (search.sale) list = list.filter((p) => p.isSale);
-    if (search.minPrice !== undefined) list = list.filter((p) => p.price >= search.minPrice!);
-    if (search.maxPrice !== undefined) list = list.filter((p) => p.price <= search.maxPrice!);
+    if (search.minPrice !== undefined) list = list.filter((p) => effectivePrice(p.price, p.offerPct) >= search.minPrice!);
+    if (search.maxPrice !== undefined) list = list.filter((p) => effectivePrice(p.price, p.offerPct) <= search.maxPrice!);
     if (search.rating) list = list.filter((p) => p.rating >= search.rating!);
     switch (search.sort) {
-      case "price_asc": list.sort((a, b) => a.price - b.price); break;
-      case "price_desc": list.sort((a, b) => b.price - a.price); break;
+      case "price_asc": list.sort((a, b) => effectivePrice(a.price, a.offerPct) - effectivePrice(b.price, b.offerPct)); break;
+      case "price_desc": list.sort((a, b) => effectivePrice(b.price, b.offerPct) - effectivePrice(a.price, a.offerPct)); break;
       case "rating": list.sort((a, b) => b.rating - a.rating); break;
       default: list.sort((a, b) => b.ratingCount - a.ratingCount);
     }

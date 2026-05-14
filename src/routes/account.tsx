@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import { 
   User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, 
-  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard 
+  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard, ShieldCheck 
 } from "lucide-react";
 import { redirectToPayU } from "@/utils/payu";
 import { useAuth } from "@/store/auth";
@@ -81,123 +81,145 @@ function AccountPage() {
   if (user) {
     const name = user.full_name || user.email?.split("@")[0] || "User";
     return (
-      <div className="min-h-[calc(100vh-140px)] bg-[#F8F9FC] py-6 md:py-10">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="min-h-[calc(100vh-140px)] bg-[#F4F6F9] py-6 md:py-10">
+        <div className="container mx-auto px-4 max-w-6xl">
           
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
             
-            {/* Premium Sidebar Pane */}
-            <aside className="w-full lg:w-72 xl:w-80 shrink-0 space-y-6">
+            {/* Premium Left Sidebar Area */}
+            <aside className="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col gap-6">
               
-              {/* User Identity Container */}
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF4B4B] to-[#D82D2D] text-white flex items-center justify-center font-bold text-xl uppercase shadow-md shrink-0">
+              {/* Profile Info Header Card */}
+              <div className="bg-white rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-lg uppercase shadow-sm shrink-0">
                   {name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-bold text-base text-slate-900 truncate">{name}</h2>
-                  {isAdmin ? (
-                    <div className="mt-1 inline-flex items-center gap-1 bg-purple-50 text-[#802a8f] font-bold text-[10px] px-2.5 py-0.5 rounded-full border border-purple-100">
-                      <Shield className="w-3 h-3" /> ADMIN
-                    </div>
-                  ) : (
-                    <p className="text-xs text-slate-400 truncate">{user.email}</p>
-                  )}
+                  <h2 className="font-bold text-[15px] text-slate-800 leading-tight truncate">{name}</h2>
+                  <p className="text-xs text-slate-400 font-medium truncate mt-0.5">{user.email}</p>
                 </div>
               </div>
 
-              {/* Navigation Menu Links */}
-              <div className="bg-white rounded-3xl py-4 shadow-sm border border-slate-100 space-y-1">
+              {/* Side Nav Navigation Block */}
+              <div className="bg-white rounded-2xl py-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col">
                 
-                {/* Orders Tab */}
-                <button 
-                  onClick={() => setView("orders")}
-                  className={`w-full flex items-center justify-between px-6 py-3 font-semibold text-sm transition ${
-                    view === "orders" 
-                      ? "text-[#E43E3D] bg-red-50/50" 
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3.5">
-                    <Package className={`w-4 h-4 ${view === "orders" ? "text-[#E43E3D]" : "text-slate-400"}`} />
-                    <span>My Orders</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-300" />
-                </button>
-
-                {/* Section Divider: SETTINGS */}
-                <div className="pt-5 pb-2 px-6">
-                  <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Settings</span>
+                {/* Isolated Top Nav: My Orders */}
+                <div className="px-3">
+                  <button 
+                    onClick={() => setView("orders")}
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
+                      view === "orders" 
+                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Package className={`w-[18px] h-[18px] ${view === "orders" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <span>My Orders</span>
+                    </div>
+                    <ChevronRight className={`w-4 h-4 ${view === "orders" ? "text-[#1D4ED8]" : "text-slate-300"}`} />
+                  </button>
                 </div>
 
-                {/* Profile Information Tab */}
-                <div className="px-3">
+                <div className="border-b border-slate-100/70 my-3"></div>
+
+                {/* Group 1: Account Settings */}
+                <div className="px-6 pb-1.5">
+                  <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">Account Settings</span>
+                </div>
+
+                <div className="px-3 space-y-1">
                   <button 
                     onClick={() => setView("profile")}
-                    className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold text-sm transition ${
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "profile" 
-                        ? "bg-[#FFF0F0] text-[#E43E3D]" 
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
                     }`}
                   >
-                    <User className={`w-4 h-4 ${view === "profile" ? "text-[#E43E3D]" : "text-slate-400"}`} />
-                    <span>Profile Information</span>
+                    <div className="flex items-center gap-3">
+                      <User className={`w-[18px] h-[18px] ${view === "profile" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <span>Profile Information</span>
+                    </div>
+                    {view !== "profile" && <ChevronRight className="w-4 h-4 text-slate-300" />}
                   </button>
-                </div>
 
-                {/* Manage Addresses Tab */}
-                <div className="px-3">
                   <button 
                     onClick={() => setView("addresses")}
-                    className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold text-sm transition ${
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "addresses" 
-                        ? "bg-[#FFF0F0] text-[#E43E3D]" 
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
                     }`}
                   >
-                    <MapPin className={`w-4 h-4 ${view === "addresses" ? "text-[#E43E3D]" : "text-slate-400"}`} />
-                    <span>Manage Addresses</span>
+                    <div className="flex items-center gap-3">
+                      <MapPin className={`w-[18px] h-[18px] ${view === "addresses" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <span>Manage Addresses</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
                   </button>
                 </div>
 
-                {/* Section Divider: ADMIN */}
+
+
                 {isAdmin && (
                   <>
-                    <div className="pt-5 pb-2 px-6">
-                      <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Admin</span>
+                    <div className="border-b border-slate-100/70 my-3"></div>
+                    <div className="px-6 pb-1.5">
+                      <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">Admin Panel</span>
                     </div>
                     <div className="px-3">
                       <button 
                         onClick={() => navigate({ to: "/admin" })}
-                        className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-bold text-sm text-[#802a8f] hover:bg-purple-50 transition"
+                        className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-sm text-[#1D4ED8] bg-blue-50 hover:bg-blue-100 transition"
                       >
-                        <Shield className="w-4 h-4 text-[#802a8f]" />
-                        <span>Admin Panel</span>
+                        <Shield className="w-[18px] h-[18px] text-[#1D4ED8]" />
+                        <span>Admin Dashboard</span>
                       </button>
                     </div>
                   </>
                 )}
 
-                {/* Bottom Logout Button */}
-                <div className="pt-3 px-3 border-t border-slate-50 mt-2">
+                <div className="border-t border-slate-100 mt-4 pt-2 px-3">
                   <button 
                     onClick={signOut}
-                    className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-bold text-sm text-rose-600 hover:bg-rose-50 transition"
+                    className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-sm text-rose-600 hover:bg-rose-50/80 transition"
                   >
-                    <LogOut className="w-4 h-4 text-rose-500" />
+                    <LogOut className="w-[18px] h-[18px] text-rose-500" />
                     <span>Sign Out</span>
                   </button>
                 </div>
 
               </div>
 
+              {/* Safety / Security Guarantee Banner */}
+              <div className="bg-[#EEF2FF] border border-indigo-100/50 rounded-2xl p-5 flex flex-col gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white text-[#1D4ED8] flex items-center justify-center shadow-sm">
+                  <ShieldCheck className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-800">Your security is our priority</h3>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    We use industry-standard measures to keep your information safe and secure.
+                  </p>
+                </div>
+                <button 
+                  onClick={() => navigate({ to: "/policies/privacy" })} 
+                  className="text-xs font-bold text-[#1D4ED8] text-left hover:underline"
+                >
+                  Learn more &gt;
+                </button>
+              </div>
+
             </aside>
 
-            {/* Main Information Dynamic Screen Area */}
-            <main className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden min-h-[580px]">
+            {/* Main Right View Container */}
+            <main className="flex-1 w-full bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden min-h-[600px]">
               {view === "profile" && <ProfileDetailsEngine />}
               {view === "orders" && <MyOrdersEngine />}
               {view === "addresses" && <AddressesEngine />}
+              {view === "password" && <PasswordEngine />}
+              {view === "notifications" && <NotificationsEngine />}
             </main>
 
           </div>
@@ -440,6 +462,12 @@ function ProfileDetailsEngine() {
   const [name, setName] = useState(user?.full_name || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
+  const reset = () => {
+    setName(user?.full_name || "");
+    setPhone(user?.phone || "");
+    toast("Form reset to original details.");
+  };
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!updateProfile) return;
@@ -450,82 +478,128 @@ function ProfileDetailsEngine() {
   };
 
   return (
-    <div className="p-6 md:p-10">
+    <div className="p-6 md:p-10 relative overflow-hidden">
       
-      {/* Top Banner Identity Area */}
+      {/* Background Subtle Illustration Pattern */}
+      <div className="absolute top-8 right-8 hidden md:block opacity-[0.04] pointer-events-none">
+        <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#1D4ED8]">
+          <rect x="4" y="4" width="16" height="16" rx="2" />
+          <path d="M9 9h6" />
+          <path d="M9 13h6" />
+          <path d="M9 17h4" />
+        </svg>
+      </div>
+
+      {/* Main Profile Header */}
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
-          <User className="w-6 h-6 stroke-[1.5]" />
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0 shadow-xs">
+          <User className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900 leading-tight">Profile Information</h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Update your personal details and contact information.</p>
+          <h2 className="text-lg font-bold text-slate-800 leading-tight">Profile Information</h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">Update your personal details and contact information.</p>
         </div>
       </div>
 
-      <form onSubmit={save} className="max-w-xl space-y-6">
+      <form onSubmit={save} className="max-w-2xl space-y-7">
         
-        {/* Input Block: Full Name */}
+        {/* Field: Full Name */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 block">Full Name</label>
+          <div className="flex flex-col gap-0.5">
+            <label className="text-xs font-bold text-slate-800">Full Name</label>
+            <span className="text-[11px] text-slate-400 font-medium">This is the name displayed on your account.</span>
+          </div>
           <div className="relative flex items-center">
+            <User className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
+              required
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Full Name"
-              className="w-full pl-4 pr-11 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+              className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-700 font-medium placeholder:text-slate-300"
             />
-            <User className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
         </div>
 
-        {/* Input Block: Email Address */}
+        {/* Field: Email Address */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 block">Email Address</label>
+          <div className="flex flex-col gap-0.5">
+            <label className="text-xs font-bold text-slate-800">Email Address</label>
+            <span className="text-[11px] text-slate-400 font-medium">We'll never share your email with anyone else.</span>
+          </div>
           <div className="relative flex items-center">
+            <Mail className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               value={user?.email || ""}
               disabled
               placeholder="Email Address"
-              className="w-full pl-4 pr-11 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-500 outline-none cursor-not-allowed font-medium"
+              className="w-full pl-11 pr-28 py-3 text-sm bg-slate-50/80 border border-slate-200/80 rounded-xl text-slate-500 outline-none cursor-not-allowed font-medium"
             />
-            <Mail className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
+            <div className="absolute right-3 flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold text-[10px] px-2 py-0.5 rounded-md shadow-xs pointer-events-none uppercase tracking-wide">
+              <span>Verified</span>
+              <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+            </div>
           </div>
         </div>
 
-        {/* Input Block: Phone Number */}
+        {/* Field: Phone Number */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 block">Phone Number</label>
+          <div className="flex flex-col gap-0.5">
+            <label className="text-xs font-bold text-slate-800">Phone Number</label>
+            <span className="text-[11px] text-slate-400 font-medium">Add your phone number for quick support and important alerts.</span>
+          </div>
           <div className="relative flex items-center">
+            <Phone className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
+              required
+              disabled={Boolean(user?.phone)}
               value={phone}
               onChange={e => setPhone(e.target.value)}
               placeholder="Enter your phone number"
-              className="w-full pl-4 pr-11 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+              className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${
+                user?.phone
+                  ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
+                  : "bg-white border-slate-200 text-slate-700 focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 placeholder:text-slate-300"
+              }`}
             />
-            <Phone className="absolute right-4 w-4 h-4 text-slate-400 pointer-events-none" />
+            {Boolean(user?.phone) && (
+              <div className="absolute right-3 flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold text-[10px] px-2 py-0.5 rounded-md shadow-xs pointer-events-none uppercase tracking-wide">
+                <span>Verified</span>
+                <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Beautiful Purple Alert Block */}
-        <div className="bg-[#F6F4FB] rounded-2xl p-4 md:p-5 flex gap-4 mt-8 border border-purple-100/50">
-          <Shield className="w-5 h-5 text-[#802a8f] shrink-0 mt-0.5 stroke-[2]" />
+        {/* Elegant Alert banner at form base */}
+        <div className="bg-[#F0F7FF] rounded-xl p-4 flex gap-3.5 mt-8 border border-blue-100/50 shadow-xs">
+          <ShieldCheck className="w-5 h-5 text-[#1D4ED8] shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs md:text-sm font-bold text-[#802a8f]">Keep your information up to date</h4>
-            <p className="text-[11px] md:text-xs text-slate-600 mt-1 leading-relaxed">
+            <h4 className="text-xs font-bold text-[#1D4ED8] uppercase tracking-wide">Keep your information up to date</h4>
+            <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed font-medium">
               Ensure your contact information is accurate so we can reach you when needed.
             </p>
           </div>
         </div>
 
-        {/* Gradient Action Save Button */}
-        <div className="pt-2">
+        {/* Responsive Action Row Buttons */}
+        <div className="pt-2 flex flex-wrap items-center gap-3">
           <button 
             disabled={busy} 
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            type="submit"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm hover:brightness-110 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Saving Changes..." : "Save Changes"}</span>
+          </button>
+
+          <button 
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm px-6 py-3 rounded-xl shadow-xs active:scale-95 transition"
+          >
+            <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15.89M21 12h-6" /></svg>
+            <span>Reset</span>
           </button>
         </div>
 
@@ -753,12 +827,12 @@ function AddressesEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
-          <MapPin className="w-6 h-6 stroke-[1.5]" />
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+          <MapPin className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900 leading-tight">Manage Addresses</h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Configure your primary delivery endpoint details.</p>
+          <h2 className="text-lg font-bold text-slate-800 leading-tight">Manage Addresses</h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">Configure your primary delivery endpoint details.</p>
         </div>
       </div>
 
@@ -771,7 +845,7 @@ function AddressesEngine() {
             onChange={e => setAddr(e.target.value)}
             rows={3}
             placeholder="Flat No, Wing, Apartment name, Landmark..."
-            className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium resize-none"
+            className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium resize-none"
           />
         </div>
 
@@ -783,7 +857,7 @@ function AddressesEngine() {
               value={city}
               onChange={e => setCity(e.target.value)}
               placeholder="City"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
             />
           </div>
           <div className="space-y-2">
@@ -793,7 +867,7 @@ function AddressesEngine() {
               value={state}
               onChange={e => setState(e.target.value)}
               placeholder="State"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
             />
           </div>
           <div className="space-y-2">
@@ -804,7 +878,7 @@ function AddressesEngine() {
               value={pin}
               onChange={e => setPin(e.target.value)}
               placeholder="Pincode"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
             />
           </div>
         </div>
@@ -812,7 +886,7 @@ function AddressesEngine() {
         <div className="pt-2">
           <button 
             disabled={busy} 
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Saving Address..." : "Save Address"}</span>
@@ -853,12 +927,12 @@ function PasswordEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
-          <Lock className="w-6 h-6 stroke-[1.5]" />
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+          <Lock className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900 leading-tight">Change Password</h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Secure your identity with a robust passphrase credential.</p>
+          <h2 className="text-lg font-bold text-slate-800 leading-tight">Change Password</h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">Secure your identity with a robust passphrase credential.</p>
         </div>
       </div>
 
@@ -871,7 +945,7 @@ function PasswordEngine() {
             value={oldPass}
             onChange={e => setOldPass(e.target.value)}
             placeholder="Current Password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
           />
         </div>
         <div className="space-y-2">
@@ -882,14 +956,14 @@ function PasswordEngine() {
             value={newPass}
             onChange={e => setNewPass(e.target.value)}
             placeholder="New robust password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-50 transition text-slate-800 font-medium"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
           />
         </div>
 
         <div className="pt-2">
           <button 
             disabled={busy} 
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Updating Passphrase..." : "Update Passphrase"}</span>
@@ -915,12 +989,12 @@ function NotificationsEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-14 h-14 rounded-full bg-red-50 text-[#E43E3D] flex items-center justify-center border border-red-100 shrink-0">
-          <Bell className="w-6 h-6 stroke-[1.5]" />
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+          <Bell className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900 leading-tight">Notification Settings</h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-0.5">Control how automated event handoffs alert your channels.</p>
+          <h2 className="text-lg font-bold text-slate-800 leading-tight">Notification Settings</h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">Control how automated event handoffs alert your channels.</p>
         </div>
       </div>
 
@@ -956,7 +1030,7 @@ function NotificationsEngine() {
         <div className="pt-2">
           <button 
             type="submit"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF3B3B] to-[#802a8f] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition"
           >
             <Save className="w-4 h-4" />
             <span>Save Settings</span>

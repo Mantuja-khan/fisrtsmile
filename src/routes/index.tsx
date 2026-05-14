@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts, useCategories, useBanners } from "@/hooks/useCatalog";
-import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus } from "lucide-react";
+import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus, Rocket } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import { resolveImage } from "@/data/products";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
@@ -11,6 +11,9 @@ import under199 from "@/assets/shopbyprice/under199.png";
 import under399 from "@/assets/shopbyprice/under399.png";
 import under699 from "@/assets/shopbyprice/under699.png";
 import under999 from "@/assets/shopbyprice/under999.png";
+import under1499 from "@/assets/shopbyprice/under1499.png";
+import above1500 from "@/assets/shopbyprice/above1500.png";
+
 
 import age0_2 from "@/assets/0_2.png";
 import age2_4 from "@/assets/2_4.png";
@@ -49,6 +52,9 @@ function HomePage() {
   const offers = products.filter((p) => p.isSale);
   const offerProducts = products.filter((p) => p.mrp > p.price || p.offerPct > 0);
   const featured = products.slice(0, 8);
+  const bestSellers = products.filter(p =>
+    p.badge && p.badge.toLowerCase().split(",").some(b => ["best seller", "best seller product", "bestseller"].includes(b.trim()))
+  );
 
   const heroBanners = banners.filter(b => b.position !== 'promo');
   const promoBanners = banners.filter(b => b.position === 'promo').slice(0, 2);
@@ -148,7 +154,7 @@ function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Zap className="size-6 fill-destructive text-destructive animate-pulse" />
-                  <h2 className="font-display text-3xl md:text-4xl">Flash Sale</h2>
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl">Flash Sale</h2>
                 </div>
                 <p className="text-xs md:text-sm opacity-80 mt-1">Limited time. Limited stock. Grab yours now!</p>
               </div>
@@ -158,7 +164,7 @@ function HomePage() {
                     <Plus className="size-3.5" /> Add Product
                   </Link>
                 )}
-                <Link to="/products" search={{ sale: true } as never} className="text-sm font-semibold underline">
+                <Link to="/products" search={{ sale: true } as never} className="text-xs md:text-sm font-semibold underline opacity-90 hover:opacity-100">
                   View all →
                 </Link>
               </div>
@@ -178,11 +184,10 @@ function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Sparkles className="size-6 text-purple-600 animate-spin-slow" />
-                  <h2 className="font-display text-3xl md:text-4xl text-purple-950">Special Offers</h2>
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-purple-950">Special Offers</h2>
                 </div>
-                <p className="text-xs md:text-sm text-purple-800 mt-1">Unbeatable discounts on top quality toys</p>
               </div>
-              <Link to="/products" className="text-sm font-semibold text-purple-700 hover:underline">View all offers →</Link>
+              <Link to="/products" className="text-xs md:text-sm font-semibold text-purple-700 underline hover:opacity-80">View all offers →</Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {offerProducts.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
@@ -197,13 +202,39 @@ function HomePage() {
           <div className="bg-surface rounded-3xl shadow-card p-5 md:p-8">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="font-display text-3xl md:text-4xl">Featured Toys</h2>
-                <p className="text-sm text-muted-foreground mt-1">Hand-picked favourites our customers love</p>
+                <h2 className="font-display text-xl md:text-3xl lg:text-4xl">Featured Toys</h2>
               </div>
-              <Link to="/products" className="text-sm font-semibold text-primary">View all →</Link>
+              <Link to="/products" className="text-xs md:text-sm font-semibold text-primary underline hover:opacity-80">View more →</Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {featured.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Best Sellers Section */}
+      {bestSellers.length > 0 && (
+        <section className="container mx-auto px-4 py-4">
+          <div className="bg-indigo-50/40 rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-indigo-100/40 p-5 md:p-8 relative overflow-hidden">
+            <div className="absolute -top-6 -right-6 size-32 rounded-full bg-indigo-400/5 blur-2xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-5 relative z-10">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Star className="size-6 text-[#1D4ED8] fill-current" />
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-slate-900">Best Sellers</h2>
+                </div>
+              </div>
+              <Link
+                to="/products"
+                search={{ badge: "Best Seller" } as never}
+                className="text-xs md:text-sm font-bold text-[#1D4ED8] underline hover:opacity-80 transition-opacity"
+              >
+                View More →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative z-10">
+              {bestSellers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
         </section>
@@ -226,15 +257,15 @@ function HomePage() {
               params={{ slug: c.slug } as never}
               className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
-              <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
+              <div className="w-full aspect-square flex items-center justify-center overflow-hidden relative p-2 sm:p-3 group-hover:scale-105 transition-transform duration-300 bg-transparent">
                 {c.image ? (
                   <img
                     src={resolveImage(c.image)}
                     alt={c.name}
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-full object-contain select-none"
                   />
                 ) : (
-                  <span className="text-5xl sm:text-6xl group-hover:scale-110 transition-transform duration-300">{c.icon ?? "🎁"}</span>
+                  <span className="text-5xl sm:text-6xl transition-transform duration-300">{c.icon ?? "🎁"}</span>
                 )}
               </div>
 
@@ -263,11 +294,11 @@ function HomePage() {
               search={{ age_range: age.value } as never}
               className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
-              <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-48 lg:h-48 flex items-center justify-center overflow-visible relative group-hover:scale-110 transition-transform duration-300">
+              <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100">
                 <img
                   src={age.image}
                   alt={age.label}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover select-none"
                 />
               </div>
 
@@ -288,20 +319,22 @@ function HomePage() {
         <div className="text-center mb-6">
           <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Price</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { max: 199, img: under199 },
-            { max: 399, img: under399 },
-            { max: 699, img: under699 },
-            { max: 999, img: under999 },
-          ].map((tier) => (
+            { val: 199, img: under199, query: { minPrice: 0, maxPrice: 199, sort: 'price_desc' as const } },
+            { val: 399, img: under399, query: { minPrice: 200, maxPrice: 399, sort: 'price_desc' as const } },
+            { val: 699, img: under699, query: { minPrice: 400, maxPrice: 699, sort: 'price_desc' as const } },
+            { val: 999, img: under999, query: { minPrice: 700, maxPrice: 999, sort: 'price_desc' as const } },
+            { val: 1499, img: under1499, query: { minPrice: 1000, maxPrice: 1499, sort: 'price_desc' as const } },
+            { val: '1500+', img: above1500, query: { minPrice: 1500, sort: 'price_asc' as const } },
+          ].map((tier, idx) => (
             <Link
-              key={tier.max}
+              key={idx}
               to="/products"
-              search={{ maxPrice: tier.max }}
-              className="block rounded-2xl overflow-hidden shadow-card"
+              search={tier.query as never}
+              className="block rounded-2xl overflow-hidden shadow-card hover:scale-[1.02] transition-transform duration-300"
             >
-              <img src={tier.img} className="w-full h-auto object-contain" alt={`Under ₹${tier.max}`} />
+              <img src={tier.img} className="w-full h-auto object-contain" alt={`Price tier ${tier.val}`} />
             </Link>
           ))}
         </div>
