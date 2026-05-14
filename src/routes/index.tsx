@@ -270,7 +270,7 @@ function HomePage() {
               </div>
 
               {/* Rectangular Box Text matching Shop by Age design */}
-              <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
+              <div className="mt-4 border-2 border-[#1D4ED8] bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_#FFC107] group-hover:bg-[#1D4ED8] group-hover:text-white group-hover:border-[#1D4ED8] transition-all duration-300">
                 <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap truncate block">
                   {c.name}
                 </span>
@@ -303,7 +303,7 @@ function HomePage() {
               </div>
 
               {/* The Rectangular Box Text below - matching user design */}
-              <div className="mt-4 border-2 border-black bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-black group-hover:text-white transition-colors">
+              <div className="mt-4 border-2 border-[#1D4ED8] bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_#FFC107] group-hover:bg-[#1D4ED8] group-hover:text-white group-hover:border-[#1D4ED8] transition-all duration-300">
                 <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap">
                   {age.label}
                 </span>

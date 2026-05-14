@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Search, Filter } from "lucide-react";
 
 type OrderStatus = "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned" | "rejected";
 
@@ -47,6 +47,8 @@ const statusColors: Record<OrderStatus, string> = {
 function AdminOrders() {
   const qc = useQueryClient();
   const [open, setOpen] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const { data: orders = [] } = useQuery({
     queryKey: ["admin-orders"],
@@ -55,7 +57,24 @@ function AdminOrders() {
         return data as Order[];
     },
   });
+  const filteredOrders = orders.filter((o) => {
+    const matchesStatus = statusFilter === "all" || o.status.toLowerCase() === statusFilter.toLowerCase();
+    if (!matchesStatus) return false;
+    
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      o.order_number.toLowerCase().includes(term) ||
+      o.customer_name.toLowerCase().includes(term) ||
+      (o.customer_email && o.customer_email.toLowerCase().includes(term)) ||
+      (o.customer_phone && o.customer_phone.toLowerCase().includes(term))
+    );
+  });
 
+  const getCount = (statusId: string) => {
+    if (statusId === "all") return orders.length;
+    return orders.filter(o => o.status.toLowerCase() === statusId).length;
+  };
   const sendWhatsApp = (o: Order, status: "shipped" | "delivered") => {
     if (!o.customer_phone) {
       toast.error("No phone number on this order");
@@ -144,9 +163,65 @@ function AdminOrders() {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-bold text-lg">Orders ({orders.length})</h2>
-      <div className="bg-surface rounded-xl shadow-card divide-y divide-border">
-        {orders.map((o) => (
+      <div className="bg-surface rounded-xl border border-border p-4 shadow-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 className="font-bold text-lg flex items-center gap-2">
+            Orders <span className="text-xs font-normal text-muted-foreground">({filteredOrders.length} listed)</span>
+          </h2>
+          
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input 
+              type="text"
+              placeholder="Search order ID, customer name, phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-4 py-2 text-sm border border-input rounded-lg w-full bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none transition"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600">Clear</button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-slate-100">
+          {[
+            { id: "all", label: "All" },
+            { id: "placed", label: "Placed" },
+            { id: "processing", label: "Processing" },
+            { id: "shipped", label: "Shipped" },
+            { id: "delivered", label: "Delivered" },
+            { id: "cancelled", label: "Cancelled" },
+            { id: "return requested", label: "Returns" }
+          ].map((f) => {
+            const isActive = statusFilter === f.id;
+            const count = getCount(f.id);
+            return (
+              <button
+                key={f.id}
+                onClick={() => setStatusFilter(f.id)}
+                className={`px-3.5 py-1.5 rounded-full font-bold text-[11px] tracking-wide transition flex items-center gap-2 border select-none ${
+                  isActive
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-white border-border text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                <span>{f.label}</span>
+                {count > 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold transition ${
+                    isActive ? "bg-white/25 text-white" : "bg-slate-100 text-slate-500"
+                  }`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="bg-surface rounded-xl shadow-card divide-y divide-border border border-border overflow-hidden">
+        {filteredOrders.map((o) => (
           <div key={o._id} className="p-3">
             <button
               onClick={() => setOpen(open === o._id ? null : o._id)}
@@ -304,7 +379,11 @@ function AdminOrders() {
             )}
           </div>
         ))}
-        {orders.length === 0 && <div className="p-8 text-center text-sm text-muted-foreground">No orders yet</div>}
+        {filteredOrders.length === 0 && (
+          <div className="p-12 text-center text-sm text-muted-foreground bg-slate-50/50">
+            {orders.length === 0 ? "No orders placed in store yet." : "No orders match your search or filter."}
+          </div>
+        )}
       </div>
     </div>
   );

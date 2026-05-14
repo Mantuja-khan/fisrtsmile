@@ -188,18 +188,23 @@ function ProductPage() {
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-2 text-center text-xs">
-            {[
-              { icon: Truck, t: "Free shipping", s: "On prepaid" },
-              { icon: RotateCcw, t: "Exchange", s: "Same product" },
-              { icon: ShieldCheck, t: "Genuine", s: "Brand verified" },
-            ].map((b) => (
-              <div key={b.t} className="bg-muted rounded-lg p-3">
-                <b.icon className="size-5 mx-auto text-primary mb-1" />
-                <div className="font-semibold text-foreground">{b.t}</div>
-                <div className="text-muted-foreground">{b.s}</div>
-              </div>
-            ))}
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <ShieldCheck className="size-4 text-emerald-600" /> Safely Dispatched
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {[
+                { icon: Truck, t: "Fast Dispatch", c: "bg-blue-50 text-[#1D4ED8] border-blue-100" },
+                { icon: ShieldCheck, t: "Safe Packaging", c: "bg-emerald-50 text-emerald-700 border-emerald-100" },
+                { icon: RotateCcw, t: "Easy Exchange", c: "bg-purple-50 text-purple-700 border-purple-100" },
+                { icon: Sparkles, t: "100% Genuine", c: "bg-amber-50 text-amber-800 border-amber-100" },
+              ].map((b) => (
+                <div key={b.t} className={`flex items-center gap-2 px-2.5 py-2.5 rounded-lg border shadow-xs text-[11px] font-bold leading-none ${b.c}`}>
+                  <b.icon className="size-4 shrink-0" />
+                  <span>{b.t}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

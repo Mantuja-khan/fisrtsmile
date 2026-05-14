@@ -12,7 +12,7 @@ connectDB();
 const importData = async () => {
     try {
         await User.deleteMany();
-        
+
         const adminUser = {
             full_name: 'Admin User',
             email: process.env.ADMIN_EMAIL.toLowerCase().trim(),

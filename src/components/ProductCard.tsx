@@ -43,7 +43,7 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         ))}
         {!product.inStock && (
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase bg-black text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase bg-slate-600 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
             Sold Out
           </span>
         )}
@@ -120,13 +120,13 @@ export function ProductCard({ product }: { product: Product }) {
               e.preventDefault();
               if (product.inStock) {
                 addToCart(product.id);
-                toast.success("Added to cart");
+                toast.success("Added to cart 🛒");
               }
             }}
-            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest transition-all duration-200 border rounded-sm ${
+            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest transition-all duration-300 border rounded-full ${
               product.inStock
-                ? "border-gray-900 text-gray-900 bg-white hover:bg-gray-900 hover:text-white"
-                : "border-gray-400 text-gray-500 bg-gray-50 cursor-not-allowed"
+                ? "border-[#1D4ED8] text-[#1D4ED8] bg-white hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#1D4ED8]"
+                : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
             }`}
           >
             {product.inStock ? "ADD TO CART" : "NOTIFY ME"}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MessageCircle, Instagram, Phone } from "lucide-react";
+import logo from "@/assets/firstsmile_logo.png";
 
 export function Footer() {
   return (
@@ -7,8 +8,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">🧸</span>
-            <span className="font-extrabold text-lg">First Smile</span>
+            <img src={logo} alt="First Smile Logo" className="h-10 md:h-12 w-auto object-contain" />
           </div>
           <p className="text-sm opacity-70">
             India's playful destination for premium toys. Bringing smiles, one toy at a time.
@@ -16,7 +16,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold mb-3 text-secondary">Shop</h4>
+          <h4 className="font-semibold mb-3 text-secondary">Categories</h4>
           <ul className="space-y-2 text-sm opacity-80">
             <li><Link to="/products">All Products</Link></li>
             <li><Link to="/products" search={{ category: "Soft Toys" } as never}>Soft Toys</Link></li>
@@ -40,9 +40,9 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-3 text-secondary">Reach Us</h4>
           <ul className="space-y-2 text-sm opacity-80">
-            <li className="flex items-center gap-2"><Mail className="size-4" /> support@toyhaat.com</li>
+            <li className="flex items-center gap-2"><Mail className="size-4" /> firstsmile19@gmail.com</li>
             <li className="flex items-center gap-2"><MessageCircle className="size-4" /> WhatsApp (10 AM – 7 PM)</li>
-            <li className="flex items-center gap-2"><Instagram className="size-4" /> @toyhaat</li>
+            <li className="flex items-center gap-2"><Instagram className="size-4" /> @Firstsmile19</li>
             <li className="flex items-center gap-2"><Phone className="size-4" /> Calls fall back to WhatsApp</li>
           </ul>
         </div>

@@ -118,7 +118,7 @@ export function Header() {
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 md:py-4">
 
           <Link to="/" className="flex items-center shrink-0">
-            <img src={logo} alt="First Smile" className="h-8 md:h-12 w-auto object-contain brightness-0 invert" />
+            <img src={logo} alt="First Smile" className="h-8 md:h-12 w-auto object-contain" />
           </Link>
 
           {/* Center Search */}

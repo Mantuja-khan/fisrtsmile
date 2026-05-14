@@ -696,7 +696,7 @@ function MyOrdersEngine() {
         </div>
         <h3 className="font-bold text-lg text-slate-800">No orders placed yet</h3>
         <p className="text-xs text-slate-400 mt-1 mb-6">Explore our curated collections to start your journey.</p>
-        <Link to="/products" className="inline-block bg-[#E43E3D] text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:opacity-90 transition">
+        <Link to="/products" className="inline-block bg-[#1D4ED8] text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:opacity-90 transition">
           Browse Products
         </Link>
       </div>

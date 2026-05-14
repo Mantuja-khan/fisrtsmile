@@ -50,7 +50,7 @@ function AboutPage() {
           </span>
           <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight">
             Crafting Every <br className="hidden md:block" />
-            <span className="text-[#E43E3D]">First Smile</span>
+            <span className="text-[#FFC107]">First Smile</span>
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium leading-relaxed">
             Transforming playtime into cherished childhood milestones since day one.
@@ -66,7 +66,7 @@ function AboutPage() {
         <div className="grid md:grid-cols-12 gap-12 items-center">
           <div className="md:col-span-6 space-y-6 order-2 md:order-1">
             <div className="space-y-2">
-              <div className="h-1 w-16 bg-[#E43E3D] rounded-full"></div>
+              <div className="h-1 w-16 bg-[#1D4ED8] rounded-full"></div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-display">The Heart Behind Our Mission</h2>
             </div>
             
@@ -79,7 +79,7 @@ function AboutPage() {
 
             <div className="grid grid-cols-2 gap-6 pt-4">
               <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-rose-50 text-[#E43E3D]">
+                <div className="p-2.5 rounded-xl bg-blue-50 text-[#1D4ED8]">
                   <Users className="size-6" />
                 </div>
                 <div>
@@ -88,7 +88,7 @@ function AboutPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-rose-50 text-[#E43E3D]">
+                <div className="p-2.5 rounded-xl bg-blue-50 text-[#1D4ED8]">
                   <ShoppingBag className="size-6" />
                 </div>
                 <div>
@@ -101,7 +101,7 @@ function AboutPage() {
 
           <div className="md:col-span-6 order-1 md:order-2">
              <div className="relative group">
-                <div className="absolute -inset-2 bg-gradient-to-r from-[#E43E3D] to-pink-500 rounded-[2.5rem] opacity-20 blur-xl group-hover:opacity-30 transition duration-700"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-[#1D4ED8] to-[#FFC107] rounded-[2.5rem] opacity-20 blur-xl group-hover:opacity-30 transition duration-700"></div>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl">
                   <img 
                     src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800&q=80" 
@@ -118,14 +118,14 @@ function AboutPage() {
       <section className="bg-white py-20 border-y border-gray-100">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16 space-y-4">
-             <h3 className="text-sm font-bold text-[#E43E3D] tracking-widest uppercase">Our Guarantee</h3>
+             <h3 className="text-sm font-bold text-[#1D4ED8] tracking-widest uppercase">Our Guarantee</h3>
              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900">The First Smile Promise</h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 md:gap-12">
             {/* Card 1 */}
             <div className="group flex flex-col items-center text-center p-4">
-              <div className="size-20 bg-rose-50 text-[#E43E3D] rounded-[2rem] flex items-center justify-center mb-6 shadow-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-lg group-hover:bg-[#E43E3D] group-hover:text-white">
+              <div className="size-20 bg-blue-50 text-[#1D4ED8] rounded-[2rem] flex items-center justify-center mb-6 shadow-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-lg group-hover:bg-[#1D4ED8] group-hover:text-white">
                 <Truck className="size-8" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Express Delivery</h3>
@@ -161,9 +161,9 @@ function AboutPage() {
 
       {/* CALL TO ACTION / CLOSER */}
       <section className="py-24 text-center container mx-auto px-6">
-        <div className="max-w-3xl mx-auto space-y-8 bg-gradient-to-br from-gray-900 to-gray-800 p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#E43E3D]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="max-w-3xl mx-auto space-y-8 bg-gradient-to-br from-slate-900 to-slate-800 p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#1D4ED8]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC107]/10 rounded-full blur-3xl"></div>
           
           <h2 className="text-3xl md:text-5xl font-bold text-white relative z-10 font-display">Ready to unlock joy?</h2>
           <p className="text-gray-300 relative z-10 text-lg">Start browsing our catalog and discover exactly what your little one is dreaming of.</p>
@@ -171,7 +171,7 @@ function AboutPage() {
           <div className="relative z-10 pt-4">
             <a 
               href="/products" 
-              className="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-full font-bold tracking-wide text-lg shadow-xl hover:bg-[#E43E3D] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-full font-bold tracking-wide text-lg shadow-xl hover:bg-[#FFC107] hover:text-[#1D4ED8] transition-all duration-300 hover:scale-105 active:scale-95"
             >
               Browse Products
             </a>

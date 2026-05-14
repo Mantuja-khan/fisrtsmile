@@ -112,17 +112,37 @@ function AdminProducts() {
               ? (maincatName ? `${maincatName} > ${subcatName}` : subcatName)
               : maincatName;
             
+            const parseBool = (val: any, fallback: boolean): boolean => {
+              if (val === undefined || val === null || val === '') return fallback;
+              if (typeof val === 'boolean') return val;
+              const s = String(val).toLowerCase().trim();
+              return ['true', '1', 'yes', 'y', 'in stock', 'on'].includes(s);
+            };
+
+            const galleryRaw = String(getVal(r, ['images', 'gallery', 'additionalimages', 'otherimages', 'pics']) || '');
+            const parsedGallery = galleryRaw
+              ? galleryRaw.split(/[,\n|]+/).map(url => url.trim()).filter(url => !!url)
+              : [];
+
             return {
               name: String(getVal(r, ['name', 'productname', 'item', 'title']) || '').trim(),
-              description: String(getVal(r, ['description', 'desc', 'about', 'detail']) || ''),
+              description: String(getVal(r, ['description', 'desc', 'about', 'detail']) || '').trim(),
               price: Number(getVal(r, ['price', 'sellingprice', 'rate']) || 0),
               mrp: Number(getVal(r, ['mrp', 'originalprice', 'marketprice', 'retailprice']) || 0),
-              image: String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || ''),
-              brand: String(getVal(r, ['brand', 'company', 'make']) || ''),
-              age_range: String(getVal(r, ['agerange', 'age', 'years']) || ''),
+              image: String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || '').trim(),
+              images: parsedGallery,
+              badge: String(getVal(r, ['badge', 'badges', 'tag', 'tags']) || '').trim() || null,
+              brand: String(getVal(r, ['brand', 'company', 'make']) || '').trim() || null,
+              age_range: String(getVal(r, ['agerange', 'age', 'years', 'ages']) || '').trim() || null,
+              weight: getVal(r, ['weight', 'wt']) ? Number(getVal(r, ['weight', 'wt'])) : null,
+              length: getVal(r, ['length', 'len']) ? Number(getVal(r, ['length', 'len'])) : null,
+              breadth: getVal(r, ['breadth', 'width']) ? Number(getVal(r, ['breadth', 'width'])) : null,
+              height: getVal(r, ['height', 'ht']) ? Number(getVal(r, ['height', 'ht'])) : null,
               category: matchedCat ? matchedCat._id : null,
               categoryName: displayCatName || "None",
-              in_stock: true
+              in_stock: parseBool(getVal(r, ['instock', 'stock', 'available']), true),
+              show_in_hero: parseBool(getVal(r, ['showinhero', 'hero', 'banner']), false),
+              is_sale: parseBool(getVal(r, ['issale', 'flashsale', 'sale', 'discountarea']), false)
             };
           }).filter((item: any) => !!item.name);
 
@@ -163,10 +183,18 @@ function AdminProducts() {
           price: row.price,
           mrp: row.mrp || row.price,
           image: row.image,
+          images: row.images,
           category: row.category,
           brand: row.brand,
+          badge: row.badge,
           age_range: row.age_range,
-          in_stock: true
+          weight: row.weight,
+          length: row.length,
+          breadth: row.breadth,
+          height: row.height,
+          in_stock: row.in_stock,
+          show_in_hero: row.show_in_hero,
+          is_sale: row.is_sale,
         });
         count++;
       } catch (error) {
@@ -705,62 +733,89 @@ function AdminProducts() {
             </div>
 
             <div className="flex-1 overflow-auto p-4">
-              <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[800px]">
+              <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1000px]">
                 <thead>
                   <tr className="bg-muted border-b border-border font-bold text-muted-foreground">
                     <th className="p-2.5">Product Name</th>
                     <th className="p-2.5">Category</th>
                     <th className="p-2.5">Brand</th>
-                    <th className="p-2.5 text-right">Selling Price</th>
+                    <th className="p-2.5 text-right">Price</th>
                     <th className="p-2.5 text-right">MRP</th>
-                    <th className="p-2.5">Image Status</th>
+                    <th className="p-2.5">Images</th>
+                    <th className="p-2.5">Badges & Ages</th>
+                    <th className="p-2.5">Flags</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50 font-medium text-foreground">
                   {previewRows.map((r, idx) => (
                     <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-2.5 text-foreground font-bold">{r.name}</td>
+                      <td className="p-2.5 text-foreground font-bold max-w-[200px] truncate" title={r.name}>{r.name}</td>
                       <td className="p-2.5 min-w-[220px]">
                         <div className="space-y-1">
                           <select
-                            value={r.category || ""}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              const updated = [...previewRows];
-                              updated[idx] = { ...updated[idx], category: val || null };
-                              setPreviewRows(updated);
-                            }}
-                            className={`w-full text-[11px] font-bold p-1.5 border rounded-md outline-none cursor-pointer bg-white shadow-sm ${
-                              r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
-                            }`}
+                             value={r.category || ""}
+                             onChange={(e) => {
+                               const val = e.target.value;
+                               const updated = [...previewRows];
+                               updated[idx] = { ...updated[idx], category: val || null };
+                               setPreviewRows(updated);
+                             }}
+                             className={`w-full text-[11px] font-bold p-1.5 border rounded-md outline-none cursor-pointer bg-white shadow-sm ${
+                               r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
+                             }`}
                           >
-                            <option value="">— Uncategorized —</option>
-                            {categories
-                              .filter((c: any) => !c.parent)
-                              .map((parent: any) => (
-                                <optgroup key={parent._id} label={parent.name}>
-                                  <option value={parent._id}>{parent.name} (Main)</option>
-                                  {categories
-                                    .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
-                                    .map((child: any) => (
-                                      <option key={child._id} value={child._id}>↳ {child.name}</option>
-                                    ))
-                                  }
-                                </optgroup>
-                              ))
-                            }
+                             <option value="">— Uncategorized —</option>
+                             {categories
+                               .filter((c: any) => !c.parent)
+                               .map((parent: any) => (
+                                 <optgroup key={parent._id} label={parent.name}>
+                                   <option value={parent._id}>{parent.name} (Main)</option>
+                                   {categories
+                                     .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
+                                     .map((child: any) => (
+                                       <option key={child._id} value={child._id}>↳ {child.name}</option>
+                                     ))
+                                   }
+                                 </optgroup>
+                               ))
+                             }
                           </select>
                           {r.categoryName && r.categoryName !== "None" && (
-                            <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
-                              Found: "{r.categoryName}"
-                            </div>
+                             <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
+                               Found: "{r.categoryName}"
+                             </div>
                           )}
                         </div>
                       </td>
                       <td className="p-2.5 text-muted-foreground">{r.brand || "—"}</td>
                       <td className="p-2.5 text-right font-bold">₹{r.price.toLocaleString()}</td>
                       <td className="p-2.5 text-right text-muted-foreground">₹{r.mrp.toLocaleString()}</td>
-                      <td className="p-2.5 text-muted-foreground italic truncate max-w-[120px]">{r.image ? "✓ Provided" : "— No image"}</td>
+                      <td className="p-2.5 text-muted-foreground text-[11px]">
+                        <div className="font-bold text-slate-700 whitespace-nowrap">{r.image ? "✓ Main Image" : "— No Main"}</div>
+                        {r.images && r.images.length > 0 && (
+                          <div className="text-emerald-600 font-bold mt-0.5">+{r.images.length} gallery imgs</div>
+                        )}
+                      </td>
+                      <td className="p-2.5 text-[11px] max-w-[180px] truncate">
+                        {r.badge && <div className="text-slate-800 font-bold">🏷️ {r.badge}</div>}
+                        {r.age_range && <div className="text-indigo-600 mt-0.5 font-bold">👶 {r.age_range}</div>}
+                        {(!r.badge && !r.age_range) && <span className="text-slate-400">—</span>}
+                      </td>
+                      <td className="p-2.5 text-[11px]">
+                        <div className="flex flex-wrap gap-1 font-bold">
+                          {r.in_stock ? (
+                            <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200 text-[9px]">IN-STOCK</span>
+                          ) : (
+                            <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 text-[9px]">OUT</span>
+                          )}
+                          {r.show_in_hero && (
+                            <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 text-[9px]">HERO</span>
+                          )}
+                          {r.is_sale && (
+                            <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200 text-[9px]">SALE</span>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

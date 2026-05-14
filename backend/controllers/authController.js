@@ -2,7 +2,7 @@ import User from '../models/User.js';
 import Blacklist from '../models/Blacklist.js';
 import OTP from '../models/OTP.js';
 import jwt from 'jsonwebtoken';
-import { sendEmail } from '../config/email.js';
+import { sendEmail, getEmailTemplate } from '../config/email.js';
 
 // Generate JWT
 const generateToken = (id) => {
@@ -93,6 +93,21 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
+        // Send Welcome Email (Fire and forget asynchronously)
+        const welcomeTitle = 'Welcome to First Smile! 🎉';
+        const welcomeText = `Welcome ${full_name} to First Smile! Your account has been successfully created. We are excited to help you bring smiles, one toy at a time.`;
+        const welcomeHtml = getEmailTemplate(welcomeTitle, `
+            <h1>Welcome to First Smile! 🎈</h1>
+            <p>Dear <strong>${full_name}</strong>,</p>
+            <p>Thank you for joining the <strong>First Smile</strong> family! Your account has been successfully created.</p>
+            <p>Explore our wide collections of premium, educational, and joyful toys curated just for you.</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://toyhaat.com" class="btn">Start Exploring Our Toys</a>
+            </div>
+            <p>If you have any questions, simply hit reply or reach out on Instagram! We are always happy to assist.</p>
+        `);
+        sendEmail(normalizedEmail, welcomeTitle, welcomeText, welcomeHtml).catch(err => console.error("Welcome email failed:", err));
+
         res.status(201).json({
             _id: user._id,
             full_name: user.full_name,
@@ -245,11 +260,17 @@ export const sendOTP = async (req, res) => {
     await OTP.deleteMany({ email: normalizedEmail });
     await OTP.create({ email: normalizedEmail, otp });
 
-    const emailSent = await sendEmail(
-        normalizedEmail,
-        'Verification Code — First Smile',
-        `Your verification code is: ${otp}. This code is valid for 10 minutes.`
-    );
+    const title = 'Verification Code — First Smile';
+    const text = `Your verification code is: ${otp}. This code is valid for 10 minutes.`;
+    const html = getEmailTemplate(title, `
+        <h1>Account Verification</h1>
+        <p>Hello there,</p>
+        <p>Thank you for choosing <strong>First Smile</strong>. To complete your verification, please use the one-time passcode (OTP) below:</p>
+        <div class="otp-box">${otp}</div>
+        <p>This code is valid for <strong>10 minutes</strong>. For security, please do not share this code with anyone.</p>
+    `);
+
+    const emailSent = await sendEmail(normalizedEmail, title, text, html);
 
     if (emailSent) {
         res.status(200).json({ message: 'OTP sent to your email.' });
