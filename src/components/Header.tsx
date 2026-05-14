@@ -286,11 +286,11 @@ export function Header() {
 
       {/* Bottom White Bar */}
       <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#1D4ED8] shadow-sm">
-        <div className="container mx-auto flex items-center justify-center gap-6 xl:gap-8 px-4 py-3 text-sm font-bold">
+        <div className="container mx-auto flex items-center justify-center gap-6 xl:gap-8 px-4 py-3 text-sm font-bold relative">
 
           <div
             ref={catRef}
-            className="relative pb-2 -mb-2"
+            className="pb-2 -mb-2"
             onMouseEnter={() => {
               setCatOpen(true);
               setAgeOpen(false);
@@ -317,7 +317,7 @@ export function Header() {
               <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-0 top-full mt-0 w-[95vw] max-w-7xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-[95vw] max-w-7xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
                 <div className="p-6 md:p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
                   {categories.length === 0 ? (
                     <div className="text-sm text-muted-foreground p-3 text-center w-full flex items-center justify-center">Loading...</div>
