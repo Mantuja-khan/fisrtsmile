@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones, Heart } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones, Heart, ChevronRight } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
@@ -172,12 +172,17 @@ export function Header() {
             </div>
 
             {/* Mobile Search Toggle */}
-            <button className="md:hidden p-2 text-white" onClick={() => setSearchOpen(!searchOpen)}>
+            <button className="md:hidden p-2 text-white flex items-center" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="size-6" />
             </button>
 
+            {/* Mobile Wishlist Toggle */}
+            <Link to="/wishlist" className="md:hidden p-2 text-white flex items-center relative">
+              <Heart className="size-6 fill-white text-white" />
+            </Link>
+
             {/* Mobile Menu Toggle */}
-            <button className="md:hidden p-2 text-white" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="md:hidden p-2 text-white flex items-center" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <Menu className="size-6" />
             </button>
           </div>
@@ -230,7 +235,7 @@ export function Header() {
 
               {/* Shop by Age collapsible */}
               <div className="border-b border-border flex flex-col">
-                <button 
+                <button
                   onClick={() => setMobileAgeOpen(!mobileAgeOpen)}
                   className="w-full p-4 flex items-center justify-between font-semibold text-left"
                 >
@@ -240,9 +245,9 @@ export function Header() {
                 {mobileAgeOpen && (
                   <div className="bg-slate-50/60 border-t border-border/50 flex flex-col pl-8 pr-4 py-2 gap-2.5">
                     {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map(age => (
-                      <Link 
+                      <Link
                         key={age}
-                        to="/products" 
+                        to="/products"
                         search={{ age } as never}
                         className="py-1 text-sm text-slate-600 hover:text-primary transition-colors font-medium"
                         onClick={() => { setMobileMenuOpen(false); setMobileAgeOpen(false); }}
@@ -256,7 +261,7 @@ export function Header() {
 
               {/* Shop by Brand collapsible */}
               <div className="border-b border-border flex flex-col">
-                <button 
+                <button
                   onClick={() => setMobileBrandOpen(!mobileBrandOpen)}
                   className="w-full p-4 flex items-center justify-between font-semibold text-left"
                 >
@@ -266,9 +271,9 @@ export function Header() {
                 {mobileBrandOpen && (
                   <div className="bg-slate-50/60 border-t border-border/50 grid grid-cols-2 pl-8 pr-4 py-3 gap-x-4 gap-y-2.5">
                     {BRANDS.map(brand => (
-                      <Link 
+                      <Link
                         key={brand}
-                        to="/products" 
+                        to="/products"
                         search={{ brand } as never}
                         className="py-1 text-sm text-slate-600 hover:text-primary transition-colors font-medium truncate"
                         onClick={() => { setMobileMenuOpen(false); setMobileBrandOpen(false); }}
@@ -288,17 +293,18 @@ export function Header() {
         )}
       </div>
 
-      {/* Bottom White Bar */}
-      <div className="hidden md:block md:sticky md:top-0 z-40 border-b border-border bg-white text-[#1D4ED8] shadow-sm">
-        <div className="container mx-auto flex items-center justify-center gap-6 xl:gap-8 px-4 py-3 text-sm font-bold relative">
+      {/* Premium Skewed Dark Navbar Bar */}
+      <div className="hidden md:block md:sticky md:top-0 z-40 border-y border-slate-800 bg-slate-900 text-white shadow-md">
+        <div className="container mx-auto flex items-center justify-center h-12 relative overflow-visible">
 
+          {/* Categories Button & Hover Dropdown */}
           <div
             ref={catRef}
-            className="pb-2 -mb-2"
+            className="h-full relative group"
             onMouseEnter={() => {
               setCatOpen(true);
               setAgeOpen(false);
-              setProfileOpen(false);
+              setBrandOpen(false);
               if (categories.length > 0 && !activeCatId) {
                 const root = categories.find(c => !c.parent_id);
                 if (root) setActiveCatId(root.id);
@@ -310,165 +316,235 @@ export function Header() {
               onClick={() => {
                 setCatOpen((v) => !v);
                 setAgeOpen(false);
-                setProfileOpen(false);
+                setBrandOpen(false);
                 if (!catOpen && categories.length > 0) {
                   const root = categories.find(c => !c.parent_id);
                   if (root) setActiveCatId(root.id);
                 }
               }}
-              className="flex items-center gap-2 uppercase tracking-wide font-bold text-[#1D4ED8] hover:opacity-80 transition"
+              className="relative h-full px-8 flex items-center justify-center outline-none cursor-pointer"
             >
-              <Grid3x3 className="size-5" /> Categories <ChevronDown className={`size-4 transition ${catOpen ? "rotate-180" : ""}`} />
+              <div className={`absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 ${catOpen
+                  ? "bg-gradient-to-b from-[#FFC107] to-[#FFB300]"
+                  : "bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300]"
+                }`} />
+              <span className={`relative z-10 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors duration-200 ${catOpen ? "text-[#1D4ED8]" : "text-slate-100 group-hover:text-[#1D4ED8]"
+                }`}>
+                <Grid3x3 className="size-4 shrink-0" /> Categories <ChevronDown className={`size-3.5 transition ${catOpen ? "rotate-180" : ""}`} />
+              </span>
             </button>
-            {catOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-[95vw] max-w-7xl bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50 flex flex-col">
-                <div className="p-6 md:p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                  {categories.length === 0 ? (
-                    <div className="text-sm text-muted-foreground p-3 text-center w-full flex items-center justify-center">Loading...</div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
-                      {categories.filter(cat => !cat.parent_id).map((parent) => {
-                        const children = categories.filter(c => c.parent_id === parent.id);
-                        return (
-                          <div key={parent.id} className="flex flex-col">
-                            {/* Column Header: Parent Category */}
-                            <Link
-                              to="/subcategories/$slug"
-                              params={{ slug: parent.slug } as never}
-                              onClick={() => setCatOpen(false)}
-                              className="flex items-center gap-2 pb-2 border-b border-border/60 group hover:opacity-80 transition-all mb-2.5"
-                            >
-                              <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded overflow-hidden bg-muted/10">
-                                {parent.image ? (
-                                  <img src={resolveImage(parent.image)} alt={parent.name} className="w-full h-full object-contain" />
-                                ) : (
-                                  <span className="text-base">{parent.icon ?? "🎁"}</span>
-                                )}
-                              </span>
-                              <span className="text-[13px] font-extrabold uppercase tracking-wider text-foreground group-hover:text-primary leading-tight line-clamp-1">
-                                {parent.name}
-                              </span>
-                            </Link>
 
-                            {/* Subcategories List */}
-                            <div className="flex flex-col gap-2 pl-0.5">
-                              {children.length > 0 ? (
-                                children.map(child => (
+            {catOpen && (
+              <div className="absolute left-0 top-full mt-0 w-[64rem] max-w-[90vw] bg-white text-foreground rounded-b-2xl shadow-2xl border-x border-b border-border overflow-hidden z-[100] flex h-[460px] animate-in fade-in slide-in-from-top-3 duration-200">
+                {/* Left Side: Root Categories */}
+                <div className="w-72 bg-slate-50/90 border-r border-slate-100 flex flex-col overflow-y-auto py-3">
+                  {categories.filter(c => !c.parent_id).map((parent) => {
+                    const isActive = activeCatId === parent.id;
+                    return (
+                      <div
+                        key={parent.id}
+                        onMouseEnter={() => setActiveCatId(parent.id)}
+                        className={`flex items-center justify-between px-5 py-3 cursor-pointer font-black text-[11px] tracking-wider uppercase transition-all relative group/root ${isActive ? "bg-white text-[#1D4ED8] shadow-sm" : "text-slate-600 hover:bg-slate-100/80"
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="size-5 flex items-center justify-center shrink-0">
+                            {parent.image ? (
+                              <img src={resolveImage(parent.image)} alt="" className="w-full h-full object-contain" />
+                            ) : (
+                              <span className="text-sm">{parent.icon ?? "🎁"}</span>
+                            )}
+                          </span>
+                          <span>{parent.name}</span>
+                        </div>
+                        <ChevronRight className={`size-3.5 opacity-60 group-hover/root:translate-x-1 transition-transform ${isActive ? "text-[#1D4ED8] opacity-100" : ""}`} />
+                        {isActive && <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#1D4ED8]" />}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Right Side: Subcategories Pop / Flyout */}
+                <div className="flex-1 bg-white p-8 overflow-y-auto relative">
+                  {activeCatId ? (
+                    <div key={activeCatId} className="animate-in zoom-in-[0.98] fade-in duration-200">
+                      {(() => {
+                        const cur = categories.find(c => c.id === activeCatId);
+                        const kids = categories.filter(c => c.parent_id === activeCatId);
+                        return (
+                          <>
+                            <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
+                              <h3 className="font-black text-sm uppercase tracking-widest text-slate-800 flex items-center gap-2">
+                                {cur?.name}
+                              </h3>
+                              <Link
+                                to="/subcategories/$slug"
+                                params={{ slug: cur?.slug } as never}
+                                onClick={() => setCatOpen(false)}
+                                className="text-xs font-bold text-[#1D4ED8] hover:underline flex items-center gap-1"
+                              >
+                                Shop All <ChevronRight className="size-3" />
+                              </Link>
+                            </div>
+                            {kids.length === 0 ? (
+                              <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-xs font-bold uppercase tracking-wider gap-2">
+                                <div className="opacity-50 text-2xl">✨</div>
+                                Browse current arrivals
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {kids.map(child => (
                                   <Link
                                     key={child.id}
                                     to="/products"
                                     search={{ category: child.slug } as never}
                                     onClick={() => setCatOpen(false)}
-                                    className="text-xs font-semibold text-muted-foreground hover:text-[#1D4ED8] hover:translate-x-1 transition-all flex items-center gap-2 leading-snug group/item"
+                                    className="group/kid flex items-center gap-2.5 p-3 rounded-xl bg-slate-50/70 hover:bg-[#1D4ED8]/5 border border-slate-100/70 hover:border-[#1D4ED8]/20 transition-all duration-200"
                                   >
-                                    <span className="opacity-50 text-[9px] shrink-0 group-hover/item:opacity-100">•</span>
-                                    <span className="truncate">{child.name}</span>
+                                    <div className="size-1.5 bg-slate-300 group-hover/kid:bg-[#1D4ED8] rounded-full group-hover/kid:scale-125 transition-all shrink-0" />
+                                    <span className="text-[12px] font-bold text-slate-600 group-hover/kid:text-[#1D4ED8] group-hover/kid:translate-x-0.5 transition-all truncate">
+                                      {child.name}
+                                    </span>
                                   </Link>
-                                ))
-                              ) : (
-                                <Link
-                                  to="/subcategories/$slug"
-                                  params={{ slug: parent.slug } as never}
-                                  onClick={() => setCatOpen(false)}
-                                  className="text-xs font-medium italic text-muted-foreground/50 hover:text-primary pl-4 transition-colors"
-                                >
-                                  Browse Category
-                                </Link>
-                              )}
-                            </div>
-                          </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
                         );
-                      })}
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 font-bold text-xs uppercase tracking-widest">
+                      Select a category to view toys
                     </div>
                   )}
                 </div>
-                <Link
-                  to="/products"
-                  onClick={() => setCatOpen(false)}
-                  className="block border-t border-border bg-muted/10 p-2.5 text-center text-xs md:text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors uppercase tracking-wider"
-                >
-                  View All Products
-                </Link>
               </div>
             )}
           </div>
 
-            <div
-              ref={brandRef}
-              className="relative pb-2 -mb-2"
-              onMouseEnter={() => {
-                setBrandOpen(true);
-                setAgeOpen(false);
-                setCatOpen(false);
-                setProfileOpen(false);
-              }}
-              onMouseLeave={() => setBrandOpen(false)}
+          {/* Brands Skewed Dropdown */}
+          <div
+            ref={brandRef}
+            className="h-full relative group"
+            onMouseEnter={() => {
+              setBrandOpen(true);
+              setAgeOpen(false);
+              setCatOpen(false);
+            }}
+            onMouseLeave={() => setBrandOpen(false)}
+          >
+            <button
+              onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); }}
+              className="relative h-full px-8 flex items-center justify-center outline-none cursor-pointer"
             >
-              <button
-                onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); setProfileOpen(false); }}
-                className="uppercase tracking-wide flex items-center gap-1 font-bold text-[#1D4ED8] hover:opacity-80 transition"
-              >
-                BRANDS <ChevronDown className={`size-4 transition ${brandOpen ? "rotate-180" : ""}`} />
-              </button>
-              {brandOpen && (
-                <div className="absolute left-0 top-full mt-0 w-[420px] bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
-                  <div className="p-2 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
-                    {BRANDS.map((b) => (
-                      <Link
-                        key={b}
-                        to="/products"
-                        search={{ brand: b } as never}
-                        onClick={() => setBrandOpen(false)}
-                        className="block px-3 py-2 hover:bg-muted rounded text-sm font-medium transition"
-                      >
-                        {b}
-                      </Link>
-                    ))}
-                  </div>
+              <div className={`absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 ${brandOpen
+                  ? "bg-gradient-to-b from-[#FFC107] to-[#FFB300]"
+                  : "bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300]"
+                }`} />
+              <span className={`relative z-10 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors duration-200 ${brandOpen ? "text-[#1D4ED8]" : "text-slate-100 group-hover:text-[#1D4ED8]"
+                }`}>
+                Brands <ChevronDown className={`size-3.5 transition ${brandOpen ? "rotate-180" : ""}`} />
+              </span>
+            </button>
+            {brandOpen && (
+              <div className="absolute left-0 top-full mt-0 w-[400px] bg-white text-foreground rounded-b-2xl shadow-2xl border-x border-b border-border overflow-hidden z-[100] animate-in fade-in slide-in-from-top-3 duration-200">
+                <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
+                  {BRANDS.map((b) => (
+                    <Link
+                      key={b}
+                      to="/products"
+                      search={{ brand: b } as never}
+                      onClick={() => setBrandOpen(false)}
+                      className="block px-4 py-2.5 hover:bg-slate-50 hover:text-[#1D4ED8] rounded-xl text-[12px] font-bold uppercase tracking-wider transition"
+                    >
+                      {b}
+                    </Link>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
 
-            <div
-              ref={ageRef}
-              className="relative pb-2 -mb-2"
-              onMouseEnter={() => {
-                setAgeOpen(true);
-                setBrandOpen(false);
-                setCatOpen(false);
-                setProfileOpen(false);
-              }}
-              onMouseLeave={() => setAgeOpen(false)}
+          {/* Shop by Age Skewed Dropdown */}
+          <div
+            ref={ageRef}
+            className="h-full relative group"
+            onMouseEnter={() => {
+              setAgeOpen(true);
+              setBrandOpen(false);
+              setCatOpen(false);
+            }}
+            onMouseLeave={() => setAgeOpen(false)}
+          >
+            <button
+              onClick={() => { setAgeOpen((v) => !v); setBrandOpen(false); setCatOpen(false); }}
+              className="relative h-full px-8 flex items-center justify-center outline-none cursor-pointer"
             >
-              <button
-                onClick={() => { setAgeOpen((v) => !v); setCatOpen(false); setProfileOpen(false); }}
-                className="uppercase tracking-wide flex items-center gap-1"
-              >
-                SHOP BY AGE <ChevronDown className={`size-4 transition ${ageOpen ? "rotate-180" : ""}`} />
-              </button>
-              {ageOpen && (
-                <div className="absolute left-0 top-full mt-0 w-48 bg-surface text-foreground rounded-xl shadow-pop border border-border overflow-hidden z-50">
-                  <div className="p-2 flex flex-col gap-1">
-                    {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
-                      <Link
-                        key={age}
-                        to="/products"
-                        search={{ age: age } as never}
-                        onClick={() => setAgeOpen(false)}
-                        className="block px-3 py-2 rounded text-sm font-medium"
-                      >
-                        {age}
-                      </Link>
-                    ))}
-                  </div>
+              <div className={`absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 ${ageOpen
+                  ? "bg-gradient-to-b from-[#FFC107] to-[#FFB300]"
+                  : "bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300]"
+                }`} />
+              <span className={`relative z-10 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors duration-200 ${ageOpen ? "text-[#1D4ED8]" : "text-slate-100 group-hover:text-[#1D4ED8]"
+                }`}>
+                Shop By Age <ChevronDown className={`size-3.5 transition ${ageOpen ? "rotate-180" : ""}`} />
+              </span>
+            </button>
+            {ageOpen && (
+              <div className="absolute left-0 top-full mt-0 w-52 bg-white text-foreground rounded-b-2xl shadow-2xl border-x border-b border-border overflow-hidden z-[100] animate-in fade-in slide-in-from-top-3 duration-200">
+                <div className="p-2 flex flex-col gap-1">
+                  {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
+                    <Link
+                      key={age}
+                      to="/products"
+                      search={{ age: age } as never}
+                      onClick={() => setAgeOpen(false)}
+                      className="block px-4 py-2.5 rounded-xl hover:bg-slate-50 hover:text-[#1D4ED8] text-[12px] font-bold uppercase tracking-wider transition"
+                    >
+                      {age}
+                    </Link>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
 
-            <Link to="/products" search={{ sale: true } as never} className="uppercase tracking-wide font-extrabold text-emerald-600">SALE</Link>
-            {user && <Link to="/account" search={{ view: 'orders' } as any} className="uppercase tracking-wide">MY ORDERS</Link>}
-            <Link to="/coupons" className="uppercase tracking-wide text-[#1D4ED8]">COUPONS</Link>
+          {/* Sale Skewed Link */}
+          <Link
+            to="/products"
+            search={{ sale: true } as never}
+            className="relative h-full px-8 flex items-center justify-center group cursor-pointer"
+          >
+            <div className="absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300] transition-all duration-200" />
+            <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-emerald-400 group-hover:text-[#1D4ED8] flex items-center gap-1 transition-colors">
+              Sale
+            </span>
+          </Link>
 
+          {/* My Orders Skewed Link */}
+          {user && (
+            <Link
+              to="/account"
+              search={{ view: 'orders' } as any}
+              className="relative h-full px-8 flex items-center justify-center group cursor-pointer"
+            >
+              <div className="absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300] transition-all duration-200" />
+              <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-slate-100 group-hover:text-[#1D4ED8] transition-colors">
+                My Orders
+              </span>
+            </Link>
+          )}
+
+          {/* Coupons Skewed Link */}
+          <Link
+            to="/coupons"
+            className="relative h-full px-8 flex items-center justify-center group cursor-pointer"
+          >
+            <div className="absolute inset-0 border-r border-slate-700/40 -skew-x-[18deg] origin-bottom z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] bg-gradient-to-b from-slate-800 to-slate-900 group-hover:from-[#FFC107] group-hover:to-[#FFB300] transition-all duration-200" />
+            <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-slate-100 group-hover:text-[#1D4ED8] transition-colors">
+              Coupons
+            </span>
+          </Link>
 
         </div>
       </div>

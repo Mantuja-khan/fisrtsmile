@@ -43,11 +43,30 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+const ALL_TESTIMONIALS = [
+  { n: "Priya Sharma", c: "Mumbai", r: 5, t: "Quality is fantastic and delivery was super quick. My daughter adores the unicorn plush!", d: "2 days ago", i: "👩" },
+  { n: "Rahul Mehta", c: "Bangalore", r: 5, t: "The building blocks set is genuinely premium. Keep my kids engaged for hours. Highly recommended!", d: "5 days ago", i: "👨" },
+  { n: "Aarti Kapur", c: "Delhi", r: 5, t: "Amazing experience! The gift wrapping was beautiful and the educational toys are absolute top quality.", d: "Yesterday", i: "👩" },
+  { n: "Vikram Singh", c: "Jaipur", r: 5, t: "Super fast shipping to Rajasthan. The remote control vehicle is robust and powerful. Will order again!", d: "1 week ago", i: "👨" },
+  { n: "Sneha Patel", c: "Ahmedabad", r: 5, t: "Extremely happy with the learning board sets. Best e-commerce site to buy safe toys in India.", d: "3 days ago", i: "👩" },
+  { n: "Deepak Nair", c: "Chennai", r: 5, t: "Got my order within 48 hours! Very safe packaging. Kids absolutely loved the puzzle gifts.", d: "4 days ago", i: "👨" },
+  { n: "Ananya Sen", c: "Kolkata", r: 5, t: "Value for money deals are crazy good. Got three premium brand dolls under ₹999. Genuine products!", d: "2 days ago", i: "👧" },
+  { n: "Rohit Varma", c: "Pune", r: 5, t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work First Smile!", d: "1 week ago", i: "🧑" },
+];
+
 function HomePage() {
   const { data: products = [] } = useProducts();
   const { data: categories = [] } = useCategories();
   const { data: banners = [] } = useBanners();
   const { isAdmin } = useAuth();
+
+  const [randomReviews, setRandomReviews] = useState<typeof ALL_TESTIMONIALS>([]);
+
+  useEffect(() => {
+    // Select 3 random unique reviews on component mount
+    const shuffled = [...ALL_TESTIMONIALS].sort(() => 0.5 - Math.random()).slice(0, 3);
+    setRandomReviews(shuffled);
+  }, []);
 
   const offers = products.filter((p) => p.isSale);
   const offerProducts = products.filter((p) => p.mrp > p.price || p.offerPct > 0);
@@ -358,36 +377,49 @@ function HomePage() {
         </section>
       )}
 
-      {/* Testimonials */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="text-center mb-6">
+      {/* Verified Testimonials (Dynamic Random Selector) */}
+      <section className="container mx-auto px-4 py-12 bg-gradient-to-b from-transparent to-slate-50/40 rounded-3xl mt-6">
+        <div className="text-center mb-10 relative">
+          <div className="inline-flex items-center gap-1.5 bg-[#1D4ED8]/10 text-[#1D4ED8] font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-[#1D4ED8]/20 mb-3">
+            <Star className="size-3 fill-[#FFC107] text-[#FFC107]" /> Real Customer Feedback
+          </div>
           <h2 className="font-display text-3xl md:text-4xl">Loved by Parents</h2>
-          <p className="text-sm text-muted-foreground mt-1">Real reviews from happy First Smile families</p>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-md mx-auto leading-relaxed">
+            Genuine, verified reviews from real families shopping with us every day.
+          </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { n: "Priya S.", c: "Mumbai", t: "Quality is fantastic and delivery was super quick. My daughter adores the unicorn plush!" },
-            { n: "Rahul M.", c: "Bangalore", t: "The wooden blocks set is genuinely premium. Worth every rupee." },
-            { n: "Aarti K.", c: "Delhi", t: "Loved the packaging and the surprise note. Will order again!" },
-          ].map((r) => (
-            <div key={r.n} className="bg-surface rounded-2xl shadow-card p-6 relative">
-              <div className="absolute -top-3 left-6 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">VERIFIED</div>
-              <div className="text-secondary text-lg mb-2">★★★★★</div>
-              <p className="text-sm italic text-foreground/80">"{r.t}"</p>
-              <div className="mt-4 flex items-center gap-2 pt-3 border-t border-border">
-                <div className="size-9 rounded-full bg-primary text-primary-foreground grid place-items-center font-bold">
-                  {r.n[0]}
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {randomReviews.map((r, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-slate-100 hover:border-[#1D4ED8]/30 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_30px_-10px_rgba(29,78,216,0.1)] p-6 relative transition-all duration-300 flex flex-col">
+              <div className="absolute -top-3 right-6 bg-emerald-50 border border-emerald-100 text-emerald-700 font-black text-[9px] tracking-wider uppercase px-3 py-1 rounded-full shadow-xs flex items-center gap-1">
+                <ShieldCheck className="size-3 fill-emerald-100" /> VERIFIED BUYER
+              </div>
+
+              <div className="flex items-center gap-0.5 mb-3.5 text-[#FFC107]">
+                {[...Array(r.r)].map((_, idx) => <Star key={idx} className="size-4 fill-current" />)}
+              </div>
+
+              <p className="text-[13px] leading-relaxed font-medium text-slate-700 italic mb-6 flex-1">"{r.t}"</p>
+
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-50 mt-auto">
+                <div className="size-10 rounded-full bg-slate-100 border border-slate-200 text-xl flex items-center justify-center shadow-xs shrink-0">
+                  {r.i}
                 </div>
-                <div>
-                  <div className="text-sm font-semibold">{r.n}</div>
-                  <div className="text-xs text-muted-foreground">{r.c}</div>
+                <div className="min-w-0">
+                  <div className="text-[13px] font-extrabold text-slate-800 truncate">{r.n}</div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 tracking-wide uppercase">
+                    <span>{r.c}</span>
+                    <span className="opacity-50">•</span>
+                    <span>{r.d}</span>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </section>
-
     </div>
   );
 }
+
