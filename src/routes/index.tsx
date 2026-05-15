@@ -240,14 +240,14 @@ function HomePage() {
             <div className="flex items-center justify-between mb-5 relative z-10">
               <div>
                 <div className="flex items-center gap-2">
-                  <Star className="size-6 text-[#1D4ED8] fill-current" />
+                  <Star className="size-6 text-slate-800 fill-current" />
                   <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-slate-900">Best Sellers</h2>
                 </div>
               </div>
               <Link
                 to="/products"
                 search={{ badge: "Best Seller" } as never}
-                className="text-xs md:text-sm font-bold text-[#1D4ED8] underline hover:opacity-80 transition-opacity"
+                className="text-xs md:text-sm font-extrabold text-slate-900 underline decoration-[#BFDDF0] decoration-2 hover:text-slate-700 transition-all"
               >
                 View More →
               </Link>
@@ -289,8 +289,8 @@ function HomePage() {
               </div>
 
               {/* Rectangular Box Text matching Shop by Age design */}
-              <div className="mt-4 border-2 border-[#1D4ED8] bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_#FFC107] group-hover:bg-[#1D4ED8] group-hover:text-white group-hover:border-[#1D4ED8] transition-all duration-300">
-                <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap truncate block">
+              <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
+                <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap truncate block text-slate-950">
                   {c.name}
                 </span>
               </div>
@@ -322,8 +322,8 @@ function HomePage() {
               </div>
 
               {/* The Rectangular Box Text below - matching user design */}
-              <div className="mt-4 border-2 border-[#1D4ED8] bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[2px_2px_0px_#FFC107] group-hover:bg-[#1D4ED8] group-hover:text-white group-hover:border-[#1D4ED8] transition-all duration-300">
-                <span className="font-bold text-xs tracking-wider uppercase whitespace-nowrap">
+              <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
+                <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap text-slate-950">
                   {age.label}
                 </span>
               </div>
@@ -380,8 +380,8 @@ function HomePage() {
       {/* Verified Testimonials (Dynamic Random Selector) */}
       <section className="container mx-auto px-4 py-12 bg-gradient-to-b from-transparent to-slate-50/40 rounded-3xl mt-6">
         <div className="text-center mb-10 relative">
-          <div className="inline-flex items-center gap-1.5 bg-[#1D4ED8]/10 text-[#1D4ED8] font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-[#1D4ED8]/20 mb-3">
-            <Star className="size-3 fill-[#FFC107] text-[#FFC107]" /> Real Customer Feedback
+          <div className="inline-flex items-center gap-1.5 bg-[#BFDDF0]/30 text-slate-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-[#BFDDF0]/50 mb-3 shadow-xs">
+            <Star className="size-3 fill-amber-400 text-amber-400" /> Real Customer Feedback
           </div>
           <h2 className="font-display text-3xl md:text-4xl">Loved by Parents</h2>
           <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-md mx-auto leading-relaxed">
@@ -391,12 +391,12 @@ function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-6">
           {randomReviews.map((r, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-100 hover:border-[#1D4ED8]/30 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_30px_-10px_rgba(29,78,216,0.1)] p-6 relative transition-all duration-300 flex flex-col">
+            <div key={i} className="bg-white rounded-2xl border border-slate-100 hover:border-[#BFDDF0] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_30px_-10px_rgba(191,221,240,0.4)] p-6 relative transition-all duration-300 flex flex-col">
               <div className="absolute -top-3 right-6 bg-emerald-50 border border-emerald-100 text-emerald-700 font-black text-[9px] tracking-wider uppercase px-3 py-1 rounded-full shadow-xs flex items-center gap-1">
                 <ShieldCheck className="size-3 fill-emerald-100" /> VERIFIED BUYER
               </div>
 
-              <div className="flex items-center gap-0.5 mb-3.5 text-[#FFC107]">
+              <div className="flex items-center gap-0.5 mb-3.5 text-amber-400">
                 {[...Array(r.r)].map((_, idx) => <Star key={idx} className="size-4 fill-current" />)}
               </div>
 

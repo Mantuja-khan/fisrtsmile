@@ -165,7 +165,7 @@ function ProductPage() {
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Recommended Age Range</span>
               <div className="flex flex-wrap gap-2">
                 {String(product.ageRange).split(",").filter(Boolean).map((age) => (
-                  <span key={age} className="text-xs font-bold bg-indigo-50 text-[#1D4ED8] px-3 py-1 rounded-full border border-indigo-100 shadow-xs uppercase tracking-wide">
+                  <span key={age} className="text-xs font-extrabold bg-[#BFDDF0]/30 text-slate-800 px-3 py-1 rounded-full border border-[#BFDDF0]/60 shadow-xs uppercase tracking-wide">
                     {age.trim()}
                   </span>
                 ))}
@@ -194,7 +194,7 @@ function ProductPage() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {[
-                { icon: Truck, t: "Fast Dispatch", c: "bg-blue-50 text-[#1D4ED8] border-blue-100" },
+                { icon: Truck, t: "Fast Dispatch", c: "bg-[#BFDDF0]/30 text-slate-800 border-[#BFDDF0]/50" },
                 { icon: ShieldCheck, t: "Safe Packaging", c: "bg-emerald-50 text-emerald-700 border-emerald-100" },
                 { icon: RotateCcw, t: "Easy Exchange", c: "bg-purple-50 text-purple-700 border-purple-100" },
                 { icon: Sparkles, t: "100% Genuine", c: "bg-amber-50 text-amber-800 border-amber-100" },

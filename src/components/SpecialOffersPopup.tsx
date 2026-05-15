@@ -35,23 +35,23 @@ export function SpecialOffersPopup() {
       <div className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden border border-white/20 animate-in zoom-in-95 duration-300 flex flex-col">
         
         {/* Glossy Header Bar */}
-        <div className="bg-gradient-to-r from-[#802a8f] to-[#1D4ED8] p-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div className="bg-gradient-to-br from-[#BFDDF0] to-[#FEFD99] p-6 text-center relative overflow-hidden border-b border-[#BFDDF0]/50">
+          <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
           <button 
             onClick={() => setOpen(false)} 
-            className="absolute right-4 top-4 p-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors z-10"
+            className="absolute right-4 top-4 p-1.5 bg-slate-950/5 hover:bg-slate-950/10 rounded-full text-slate-800 transition-colors z-10"
           >
             <X className="size-5" />
           </button>
           
           <div className="relative z-10 flex flex-col items-center">
-            <div className="bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full border border-white/30 inline-flex items-center gap-2 text-white font-bold text-xs uppercase tracking-widest mb-2">
+            <div className="bg-slate-950/5 backdrop-blur-sm px-4 py-1 rounded-full border border-slate-950/10 inline-flex items-center gap-2 text-slate-950 font-black text-xs uppercase tracking-widest mb-2">
               <Percent className="size-3" /> Limited Time
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-white tracking-wide flex items-center gap-2">
-              <Sparkles className="size-6 fill-white text-white" /> Best Offers! <Sparkles className="size-6 fill-white text-white" />
+            <h2 className="text-3xl md:text-4xl font-display font-black text-slate-950 tracking-wide flex items-center gap-2">
+              <Sparkles className="size-6 fill-slate-950 text-slate-950" /> Best Offers! <Sparkles className="size-6 fill-slate-950 text-slate-950" />
             </h2>
-            <p className="text-white/80 text-sm font-medium mt-1">Don't miss out on our biggest discounts today.</p>
+            <p className="text-slate-800/80 text-sm font-bold mt-1">Don't miss out on our biggest discounts today.</p>
           </div>
         </div>
 
@@ -66,10 +66,10 @@ export function SpecialOffersPopup() {
                   to="/product/$id"
                   params={{ id: p.id }}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-4 bg-white border border-slate-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all group relative overflow-hidden"
+                  className="flex items-center gap-4 bg-white border border-slate-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-[#BFDDF0] transition-all group relative overflow-hidden"
                 >
                   {/* Top Left Tag */}
-                  <div className="absolute top-0 left-0 bg-blue-600 text-white font-bold text-[10px] px-3 py-1 rounded-br-xl shadow-sm z-10 animate-pulse">
+                  <div className="absolute top-0 left-0 bg-[#FEFD99] text-slate-950 font-extrabold text-[10px] px-3 py-1 rounded-br-xl border-r border-b border-slate-200/80 shadow-xs z-10">
                     Save {p.offerPct}%
                   </div>
 
@@ -82,15 +82,15 @@ export function SpecialOffersPopup() {
                   </div>
                   
                   <div className="min-w-0 flex-1 space-y-1">
-                    <h3 className="font-bold text-slate-800 text-sm md:text-base truncate group-hover:text-[#1D4ED8] transition-colors">{p.name}</h3>
+                    <h3 className="font-extrabold text-slate-800 text-sm md:text-base truncate group-hover:text-slate-950 transition-colors">{p.name}</h3>
                     <p className="text-xs text-slate-400 font-medium truncate">{p.category_name || 'Trending Product'}</p>
                     <div className="flex items-baseline gap-2 mt-1">
-                      <span className="text-blue-600 font-extrabold text-lg">₹{final}</span>
+                      <span className="text-slate-950 font-black text-lg">₹{final}</span>
                       <span className="text-slate-400 text-xs line-through">₹{p.mrp}</span>
                     </div>
                   </div>
 
-                  <div className="size-10 rounded-full bg-blue-50 text-[#1D4ED8] grid place-items-center group-hover:bg-[#1D4ED8] group-hover:text-white transition-colors shrink-0 shadow-sm">
+                  <div className="size-10 rounded-full bg-[#BFDDF0]/40 border border-[#BFDDF0]/60 text-slate-900 grid place-items-center group-hover:bg-[#BFDDF0] group-hover:text-slate-950 transition-all shrink-0 shadow-xs">
                     <ShoppingBag className="size-5" />
                   </div>
                 </Link>
@@ -104,7 +104,7 @@ export function SpecialOffersPopup() {
           <Link
             to="/products"
             onClick={() => setOpen(false)}
-            className="inline-flex items-center justify-center w-full py-3.5 bg-slate-900 hover:bg-blue-700 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
+            className="inline-flex items-center justify-center w-full py-3.5 bg-slate-950 border border-[#BFDDF0]/20 hover:bg-slate-800 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
           >
             Explore More Offers →
           </Link>

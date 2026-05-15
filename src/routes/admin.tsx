@@ -1,14 +1,14 @@
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/store/auth";
-import { 
-  Shield, 
-  LayoutGrid, 
-  Package, 
-  ShoppingBag, 
-  Tag, 
-  Users, 
-  Image as ImageIcon, 
-  Sparkles, 
+import {
+  Shield,
+  LayoutGrid,
+  Package,
+  ShoppingBag,
+  Tag,
+  Users,
+  Image as ImageIcon,
+  Sparkles,
   Lock,
   LogOut,
   Search,
@@ -76,7 +76,7 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col md:flex-row relative font-sans">
-      
+
       {/* 
         Masterclass Left Sidebar Structure matching reference screenshot:
         Composed of the extreme-left thick Solid Purple Column and the next adjacent White Panel.
@@ -87,14 +87,14 @@ function AdminLayout() {
           <Cloud className="size-5 fill-current" />
         </div>
       </div>
-      
+
       {/* Main Sidebar Links Menu Panel */}
       <aside className="w-full md:w-60 bg-white border-b md:border-b-0 md:border-r border-slate-100 flex flex-col shrink-0 relative z-10">
-        
+
         {/* Back Button Area replacing MyCloud PRO */}
         <div className="h-16 px-6 flex items-center border-b border-slate-50">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-[#7C3AED] transition-colors"
           >
             <ArrowLeft className="size-4 stroke-[2.5]" />
@@ -108,7 +108,7 @@ function AdminLayout() {
             const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
             return (
               <div key={t.to} className="relative group shrink-0 md:shrink">
-                
+
                 {/* 
                   Masterpiece overlapping active icon box matching reference screenshot precisely:
                   Pops out across the border bounding the left solid purple column and the white sidebar panel.
@@ -121,11 +121,10 @@ function AdminLayout() {
 
                 <Link
                   to={t.to}
-                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs tracking-wide transition-all block ${
-                    active 
-                      ? "bg-[#F3EEFF] text-[#7C3AED] ml-1" 
+                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs tracking-wide transition-all block ${active
+                      ? "bg-[#F3EEFF] text-[#7C3AED] ml-1"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <t.icon className={`size-4 stroke-[2.5] shrink-0 ${active ? "text-[#7C3AED]" : "text-slate-400"}`} />
                   <span className="truncate">{t.label}</span>
@@ -139,7 +138,7 @@ function AdminLayout() {
         <div className="p-4 border-t border-slate-50 mt-auto">
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs text-[#1D4ED8] hover:bg-blue-50 transition-all tracking-wide cursor-pointer"
+            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-extrabold text-xs text-rose-600 hover:bg-rose-50 transition-all tracking-wide cursor-pointer"
           >
             <LogOut className="size-4 stroke-[2.5] shrink-0" />
             <span>Logout</span>
@@ -149,15 +148,15 @@ function AdminLayout() {
 
       {/* Main Right Contents Workspace Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
+
         {/* Premium Top Bar matching screenshot elements */}
         <header className="h-16 bg-white border-b border-slate-100 px-8 flex items-center justify-between gap-4 sticky top-0 z-10">
           {/* Custom Search Box */}
           <div className="flex items-center gap-3 w-full max-w-md bg-slate-50/50 px-3.5 py-2 rounded-xl border border-slate-100">
             <Search className="size-4 text-slate-400 shrink-0" />
-            <input 
-              placeholder="Search for orders, products, customers..." 
-              className="w-full text-xs outline-none bg-transparent placeholder:text-slate-400 font-medium text-slate-700" 
+            <input
+              placeholder="Search for orders, products, customers..."
+              className="w-full text-xs outline-none bg-transparent placeholder:text-slate-400 font-medium text-slate-700"
             />
           </div>
 
@@ -165,18 +164,18 @@ function AdminLayout() {
             {/* Bell notification badge matching reference UI */}
             <div className="relative cursor-pointer hover:opacity-80 p-1">
               <Bell className="size-4 text-slate-600" />
-              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#1D4ED8] text-white rounded-full flex items-center justify-center text-[8px] font-black shadow-xs">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FEFD99] text-slate-950 border border-slate-300/60 rounded-full flex items-center justify-center text-[9px] font-black shadow-xs">
                 3
               </span>
             </div>
 
             {/* Admin Avatar Profile block */}
             <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
-              <div className="w-8 h-8 rounded-full bg-[#1D4ED8] text-white font-black text-xs flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-[#BFDDF0] border border-slate-200 text-slate-900 font-black text-xs flex items-center justify-center shadow-xs">
                 {user?.email?.[0]?.toUpperCase() || "A"}
               </div>
               <div className="hidden sm:flex items-center gap-1.5 cursor-pointer">
-                <span className="text-xs font-bold text-slate-800 tracking-tight">Admin User</span>
+                <span className="text-xs font-bold text-slate-800 tracking-tight"></span>
                 <ChevronDown className="size-3 text-slate-400" />
               </div>
             </div>

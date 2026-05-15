@@ -28,12 +28,12 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Badges */}
       <div className="absolute top-2 sm:top-3 left-0 z-10 flex flex-col gap-1 items-start">
         {product.isSale && (
-          <span className="text-[9px] sm:text-[10px] font-black uppercase bg-[#1D4ED8] text-white px-1.5 sm:px-2 py-0.5 shadow-sm animate-[pulse_0.8s_infinite] tracking-wider">
+          <span className="text-[9px] sm:text-[10px] font-black uppercase bg-[#BFDDF0] text-slate-900 px-1.5 sm:px-2 py-0.5 shadow-xs animate-[pulse_1.2s_infinite] tracking-wider border border-slate-200/50">
             ⚡ Flash Sale
           </span>
         )}
         {product.offerPct > 0 && (
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase bg-[#1D4ED8] text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
+          <span className="text-[9px] sm:text-[10px] font-black uppercase bg-[#BFDDF0] text-slate-900 px-1.5 sm:px-2 py-0.5 shadow-xs border border-slate-200/50">
             Sale {product.offerPct}%
           </span>
         )}
@@ -79,7 +79,7 @@ export function ProductCard({ product }: { product: Product }) {
         <Link
           to="/product/$id"
           params={{ id: product.id }}
-          className="text-[11px] sm:text-[13px] font-medium text-gray-700 hover:text-[#1D4ED8] line-clamp-2 leading-relaxed mb-1 sm:mb-1.5 transition-colors min-h-[2rem] sm:min-h-[2.3rem] flex items-center justify-center px-0.5"
+          className="text-[11px] sm:text-[13px] font-bold text-gray-700 hover:text-slate-950 hover:underline decoration-[#BFDDF0] decoration-2 line-clamp-2 leading-relaxed mb-1 sm:mb-1.5 transition-all min-h-[2rem] sm:min-h-[2.3rem] flex items-center justify-center px-0.5"
         >
           {/* Truncated view for mobile screens */}
           <span className="sm:hidden block">
@@ -95,7 +95,7 @@ export function ProductCard({ product }: { product: Product }) {
         {product.age_range && (
           <div className="flex flex-wrap items-center justify-center gap-1 mb-1.5">
             {String(product.age_range).split(",").filter(Boolean).map((age) => (
-              <span key={age} className="text-[9px] font-bold bg-[#eff6ff] text-[#1D4ED8] px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.05)] uppercase tracking-wider">
+              <span key={age} className="text-[9px] font-extrabold bg-[#BFDDF0]/30 text-slate-800 px-1.5 py-0.5 rounded border border-[#BFDDF0]/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] uppercase tracking-wider">
                 {age.trim()}
               </span>
             ))}
@@ -106,7 +106,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mt-auto flex flex-col gap-1 sm:gap-1.5">
           {/* Price Section */}
           <div className="flex flex-col lg:flex-row items-center lg:items-baseline lg:justify-center lg:gap-2">
-            <div className="text-[#1D4ED8] font-bold text-xs sm:text-base tracking-wide">
+            <div className="text-slate-900 font-black text-xs sm:text-base tracking-wide">
               Rs. {finalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] sm:text-[11px] text-gray-500 font-semibold lg:mt-0 mt-0.5">
@@ -123,9 +123,9 @@ export function ProductCard({ product }: { product: Product }) {
                 toast.success("Added to cart 🛒");
               }
             }}
-            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest transition-all duration-300 border rounded-full ${
+            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extrabold uppercase tracking-widest transition-all duration-300 border rounded-full ${
               product.inStock
-                ? "border-[#1D4ED8] text-[#1D4ED8] bg-white hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#1D4ED8]"
+                ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
                 : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
             }`}
           >

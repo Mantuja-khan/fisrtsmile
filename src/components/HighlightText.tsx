@@ -19,7 +19,7 @@ export function HighlightText({ text, highlight }: HighlightTextProps) {
     <>
       {parts.map((part, i) => 
         regex.test(part) ? (
-          <mark key={i} className="bg-yellow-100 text-[#1D4ED8] font-bold rounded-sm px-0.5 shadow-sm">{part}</mark>
+          <mark key={i} className="bg-[#FEFD99]/70 text-slate-950 font-extrabold rounded-xs px-0.5 border-b border-slate-400/40">{part}</mark>
         ) : (
           <span key={i}>{part}</span>
         )

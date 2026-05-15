@@ -91,11 +91,11 @@ function AccountPage() {
               
               {/* Profile Info Header Card */}
               <div className="bg-white rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-lg uppercase shadow-sm shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#BFDDF0] text-slate-900 border border-slate-200/60 flex items-center justify-center font-extrabold text-lg uppercase shadow-sm shrink-0">
                   {name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-bold text-[15px] text-slate-800 leading-tight truncate">{name}</h2>
+                  <h2 className="font-extrabold text-[15px] text-slate-800 leading-tight truncate">{name}</h2>
                   <p className="text-xs text-slate-400 font-medium truncate mt-0.5">{user.email}</p>
                 </div>
               </div>
@@ -109,15 +109,15 @@ function AccountPage() {
                     onClick={() => setView("orders")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "orders" 
-                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Package className={`w-[18px] h-[18px] ${view === "orders" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <Package className={`w-[18px] h-[18px] ${view === "orders" ? "text-slate-900" : "text-slate-400"}`} />
                       <span>My Orders</span>
                     </div>
-                    <ChevronRight className={`w-4 h-4 ${view === "orders" ? "text-[#1D4ED8]" : "text-slate-300"}`} />
+                    <ChevronRight className={`w-4 h-4 ${view === "orders" ? "text-slate-900" : "text-slate-300"}`} />
                   </button>
                 </div>
 
@@ -133,12 +133,12 @@ function AccountPage() {
                     onClick={() => setView("profile")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "profile" 
-                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <User className={`w-[18px] h-[18px] ${view === "profile" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <User className={`w-[18px] h-[18px] ${view === "profile" ? "text-slate-900" : "text-slate-400"}`} />
                       <span>Profile Information</span>
                     </div>
                     {view !== "profile" && <ChevronRight className="w-4 h-4 text-slate-300" />}
@@ -148,12 +148,12 @@ function AccountPage() {
                     onClick={() => setView("addresses")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
                       view === "addresses" 
-                        ? "bg-[#EEF2FF] text-[#1D4ED8]" 
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <MapPin className={`w-[18px] h-[18px] ${view === "addresses" ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <MapPin className={`w-[18px] h-[18px] ${view === "addresses" ? "text-slate-900" : "text-slate-400"}`} />
                       <span>Manage Addresses</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -171,9 +171,9 @@ function AccountPage() {
                     <div className="px-3">
                       <button 
                         onClick={() => navigate({ to: "/admin" })}
-                        className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-sm text-[#1D4ED8] bg-blue-50 hover:bg-blue-100 transition"
+                        className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-extrabold text-sm text-slate-800 bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 hover:bg-[#BFDDF0]/50 transition"
                       >
-                        <Shield className="w-[18px] h-[18px] text-[#1D4ED8]" />
+                        <Shield className="w-[18px] h-[18px] text-slate-900" />
                         <span>Admin Dashboard</span>
                       </button>
                     </div>
@@ -193,8 +193,8 @@ function AccountPage() {
               </div>
 
               {/* Safety / Security Guarantee Banner */}
-              <div className="bg-[#EEF2FF] border border-indigo-100/50 rounded-2xl p-5 flex flex-col gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white text-[#1D4ED8] flex items-center justify-center shadow-sm">
+              <div className="bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 rounded-2xl p-5 flex flex-col gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white text-slate-800 flex items-center justify-center shadow-sm">
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div className="space-y-1">
@@ -205,7 +205,7 @@ function AccountPage() {
                 </div>
                 <button 
                   onClick={() => navigate({ to: "/policies/privacy" })} 
-                  className="text-xs font-bold text-[#1D4ED8] text-left hover:underline"
+                  className="text-xs font-extrabold text-slate-800 text-left hover:underline"
                 >
                   Learn more &gt;
                 </button>
@@ -481,8 +481,8 @@ function ProfileDetailsEngine() {
     <div className="p-6 md:p-10 relative overflow-hidden">
       
       {/* Background Subtle Illustration Pattern */}
-      <div className="absolute top-8 right-8 hidden md:block opacity-[0.04] pointer-events-none">
-        <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#1D4ED8]">
+      <div className="absolute top-8 right-8 hidden md:block opacity-[0.15] pointer-events-none">
+        <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#BFDDF0]">
           <rect x="4" y="4" width="16" height="16" rx="2" />
           <path d="M9 9h6" />
           <path d="M9 13h6" />
@@ -492,11 +492,11 @@ function ProfileDetailsEngine() {
 
       {/* Main Profile Header */}
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0 shadow-xs">
+        <div className="w-12 h-12 rounded-full bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 text-slate-800 flex items-center justify-center shrink-0 shadow-xs">
           <User className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-slate-800 leading-tight">Profile Information</h2>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Profile Information</h2>
           <p className="text-xs text-slate-400 mt-0.5 font-medium">Update your personal details and contact information.</p>
         </div>
       </div>
@@ -516,7 +516,7 @@ function ProfileDetailsEngine() {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Full Name"
-              className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-700 font-medium placeholder:text-slate-300"
+              className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-700 font-medium placeholder:text-slate-300"
             />
           </div>
         </div>
@@ -559,7 +559,7 @@ function ProfileDetailsEngine() {
               className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${
                 user?.phone
                   ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
-                  : "bg-white border-slate-200 text-slate-700 focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 placeholder:text-slate-300"
+                  : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
               }`}
             />
             {Boolean(user?.phone) && (
@@ -572,10 +572,10 @@ function ProfileDetailsEngine() {
         </div>
 
         {/* Elegant Alert banner at form base */}
-        <div className="bg-[#F0F7FF] rounded-xl p-4 flex gap-3.5 mt-8 border border-blue-100/50 shadow-xs">
-          <ShieldCheck className="w-5 h-5 text-[#1D4ED8] shrink-0 mt-0.5" />
+        <div className="bg-[#BFDDF0]/20 rounded-xl p-4 flex gap-3.5 mt-8 border border-[#BFDDF0]/40 shadow-xs">
+          <ShieldCheck className="w-5 h-5 text-slate-800 shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-bold text-[#1D4ED8] uppercase tracking-wide">Keep your information up to date</h4>
+            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">Keep your information up to date</h4>
             <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed font-medium">
               Ensure your contact information is accurate so we can reach you when needed.
             </p>
@@ -587,7 +587,7 @@ function ProfileDetailsEngine() {
           <button 
             disabled={busy} 
             type="submit"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm border border-[#BFDDF0]/20 hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Saving Changes..." : "Save Changes"}</span>
@@ -696,7 +696,7 @@ function MyOrdersEngine() {
         </div>
         <h3 className="font-bold text-lg text-slate-800">No orders placed yet</h3>
         <p className="text-xs text-slate-400 mt-1 mb-6">Explore our curated collections to start your journey.</p>
-        <Link to="/products" className="inline-block bg-[#1D4ED8] text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:opacity-90 transition">
+        <Link to="/products" className="inline-block bg-slate-900 border border-[#BFDDF0]/30 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:bg-slate-800 transition">
           Browse Products
         </Link>
       </div>
@@ -827,11 +827,11 @@ function AddressesEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+        <div className="w-12 h-12 rounded-full bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 text-slate-800 flex items-center justify-center shrink-0">
           <MapPin className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-slate-800 leading-tight">Manage Addresses</h2>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Manage Addresses</h2>
           <p className="text-xs text-slate-400 mt-0.5 font-medium">Configure your primary delivery endpoint details.</p>
         </div>
       </div>
@@ -845,7 +845,7 @@ function AddressesEngine() {
             onChange={e => setAddr(e.target.value)}
             rows={3}
             placeholder="Flat No, Wing, Apartment name, Landmark..."
-            className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium resize-none"
+            className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium resize-none"
           />
         </div>
 
@@ -857,7 +857,7 @@ function AddressesEngine() {
               value={city}
               onChange={e => setCity(e.target.value)}
               placeholder="City"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
           </div>
           <div className="space-y-2">
@@ -867,7 +867,7 @@ function AddressesEngine() {
               value={state}
               onChange={e => setState(e.target.value)}
               placeholder="State"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
           </div>
           <div className="space-y-2">
@@ -878,7 +878,7 @@ function AddressesEngine() {
               value={pin}
               onChange={e => setPin(e.target.value)}
               placeholder="Pincode"
-              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
+              className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
           </div>
         </div>
@@ -886,7 +886,7 @@ function AddressesEngine() {
         <div className="pt-2">
           <button 
             disabled={busy} 
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Saving Address..." : "Save Address"}</span>
@@ -927,11 +927,11 @@ function PasswordEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+        <div className="w-12 h-12 rounded-full bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 text-slate-800 flex items-center justify-center shrink-0">
           <Lock className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-slate-800 leading-tight">Change Password</h2>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Change Password</h2>
           <p className="text-xs text-slate-400 mt-0.5 font-medium">Secure your identity with a robust passphrase credential.</p>
         </div>
       </div>
@@ -945,7 +945,7 @@ function PasswordEngine() {
             value={oldPass}
             onChange={e => setOldPass(e.target.value)}
             placeholder="Current Password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
           />
         </div>
         <div className="space-y-2">
@@ -956,14 +956,14 @@ function PasswordEngine() {
             value={newPass}
             onChange={e => setNewPass(e.target.value)}
             placeholder="New robust password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-blue-50 transition text-slate-800 font-medium"
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
           />
         </div>
 
         <div className="pt-2">
           <button 
             disabled={busy} 
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{busy ? "Updating Passphrase..." : "Update Passphrase"}</span>
@@ -989,11 +989,11 @@ function NotificationsEngine() {
   return (
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-4 pb-8 mb-8 border-b border-slate-100">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-[#1D4ED8] flex items-center justify-center border border-blue-100/50 shrink-0">
+        <div className="w-12 h-12 rounded-full bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 text-slate-800 flex items-center justify-center shrink-0">
           <Bell className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-slate-800 leading-tight">Notification Settings</h2>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Notification Settings</h2>
           <p className="text-xs text-slate-400 mt-0.5 font-medium">Control how automated event handoffs alert your channels.</p>
         </div>
       </div>
@@ -1030,7 +1030,7 @@ function NotificationsEngine() {
         <div className="pt-2">
           <button 
             type="submit"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1D4ED8] to-[#312E81] text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:brightness-110 active:scale-95 transition"
+            className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition"
           >
             <Save className="w-4 h-4" />
             <span>Save Settings</span>

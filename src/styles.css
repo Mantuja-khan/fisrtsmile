@@ -63,13 +63,13 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 260);
 
-  /* Flipkart-style blue */
-  --primary: oklch(0.52 0.2 256);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Light Blue palette instead of electric blue */
+  --primary: #BFDDF0;
+  --primary-foreground: oklch(0.2 0.02 260); /* dark for readability */
 
-  /* Yellow accent (CTA) */
-  --secondary: oklch(0.82 0.17 75);
-  --secondary-foreground: oklch(0.2 0.04 260);
+  /* Pastel Yellow accent instead of sunny yellow */
+  --secondary: #FEFD99;
+  --secondary-foreground: oklch(0.2 0.02 260); /* dark for readability */
 
   --muted: oklch(0.96 0.005 250);
   --muted-foreground: oklch(0.5 0.02 260);
