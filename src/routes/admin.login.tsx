@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Lock, Mail } from "lucide-react";
+import { Shield, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -22,6 +22,7 @@ function AdminLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -114,15 +115,22 @@ function AdminLoginPage() {
             </div>
 
             <div className="relative flex items-center">
-              <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+              <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60 pointer-events-none" />
               <input
                 required
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                className="w-full pl-12 pr-12 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
                 placeholder="Password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 w-5 h-5 text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition flex items-center justify-center"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
             <button

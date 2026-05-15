@@ -3,7 +3,7 @@ import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
 import { useAuth } from "@/store/auth";
-import { Lock, Mail, ShieldCheck, KeyRound } from "lucide-react";
+import { Lock, Mail, ShieldCheck, KeyRound, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/admin/password")({
   component: AdminPasswordPage,
@@ -15,6 +15,8 @@ function AdminPasswordPage() {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const sendOtp = async () => {
@@ -118,26 +120,44 @@ function AdminPasswordPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-muted-foreground uppercase block">New Password</label>
-              <input
-                type="password"
-                required
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="Enter robust new password"
-                className="w-full px-3 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
-              />
+              <div className="relative flex items-center">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="Enter robust new password"
+                  className="w-full pl-3 pr-10 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 text-muted-foreground hover:text-foreground focus:outline-none transition"
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-muted-foreground uppercase block">Confirm New Password</label>
-              <input
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter new password"
-                className="w-full px-3 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
-              />
+              <div className="relative flex items-center">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="w-full pl-3 pr-10 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 text-muted-foreground hover:text-foreground focus:outline-none transition"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="pt-2 flex gap-2.5">

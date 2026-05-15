@@ -29,7 +29,7 @@ export function Header() {
   const [mobileBrandOpen, setMobileBrandOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+
   const catRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLDivElement>(null);
@@ -62,14 +62,14 @@ export function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Always show header at the very top
       if (currentScrollY < 50) {
         setIsVisible(true);
         setLastScrollY(currentScrollY);
         return;
       }
-      
+
       // Check direction
       if (currentScrollY > lastScrollY) {
         // Scrolling down (viewport moves down) -> Hide header
@@ -78,7 +78,7 @@ export function Header() {
         // Scrolling up (viewport moves back to top) -> Show header
         setIsVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -113,9 +113,19 @@ export function Header() {
 
   return (
     <>
-      <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${
-        isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
-      }`}>
+      <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+        }`}>
+
+        {/* Tiny Top Legal Header - Visible on Large Screens Only */}
+        <div className="hidden lg:block w-full bg-white text-slate-900 text-[10px] font-extrabold uppercase tracking-wider border-b border-slate-100 relative z-50 shadow-xs">
+          <div className="container mx-auto flex items-center justify-end gap-6 py-2 px-4">
+            <Link to="/policies/legal" className="hover:text-rose-600 transition-colors">Legal Notice</Link>
+            <Link to="/policies/terms" className="hover:text-rose-600 transition-colors">Terms & Conditions</Link>
+            <Link to="/policies/privacy" className="hover:text-rose-600 transition-colors">Privacy Policy</Link>
+            <Link to="/policies/returns" className="hover:text-rose-600 transition-colors">Refund Policy</Link>
+          </div>
+        </div>
+
         {/* Consolidated Light Blue Bar */}
         <div className="bg-[#BFDDF0] text-slate-900 relative shadow-md transition-all">
           <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-3 md:py-4">
@@ -127,7 +137,7 @@ export function Header() {
 
             {/* Center: Desktop Consolidated Navigation */}
             <nav className="hidden lg:flex items-center gap-1 mx-auto">
-              
+
               {/* Categories Button & Hover Dropdown */}
               <div
                 ref={catRef}
@@ -153,99 +163,31 @@ export function Header() {
                       if (root) setActiveCatId(root.id);
                     }
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
-                    catOpen 
-                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm" 
-                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${catOpen
+                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                    }`}
                 >
                   <Grid3x3 className="size-3.5 shrink-0" /> Categories <ChevronDown className={`size-3 transition ${catOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {catOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[64rem] max-w-[90vw] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[100] flex h-[460px] animate-in fade-in slide-in-from-top-3 duration-200">
-                    {/* Left Side: Root Categories */}
-                    <div className="w-72 bg-slate-50/90 border-r border-slate-100 flex flex-col overflow-y-auto py-3">
-                      {categories.filter(c => !c.parent_id).map((parent) => {
-                        const isActive = activeCatId === parent.id;
-                        return (
-                          <div
-                            key={parent.id}
-                            onMouseEnter={() => setActiveCatId(parent.id)}
-                            className={`flex items-center justify-between px-5 py-3 cursor-pointer font-black text-[11px] tracking-wider uppercase transition-all relative group/root ${isActive ? "bg-[#BFDDF0]/40 text-slate-900 shadow-sm" : "text-slate-600 hover:bg-[#BFDDF0]/10"
-                              }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="size-5 flex items-center justify-center shrink-0">
-                                {parent.image ? (
-                                  <img src={resolveImage(parent.image)} alt="" className="w-full h-full object-contain" />
-                                ) : (
-                                  <span className="text-sm">{parent.icon ?? "🎁"}</span>
-                                )}
-                              </span>
-                              <span>{parent.name}</span>
-                            </div>
-                            <ChevronRight className={`size-3.5 opacity-60 group-hover/root:translate-x-1 transition-transform ${isActive ? "text-slate-900 opacity-100" : ""}`} />
-                            {isActive && <div className="absolute right-0 top-0 bottom-0 w-1 bg-slate-900" />}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Right Side: Subcategories Pop / Flyout */}
-                    <div className="flex-1 bg-white p-8 overflow-y-auto relative">
-                      {activeCatId ? (
-                        <div key={activeCatId} className="animate-in zoom-in-[0.98] fade-in duration-200">
-                          {(() => {
-                            const cur = categories.find(c => c.id === activeCatId);
-                            const kids = categories.filter(c => c.parent_id === activeCatId);
-                            return (
-                              <>
-                                <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
-                                  <h3 className="font-black text-sm uppercase tracking-widest text-slate-800 flex items-center gap-2">
-                                    {cur?.name}
-                                  </h3>
-                                  <Link
-                                    to="/subcategories/$slug"
-                                    params={{ slug: cur?.slug } as never}
-                                    onClick={() => setCatOpen(false)}
-                                    className="text-xs font-bold text-slate-800 hover:underline flex items-center gap-1"
-                                  >
-                                    Shop All <ChevronRight className="size-3" />
-                                  </Link>
-                                </div>
-                                {kids.length === 0 ? (
-                                  <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-xs font-bold uppercase tracking-wider gap-2">
-                                    <div className="opacity-50 text-2xl">✨</div>
-                                    Browse current arrivals
-                                  </div>
-                                ) : (
-                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    {kids.map(child => (
-                                      <Link
-                                        key={child.id}
-                                        to="/products"
-                                        search={{ category: child.slug } as never}
-                                        onClick={() => setCatOpen(false)}
-                                        className="group/kid flex items-center gap-2.5 p-3 rounded-xl bg-slate-50/70 hover:bg-[#BFDDF0]/20 border border-slate-100 hover:border-[#BFDDF0]/40 transition-all duration-200"
-                                      >
-                                        <div className="size-1.5 bg-slate-300 group-hover/kid:bg-slate-900 rounded-full group-hover/kid:scale-125 transition-all shrink-0" />
-                                        <span className="text-[12px] font-bold text-slate-600 group-hover/kid:text-slate-900 group-hover/kid:translate-x-0.5 transition-all truncate">
-                                          {child.name}
-                                        </span>
-                                      </Link>
-                                    ))}
-                                  </div>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-slate-400 font-bold text-xs uppercase tracking-widest">
-                          Select a category to view toys
-                        </div>
-                      )}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
+                    <div className="w-64 bg-white text-foreground rounded-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col py-1.5">
+                      {categories.filter(c => !c.parent_id).map((parent) => (
+                        <Link
+                          key={parent.id}
+                          to="/subcategories/$slug"
+                          params={{ slug: parent.slug } as never}
+                          onClick={() => setCatOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#BFDDF0]/25 text-slate-700 hover:text-slate-950 font-extrabold text-[11px] tracking-wider uppercase transition-all border-b border-slate-50 last:border-0"
+                        >
+                          <span className="size-4 flex items-center justify-center shrink-0">
+                            {parent.icon ?? "🎁"}
+                          </span>
+                          <span>{parent.name}</span>
+                        </Link>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -264,28 +206,29 @@ export function Header() {
               >
                 <button
                   onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
-                    brandOpen 
-                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm" 
-                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                  }`}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${brandOpen
+                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                    }`}
                 >
                   Brands <ChevronDown className={`size-3 transition ${brandOpen ? "rotate-180" : ""}`} />
                 </button>
                 {brandOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[400px] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-3 duration-200">
-                    <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
-                      {BRANDS.map((b) => (
-                        <Link
-                          key={b}
-                          to="/products"
-                          search={{ brand: b } as never}
-                          onClick={() => setBrandOpen(false)}
-                          className="block px-4 py-2.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-xl text-[12px] font-bold uppercase tracking-wider transition"
-                        >
-                          {b}
-                        </Link>
-                      ))}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="w-[400px] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                      <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
+                        {BRANDS.map((b) => (
+                          <Link
+                            key={b}
+                            to="/products"
+                            search={{ brand: b } as never}
+                            onClick={() => setBrandOpen(false)}
+                            className="block px-4 py-2.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-xl text-[12px] font-bold uppercase tracking-wider transition"
+                          >
+                            {b}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -304,28 +247,29 @@ export function Header() {
               >
                 <button
                   onClick={() => { setAgeOpen((v) => !v); setBrandOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
-                    ageOpen 
-                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm" 
-                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                  }`}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${ageOpen
+                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                    }`}
                 >
                   Age <ChevronDown className={`size-3 transition ${ageOpen ? "rotate-180" : ""}`} />
                 </button>
                 {ageOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-52 bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-3 duration-200">
-                    <div className="p-2 flex flex-col gap-1">
-                      {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
-                        <Link
-                          key={age}
-                          to="/products"
-                          search={{ age: age } as never}
-                          onClick={() => setAgeOpen(false)}
-                          className="block px-4 py-2.5 rounded-xl hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[12px] font-bold uppercase tracking-wider transition"
-                        >
-                          {age}
-                        </Link>
-                      ))}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="w-52 bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                      <div className="p-2 flex flex-col gap-1">
+                        {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
+                          <Link
+                            key={age}
+                            to="/products"
+                            search={{ age: age } as never}
+                            onClick={() => setAgeOpen(false)}
+                            className="block px-4 py-2.5 rounded-xl hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[12px] font-bold uppercase tracking-wider transition"
+                          >
+                            {age}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -379,7 +323,7 @@ export function Header() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 lg:gap-5 shrink-0">
-              
+
               {/* Search Toggle Icon */}
               <button
                 onClick={() => setSidebarSearchOpen(true)}
@@ -390,8 +334,8 @@ export function Header() {
               </button>
 
               {/* Wishlist */}
-              <Link 
-                to="/wishlist" 
+              <Link
+                to="/wishlist"
                 className="hidden md:flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:opacity-80 transition-opacity relative"
               >
                 <Heart className="size-5.5 fill-[#FEFD99]" />
@@ -439,31 +383,28 @@ export function Header() {
       </header>
 
       {/* Slide-out Mobile Navigation Drawer (Sliding from Left) */}
-      <div 
-        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-start ${
-          mobileMenuOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
-        }`}
+      <div
+        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-start ${mobileMenuOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
+          }`}
       >
         {/* Backdrop (hides when clicking anywhere) */}
-        <div 
+        <div
           onClick={() => setMobileMenuOpen(false)}
-          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
-            mobileMenuOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"
+            }`}
         />
 
         {/* Drawer Content */}
-        <div 
-          className={`relative w-full max-w-[280px] bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        <div
+          className={`relative w-full max-w-[280px] bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           {/* Header with Close button */}
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 className="font-black text-lg text-slate-800 flex items-center gap-2 uppercase tracking-wide">
               <Menu className="size-5 text-slate-600 stroke-[2.5]" /> Menu
             </h3>
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(false)}
               className="p-2 rounded-full hover:bg-slate-200 transition-colors text-slate-500 hover:text-slate-800 flex items-center justify-center"
             >
@@ -531,12 +472,12 @@ export function Header() {
               </div>
 
               <Link to="/coupons" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
-              
+
               {user && (
-                <Link 
-                  to="/account" 
+                <Link
+                  to="/account"
                   search={{ view: 'orders' } as any}
-                  className="p-4 border-b border-slate-100 font-bold text-slate-800" 
+                  className="p-4 border-b border-slate-100 font-bold text-slate-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   My Orders
@@ -545,7 +486,7 @@ export function Header() {
 
               <Link to="/about" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
               <Link to="/contact" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
-              
+
               <Link to="/account" className="p-4 font-bold text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <User className="size-5 text-slate-700" /> {user ? name : "Sign In"}
               </Link>
@@ -555,31 +496,28 @@ export function Header() {
       </div>
 
       {/* Slide-out Search Sidebar */}
-      <div 
-        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-end ${
-          sidebarSearchOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
-        }`}
+      <div
+        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-end ${sidebarSearchOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
+          }`}
       >
         {/* Backdrop */}
-        <div 
+        <div
           onClick={() => setSidebarSearchOpen(false)}
-          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
-            sidebarSearchOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${sidebarSearchOpen ? "opacity-100" : "opacity-0"
+            }`}
         />
 
         {/* Drawer Content */}
-        <div 
-          className={`relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
-            sidebarSearchOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        <div
+          className={`relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${sidebarSearchOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           {/* Header */}
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 className="font-black text-lg text-slate-800 flex items-center gap-2 uppercase tracking-wide">
               <Search className="size-5 text-slate-600 stroke-[2.5]" /> Find Product
             </h3>
-            <button 
+            <button
               onClick={() => setSidebarSearchOpen(false)}
               className="p-2 rounded-full hover:bg-slate-200 transition-colors text-slate-500 hover:text-slate-800 flex items-center justify-center"
             >
@@ -589,15 +527,15 @@ export function Header() {
 
           {/* Search Input Box */}
           <div className="p-5 border-b border-slate-100">
-            <form 
-              onSubmit={(e) => { 
-                e.preventDefault(); 
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
                 navigate({ to: "/products", search: { q: q || undefined } as never });
-                setSidebarSearchOpen(false); 
-              }} 
+                setSidebarSearchOpen(false);
+              }}
               className="relative flex w-full"
             >
-              <input 
+              <input
                 value={q}
                 onChange={(e) => { setQ(e.target.value); }}
                 placeholder="Search for toys, dolls, games..."
@@ -652,12 +590,12 @@ export function Header() {
                     </Link>
                   );
                 })}
-                
-                <button 
-                  onClick={(e) => { 
+
+                <button
+                  onClick={(e) => {
                     e.preventDefault();
                     navigate({ to: "/products", search: { q: q || undefined } as never });
-                    setSidebarSearchOpen(false); 
+                    setSidebarSearchOpen(false);
                   }}
                   className="w-full py-3 mt-4 bg-slate-950 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-all cursor-pointer"
                 >

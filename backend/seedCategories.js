@@ -21,22 +21,22 @@ const categoriesData = [
     },
     {
         name: "DOLL & DOLL SETS",
-        subs: ["DOLL", "DOLL HOUSE", "DOLL SET"]
+        subs: ["DOLL", "DOLL HOUSE", "DOLL SET", "DOLLS & PLAYSETS", "ROLEPLAY"]
     },
     {
-        name: "RIDE ON",
-        subs: ["BATTERY OPERATED", "BATTERY TOY ASSESSORIES", "CYCLE", "CYCLE ASSESSORIES", "MANUAL RIDE ON", "SCOOTER", "SWING CAR", "TRICYCLE"]
+        name: "RIDE ON & CYCLES",
+        subs: ["BATTERY OPERATED", "BATTERY TOY ASSESSORIES", "CYCLE", "CYCLE ASSESSORIES", "MANUAL RIDE ON", "RIDE ON", "SCOOTER", "SWING CAR", "TRICYCLE"]
     },
     {
         name: "BOARD GAME & PUZZLE",
-        subs: ["ART & CRAFT", "BOARD GAME", "CHESS", "CONSTRUCTION BLOCK", "CUBE", "FISHING GAME", "LUDO & SNAKES", "MIND GAME", "PLAYING CARDS", "PUZZLE", "SCIENCE GAME", "TABLE TOP GAME"]
+        subs: ["ART & CRAFT", "BOARD GAME", "CARD GAME", "CHESS", "CONSTRUCTION BLOCK", "CUBE", "FISHING GAME", "LUDO & SNAKES", "MIND GAME", "PLAYING CARDS", "PUZZLE", "SCIENCE GAME", "TABLE TOP GAME"]
     },
     {
         name: "SCHOOL",
         subs: ["COLORING & STATIONERY", "DIARY", "GEOMETRY PENCIL BOX", "LUNCH BOX", "PENCIL BOX", "POUCH", "SCHOOL BAG", "SIPPER", "WATER BOTTLE"]
     },
     {
-        name: "DECORATION",
+        name: "PARTY DECORATION",
         subs: ["BALLOON", "CANDLE", "CURTAINS", "COMBO SETS"]
     },
     {
@@ -45,11 +45,11 @@ const categoriesData = [
     },
     {
         name: "KIDS FURNITURE",
-        subs: ["CHAIR", "ROCKING CHAIR", "STOOL", "STUDY TABLE"]
+        subs: ["CHAIR", "ROCKING CHAIR", "STOOL", "STUDY TABLE", "TABLE AND CHAIR"]
     },
     {
         name: "SOFT TOYS",
-        subs: ["BAG", "BOY", "CAT", "CHRACTER", "DOG", "PENGUINE", "SOFA", "Soft Toys"]
+        subs: ["BAG", "BOY", "CAT", "CHRACTER", "DOG", "PENGUINE", "SOFA", "Soft Toys", "STUFFED ANIMAL", "PILLOW"]
     },
     {
         name: "FIGURE & PLAYSET",
@@ -69,11 +69,11 @@ const categoriesData = [
     },
     {
         name: "VEHICLES & TRACKS",
-        subs: ["DIE CAST TOY", "DIY", "FRICTION TOY", "RC TOYS", "TRACK SET"]
+        subs: ["DIE CAST TOY", "DIY", "FRICTION TOY", "RC TOYS", "TRACK SET", "DIE CAST TOY & FRICTION", "TRAIN AND TRACK SET"]
     },
     {
-        name: "GUNS & WEAPONS",
-        subs: ["BOW & ARROW", "BUBBLE GUN", "BULLET", "BULLET GUN", "MUSICAL GUN", "SWORD"]
+        name: "WEAPONS & GUNS",
+        subs: ["BOW & ARROW", "BUBBLE GUN", "BULLET", "BULLET GUN", "MUSICAL GUN", "SWORD", "GUNS AND BULLET", "MUSICAL GUNS", "WEAPONS"]
     },
     {
         name: "NOVELTY TOYS",
@@ -84,12 +84,16 @@ const categoriesData = [
         subs: ["HOLI", "RAKHSA BANDHAN", "XMAS"]
     },
     {
-        name: "INFANT & TOODLER",
-        subs: ["GIFT PACK", "MOTHER BAG", "BEDDING SET & BLANKET", "BABAY CARE PRODUCTS", "EDUCATIONAL", "KIDS BAG", "INFANT ASSESSORIES", "KIDS FURNITURE", "INFANT TOYS / PUZZLE", "FEEDING ASSESSORIES"]
+        name: "INFANT & PRESCHOOL",
+        subs: ["GIFT PACK", "MOTHER BAG", "BEDDING SET & BLANKET", "BABAY CARE PRODUCTS", "BABY TOYS", "BABY GEAR & UTILITY", "BABY PERSONAL CARE", "EDUCATIONAL", "KIDS BAG", "INFANT ASSESSORIES", "KIDS FURNITURE", "INFANT TOYS / PUZZLE", "FEEDING ASSESSORIES"]
     },
     {
-        name: "SPORTS",
-        subs: ["BADMINTON", "BALACING BOARD", "BASKET BALL", "BEYBLADE & FLYIG DISC", "BOW & ARROW", "BOWLING", "BOXING", "CARROM", "CRICKET", "DART GAME", "FOOTBALL", "GOLF", "HOCKEY", "HOWER BALL", "JUMPING ROPE", "POOL", "PUMP", "RACKET", "SAFETY ACCESSORIES", "SKATE", "SWIMMING", "TABLE TENNIS", "VOLLEY BALL", "YOGA"]
+        name: "SPORTS & OUTDOOR",
+        subs: ["BADMINTON", "BALACING BOARD", "BASKET BALL", "BEYBLADE & FLYIG DISC", "BOW & ARROW", "BOWLING", "BOXING", "CARROM", "CRICKET", "DART GAME", "FOOTBALL", "GOLF", "HOCKEY", "HOWER BALL", "JUMPING ROPE", "POOL", "PUMP", "RACKET", "SAFETY ACCESSORIES", "SKATE", "SWIMMING", "TABLE TENNIS", "VOLLEY BALL", "YOGA", "OUTDOOR SPORTS", "INDOOR SPORTS"]
+    },
+    {
+        name: "LIFE STYLE",
+        subs: ["MUSIC", "BUBBLE PLAY", "NOVELTY TOYS", "SCHOOL ACCESSORIES", "GADGETS", "KIDS ACCESSORIES"]
     }
 ];
 

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import { 
-  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, Phone, Home, 
+  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, EyeOff, Phone, Home, 
   Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard, ShieldCheck 
 } from "lucide-react";
 import { redirectToPayU } from "@/utils/payu";
@@ -71,6 +71,8 @@ function AccountPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [otpBusy, setOtpBusy] = useState(false);
 
@@ -376,30 +378,44 @@ function AccountPage() {
             {(mode !== "forgot" || otpVerified) && (
               <div className="mt-4 flex flex-col">
                 <div className="relative flex items-center">
-                  <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+                  <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60 pointer-events-none" />
                   <input
                     required
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                    className="w-full pl-12 pr-12 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
                     placeholder={mode === "forgot" ? "New Password" : "Password"}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 w-5 h-5 flex items-center justify-center text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             )}
 
             {mode === "forgot" && otpVerified && (
               <div className="relative flex items-center mt-4">
-                <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
+                <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60 pointer-events-none" />
                 <input
                   required
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
+                  className="w-full pl-12 pr-12 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
                   placeholder="Confirm New Password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 w-5 h-5 flex items-center justify-center text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             )}
 
@@ -903,6 +919,8 @@ function AddressesEngine() {
 function PasswordEngine() {
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
+  const [showOldPass, setShowOldPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const save = async (e: React.FormEvent) => {
@@ -939,25 +957,43 @@ function PasswordEngine() {
       <form onSubmit={save} className="max-w-xl space-y-6">
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-700 block">Current Password</label>
-          <input
-            type="password"
-            required
-            value={oldPass}
-            onChange={e => setOldPass(e.target.value)}
-            placeholder="Current Password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
-          />
+          <div className="relative flex items-center">
+            <input
+              type={showOldPass ? "text" : "password"}
+              required
+              value={oldPass}
+              onChange={e => setOldPass(e.target.value)}
+              placeholder="Current Password"
+              className="w-full pl-4 pr-12 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
+            />
+            <button
+              type="button"
+              onClick={() => setShowOldPass(!showOldPass)}
+              className="absolute right-4 text-slate-400 hover:text-slate-600 transition focus:outline-none"
+            >
+              {showOldPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-700 block">New Password</label>
-          <input
-            type="password"
-            required
-            value={newPass}
-            onChange={e => setNewPass(e.target.value)}
-            placeholder="New robust password"
-            className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
-          />
+          <div className="relative flex items-center">
+            <input
+              type={showNewPass ? "text" : "password"}
+              required
+              value={newPass}
+              onChange={e => setNewPass(e.target.value)}
+              placeholder="New robust password"
+              className="w-full pl-4 pr-12 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
+            />
+            <button
+              type="button"
+              onClick={() => setShowNewPass(!showNewPass)}
+              className="absolute right-4 text-slate-400 hover:text-slate-600 transition focus:outline-none"
+            >
+              {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
         <div className="pt-2">

@@ -30,6 +30,7 @@ import { Route as PoliciesTermsRouteImport } from './routes/policies.terms'
 import { Route as PoliciesShippingRouteImport } from './routes/policies.shipping'
 import { Route as PoliciesReturnsRouteImport } from './routes/policies.returns'
 import { Route as PoliciesPrivacyRouteImport } from './routes/policies.privacy'
+import { Route as PoliciesLegalRouteImport } from './routes/policies.legal'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminPromoRouteImport } from './routes/admin.promo'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
@@ -144,6 +145,11 @@ const PoliciesPrivacyRoute = PoliciesPrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => PoliciesRoute,
 } as any)
+const PoliciesLegalRoute = PoliciesLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => PoliciesRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
+  '/policies/legal': typeof PoliciesLegalRoute
   '/policies/privacy': typeof PoliciesPrivacyRoute
   '/policies/returns': typeof PoliciesReturnsRoute
   '/policies/shipping': typeof PoliciesShippingRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
+  '/policies/legal': typeof PoliciesLegalRoute
   '/policies/privacy': typeof PoliciesPrivacyRoute
   '/policies/returns': typeof PoliciesReturnsRoute
   '/policies/shipping': typeof PoliciesShippingRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo': typeof AdminPromoRoute
   '/admin/users': typeof AdminUsersRoute
+  '/policies/legal': typeof PoliciesLegalRoute
   '/policies/privacy': typeof PoliciesPrivacyRoute
   '/policies/returns': typeof PoliciesReturnsRoute
   '/policies/shipping': typeof PoliciesShippingRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
+    | '/policies/legal'
     | '/policies/privacy'
     | '/policies/returns'
     | '/policies/shipping'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
+    | '/policies/legal'
     | '/policies/privacy'
     | '/policies/returns'
     | '/policies/shipping'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/promo'
     | '/admin/users'
+    | '/policies/legal'
     | '/policies/privacy'
     | '/policies/returns'
     | '/policies/shipping'
@@ -541,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PoliciesPrivacyRouteImport
       parentRoute: typeof PoliciesRoute
     }
+    '/policies/legal': {
+      id: '/policies/legal'
+      path: '/legal'
+      fullPath: '/policies/legal'
+      preLoaderRoute: typeof PoliciesLegalRouteImport
+      parentRoute: typeof PoliciesRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -627,6 +646,7 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface PoliciesRouteChildren {
+  PoliciesLegalRoute: typeof PoliciesLegalRoute
   PoliciesPrivacyRoute: typeof PoliciesPrivacyRoute
   PoliciesReturnsRoute: typeof PoliciesReturnsRoute
   PoliciesShippingRoute: typeof PoliciesShippingRoute
@@ -634,6 +654,7 @@ interface PoliciesRouteChildren {
 }
 
 const PoliciesRouteChildren: PoliciesRouteChildren = {
+  PoliciesLegalRoute: PoliciesLegalRoute,
   PoliciesPrivacyRoute: PoliciesPrivacyRoute,
   PoliciesReturnsRoute: PoliciesReturnsRoute,
   PoliciesShippingRoute: PoliciesShippingRoute,

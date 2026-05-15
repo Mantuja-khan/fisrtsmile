@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ShieldCheck, Truck, Heart, Sparkles, Users, ShoppingBag } from "lucide-react";
+import { Sparkles, Target, ShieldCheck, Heart, User, Mail, MessageCircle, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — First Smile" },
-      { name: "description", content: "Discover the magic behind First Smile. Bringing joy, imagination, and safe play to children around the world." },
+      { title: "About Us — First Smile Toys" },
+      { name: "description", content: "Where Play Meets Purpose. Founded by Avinash Shah, First Smile selects toys that spark creativity and support learning." },
     ],
   }),
   component: AboutPage,
@@ -16,7 +16,6 @@ const aboutImages = [
   "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=1200&q=80",
   "https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=1200&q=80",
   "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=1200&q=80",
-  "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=1200&q=80"
 ];
 
 function AboutPage() {
@@ -30,151 +29,236 @@ function AboutPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* HERO SECTION - Borderless, Full Width */}
-      <section className="relative w-full h-[60vh] md:h-[75vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-black/35 z-10"></div>
+    <div className="min-h-screen bg-background selection:bg-primary/10 pb-12 font-sans">
+      {/* HERO SECTION */}
+      <section className="relative w-full h-[50vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
         {aboutImages.map((img, i) => (
           <div
             key={i}
-            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out ${
-              i === idx ? "opacity-100 scale-105" : "opacity-0 scale-100"
-            }`}
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out ${i === idx ? "opacity-100 scale-100" : "opacity-0"
+              }`}
             style={{ backgroundImage: `url(${img})` }}
           />
         ))}
-        
-        <div className="relative z-20 text-center px-4 max-w-4xl">
-          <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-xs font-bold tracking-widest uppercase border border-white/30 mb-6 animate-fade-in">
-            <Sparkles className="size-4" /> Our Journey
+
+        <div className="relative z-20 text-center px-4 max-w-3xl">
+          <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-medium uppercase tracking-wide border border-white/15 mb-4">
+            <Sparkles className="size-3.5 text-amber-300" /> Since 2019
           </span>
-          <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight">
-            Crafting Every <br className="hidden md:block" />
-            <span className="text-[#FEFD99]">First Smile</span>
+          <h1 className="text-3xl md:text-5xl font-semibold text-white mb-3 tracking-tight">
+            Where Play Meets <span className="text-amber-300">Purpose</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium leading-relaxed">
-            Transforming playtime into cherished childhood milestones since day one.
+          <p className="text-sm md:text-base text-white/90 max-w-lg mx-auto">
+            Every smile matters, every step matters, every toy counts.
           </p>
         </div>
 
-        {/* Bottom Fade to page bg */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#fafafa] to-transparent z-20"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent z-20"></div>
       </section>
 
-      {/* STORY SECTION - Spacious containerless content flow */}
-      <section className="container mx-auto px-6 py-16 md:py-24 max-w-6xl">
-        <div className="grid md:grid-cols-12 gap-12 items-center">
-          <div className="md:col-span-6 space-y-6 order-2 md:order-1">
-            <div className="space-y-2">
-              <div className="h-1.5 w-16 bg-[#BFDDF0] border border-slate-200 rounded-full"></div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-display">The Heart Behind Our Mission</h2>
+      {/* STORY SECTION */}
+      <section className="container mx-auto px-4 py-12 max-w-5xl">
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 text-primary bg-primary/5 px-2.5 py-1 rounded-md font-medium text-xs tracking-wider uppercase">
+              <Target className="size-3.5" /> Our Philosophy
             </div>
-            
-            <p className="text-lg text-gray-600 leading-relaxed">
-              At First Smile, we view play as the sacred, essential work of childhood. What began as a local dream fueled by a simple goal—delivering infinite joy—has blossomed into a nationally loved curator of childhood delight.
+            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">About First Smile</h2>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Founded in 2019, First Smile was created with one simple idea – <strong className="text-slate-800 font-medium">play should not just entertain… it should help a child grow.</strong>
             </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              We are more than just a toy store; we are creators of moments. Whether it's constructing intricate towers, embarking on imaginary safaris, or coding the first robot—we exist to ensure these steps are safe, smart, and absolutely magical.
+            <p className="text-slate-600 text-sm leading-relaxed">
+              That’s why every product you see here is carefully selected to:
             </p>
-
-            <div className="grid grid-cols-2 gap-6 pt-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-[#BFDDF0]/30 text-slate-800 border border-[#BFDDF0]/60 shadow-xs">
-                  <Users className="size-6" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xl text-slate-900">10K+</h4>
-                  <p className="text-sm text-gray-500 font-medium">Happy Families</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-[#BFDDF0]/30 text-slate-800 border border-[#BFDDF0]/60 shadow-xs">
-                  <ShoppingBag className="size-6" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xl text-slate-900">2000+</h4>
-                  <p className="text-sm text-gray-500 font-medium">Selected Toys</p>
-                </div>
-              </div>
-            </div>
+            <ul className="space-y-2">
+              {[
+                "Spark creativity",
+                "Build curiosity",
+                "Support learning in a natural way"
+              ].map((item, i) => (
+                <li key={i} className="flex items-center gap-2 text-slate-700 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <blockquote className="border-l-2 border-slate-300 pl-4 py-1.5 text-slate-800 italic text-base mt-5 bg-slate-50 rounded-r-md pr-3">
+              “Will this make a child better while keeping them happy?”
+            </blockquote>
+            <p className="text-slate-500 text-xs">
+              From toys and games to educational tools, everything is chosen keeping this one thing in mind.
+            </p>
           </div>
 
-          <div className="md:col-span-6 order-1 md:order-2">
-             <div className="relative group">
-                <div className="absolute -inset-2 bg-gradient-to-r from-[#BFDDF0] to-[#FEFD99] rounded-[2.5rem] opacity-30 blur-xl group-hover:opacity-45 transition duration-700"></div>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800&q=80" 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    alt="Playing Kids"
-                  />
-                </div>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PILLARS - Subtle cards floating on bg, NOT boxed inside an inner white sheet */}
-      <section className="bg-white py-20 border-y border-gray-100">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-16 space-y-4">
-             <h3 className="text-xs font-black text-slate-900 tracking-widest uppercase bg-[#BFDDF0]/40 inline-block px-3 py-1 rounded-full">Our Guarantee</h3>
-             <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900">The First Smile Promise</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-            {/* Card 1 */}
-            <div className="group flex flex-col items-center text-center p-4">
-              <div className="size-20 bg-[#BFDDF0]/30 border border-[#BFDDF0]/60 text-slate-800 rounded-[2rem] flex items-center justify-center mb-6 shadow-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-lg group-hover:bg-[#BFDDF0] group-hover:text-slate-900">
-                <Truck className="size-8" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Express Delivery</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">
-                Lightning-fast dispatch to make sure their newest adventure arrives without anticipation fatigue.
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="group flex flex-col items-center text-center p-4">
-              <div className="size-20 bg-[#BFDDF0]/30 border border-[#BFDDF0]/60 text-slate-800 rounded-[2rem] flex items-center justify-center mb-6 shadow-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-lg group-hover:bg-[#BFDDF0] group-hover:text-slate-900">
-                <ShieldCheck className="size-8" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">100% Certified Safe</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">
-                Rigorous curation standards ensuring non-toxic, strictly verified products globally sourced.
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="group flex flex-col items-center text-center p-4">
-              <div className="size-20 bg-[#FEFD99]/30 border border-[#FEFD99]/60 text-slate-800 rounded-[2rem] flex items-center justify-center mb-6 shadow-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-lg group-hover:bg-[#FEFD99] group-hover:text-slate-900">
-                <Heart className="size-8" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Made with Heart</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">
-                Selected hand-in-hand by developmental experts and passionate parents alike.
-              </p>
+          <div className="relative">
+            <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-md border border-slate-200">
+              <img
+                src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800&q=80"
+                className="w-full h-full object-cover"
+                alt="Happy childhood playing"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* CALL TO ACTION / CLOSER */}
-      <section className="py-24 text-center container mx-auto px-6">
-        <div className="max-w-3xl mx-auto space-y-8 bg-gradient-to-br from-slate-900 to-slate-800 p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#BFDDF0]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FEFD99]/10 rounded-full blur-3xl"></div>
-          
-          <h2 className="text-3xl md:text-5xl font-bold text-white relative z-10 font-display">Ready to unlock joy?</h2>
-          <p className="text-gray-300 relative z-10 text-lg">Start browsing our catalog and discover exactly what your little one is dreaming of.</p>
-          
-          <div className="relative z-10 pt-4">
-            <a 
-              href="/products" 
-              className="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-full font-bold tracking-wide text-lg shadow-xl hover:bg-[#FEFD99] hover:text-slate-900 border hover:border-[#BFDDF0]/30 transition-all duration-300 hover:scale-105 active:scale-95"
+      {/* WHAT WE BELIEVE & TRUST */}
+      <section className="bg-slate-50/50 py-12 border-y border-slate-100">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10">
+            {/* Belief card */}
+            <div className="bg-white p-6 rounded-xl border border-slate-200/60 space-y-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2.5 text-slate-900">
+                  <Heart className="size-4.5 text-rose-500" /> What We Believe
+                </h3>
+                <p className="text-slate-600 text-sm mb-3 leading-relaxed">
+                  Kids learn best when they enjoy what they’re doing. So we focus on toys that:
+                </p>
+                <ul className="space-y-2 mb-4">
+                  {[
+                    "Keep them engaged without screens",
+                    "Help improve thinking and focus",
+                    "Encourage imagination and exploration"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-slate-700 text-sm">
+                      <span className="size-1 rounded-full bg-slate-400 shrink-0"></span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
+                {["Safe for kids", "Strong & durable", "Worth trust"].map((tag, i) => (
+                  <div key={i} className="text-center p-1.5 bg-slate-50 border border-slate-100 rounded flex items-center justify-center">
+                    <span className="text-[11px] font-medium text-slate-600">✔ {tag}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trust card */}
+            <div className="bg-white p-6 rounded-xl border border-slate-200/60 flex flex-col justify-between space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2.5 text-slate-900">
+                  <ShieldCheck className="size-4.5 text-blue-500" /> Built on Trust & Care
+                </h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  We work with reliable manufacturers and partners who follow proper safety and quality standards.
+                </p>
+                <p className="text-slate-800 font-medium text-base leading-relaxed mt-3 border-l-2 border-blue-400 pl-3 bg-blue-50/30 py-1 pr-2 rounded-r">
+                  No shortcuts. No random products.
+                </p>
+                <p className="text-slate-500 text-[13px] mt-3">
+                  Only things we would feel comfortable giving to our own family.
+                </p>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-auto">
+                <p className="text-xs font-medium text-slate-700 italic leading-relaxed">
+                  "Because for us, this is not just business – it’s about the small moments that matter in a child’s life."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDER SECTION */}
+      <section className="container mx-auto px-4 py-12 max-w-5xl">
+        <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-lg text-white relative border border-slate-800">
+          <div className="relative z-10 p-6 md:p-10 grid md:grid-cols-12 gap-8 items-center">
+            <div className="md:col-span-7 space-y-4">
+              <div className="inline-flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[11px] uppercase tracking-wide border border-white/10">
+                <User className="size-3.5 text-amber-300" /> Meet the Founder
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">A Simple Idea That Started It All</h2>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                First Smile was founded by <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear goal – to bring better play options for children.
+              </p>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                He saw that many toys only keep kids busy, but don’t really help them learn or grow. So he built First Smile to offer products that:
+              </p>
+              <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {["Have real value", "Thoughtfully designed", "Make both happy"].map((text, i) => (
+                  <li key={i} className="p-2 bg-white/5 border border-white/10 rounded-md text-xs font-medium text-center">
+                    {text}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-slate-400 text-xs italic pt-3 border-t border-white/10 w-fit">
+                "Even today, that same focus continues – keeping things simple, useful, and meaningful."
+              </p>
+            </div>
+            <div className="md:col-span-5 flex justify-center">
+              <div className="size-48 md:size-56 rounded-xl border border-white/10 overflow-hidden bg-white/5 flex items-center justify-center relative">
+                <div className="flex flex-col items-center justify-center text-center gap-2.5 p-6 select-none">
+                  <div className="size-14 rounded-full bg-amber-300 text-slate-950 flex items-center justify-center font-bold text-xl">AS</div>
+                  <div>
+                    <p className="font-medium text-base text-white">Avinash Shah</p>
+                    <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">Founder, First Smile</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HELP & PROMISE */}
+      <section className="container mx-auto px-4 max-w-5xl grid md:grid-cols-2 gap-6 py-2">
+        {/* Help Section */}
+        <div className="bg-white rounded-xl border border-slate-200/70 p-6 shadow-sm flex flex-col justify-between space-y-5">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1.5">We’re Here to Help</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">Have a question about your order or product? We’re always ready to assist you.</p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="size-9 grid place-items-center bg-white text-slate-600 rounded border border-slate-200 shrink-0">
+                <Mail className="size-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Email Support</p>
+                <a href="mailto:support@firstsmiletoys.com" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">support@firstsmiletoys.com</a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-emerald-50/40 rounded-lg border border-emerald-100/60">
+              <div className="size-9 grid place-items-center bg-white text-emerald-600 rounded border border-emerald-200 shrink-0">
+                <MessageCircle className="size-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">WhatsApp Help</p>
+                <a href="https://wa.me/917827743263" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">+91 7827743263</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Promise Section */}
+        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200/60 flex flex-col justify-center items-center text-center space-y-4 relative">
+          <div className="size-12 grid place-items-center bg-rose-50 text-rose-600 rounded-full border border-rose-100 shrink-0">
+            <Heart className="size-6" fill="currentColor" />
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-semibold text-slate-900">A Small Promise</h3>
+            <p className="text-slate-600 text-sm leading-relaxed max-w-xs">
+              We don’t just want to sell toys. We want to be part of your child’s happy moments, learning, and growth.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-slate-200/50 w-full flex flex-col items-center space-y-3">
+            <p className="text-xs font-medium text-slate-500">
+              👉 Because every child deserves a happy start.
+            </p>
+
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded transition-all shadow-xs"
             >
-              Browse Products
-            </a>
+              Explore Our Toys
+            </Link>
           </div>
         </div>
       </section>

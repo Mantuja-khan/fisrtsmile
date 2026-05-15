@@ -1,26 +1,114 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LockKeyhole } from "lucide-react";
 
 export const Route = createFileRoute("/policies/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — First Smile" }] }),
+  head: () => ({ meta: [{ title: "Privacy Policy — First Smile Toys" }] }),
   component: () => (
-    <>
-      <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
-      <p className="text-sm">Your privacy matters to us. Here's how we handle your data.</p>
+    <div className="space-y-6 selection:bg-primary/10">
+      <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
+        <div className="size-9 grid place-items-center bg-primary/10 text-primary rounded-lg shrink-0">
+          <LockKeyhole className="size-5" />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground m-0">Privacy Policy</h1>
+      </div>
 
-      <h2 className="font-bold text-lg mt-5 mb-2">Data we collect</h2>
-      <ul className="list-disc pl-5 space-y-1 text-sm">
-        <li>Name, email, phone, and shipping address (for order fulfillment).</li>
-        <li>Payment is processed by trusted gateways — we do not store card details.</li>
-      </ul>
+      <p className="text-xs text-muted-foreground font-bold m-0 tracking-wide uppercase bg-muted/40 px-2 py-1 rounded w-fit border border-border/30">
+        Last updated: April 30, 2026
+      </p>
 
-      <h2 className="font-bold text-lg mt-5 mb-2">Data sharing</h2>
-      <p className="text-sm"><strong>We do not share your data</strong> with third parties for marketing. Data is shared only with logistics partners to deliver your orders.</p>
+      <p className="text-base leading-relaxed text-foreground/80 m-0 font-medium">
+        At First Smile, we value your trust and are committed to protecting your personal information.
+      </p>
 
-      <h2 className="font-bold text-lg mt-5 mb-2">Cookies</h2>
-      <p className="text-sm">We use cookies to keep your cart, wishlist, and login session. You can disable cookies in your browser at any time.</p>
+      <div className="space-y-2">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Information We Collect</h2>
+        <p className="text-sm text-muted-foreground m-0 font-medium">
+          When you place an order or contact us, we may collect:
+        </p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
+          <li>Name</li>
+          <li>Phone number</li>
+          <li>Email address</li>
+          <li>Shipping and billing address</li>
+        </ul>
+        <p className="text-xs text-muted-foreground/80 mt-1 italic font-medium">
+          This information is used only to process your order and provide support.
+        </p>
+      </div>
 
-      <h2 className="font-bold text-lg mt-5 mb-2">Your rights</h2>
-      <p className="text-sm">Email support@toyhaat.com to access, update, or delete your data.</p>
-    </>
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">How We Use Your Information</h2>
+        <p className="text-sm text-muted-foreground m-0 font-medium">
+          We use your details to:
+        </p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
+          <li>Process and deliver your orders</li>
+          <li>Send order updates and tracking details</li>
+          <li>Respond to your queries</li>
+          <li>Improve our services</li>
+        </ul>
+        <p className="text-sm font-semibold text-rose-600/90 mt-2.5 bg-rose-50 border border-rose-100 p-3 rounded-xl">
+          We do not sell or share your personal information with third parties for marketing purposes.
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Cookies</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed m-0">
+          Our website may use cookies to improve your browsing experience. You can choose to disable cookies through your browser settings.
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Data Security</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed m-0">
+          We take reasonable steps to keep your information safe. However, no online system is completely secure, so we cannot guarantee absolute security.
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Third-Party Services</h2>
+        <p className="text-sm text-muted-foreground m-0 font-medium">
+          We may use trusted third-party services for:
+        </p>
+        <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
+          <li>Payments</li>
+          <li>Shipping and delivery</li>
+        </ul>
+        <p className="text-xs text-muted-foreground/85 mt-1 leading-relaxed">
+          These services only access the information required to perform their tasks and are expected to keep it confidential.
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Children’s Privacy</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed m-0">
+          Our website is intended for users above 18 years of age. We do not knowingly collect personal data from children.
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-border/30 pt-5">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Policy Updates</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed m-0">
+          We may update this policy from time to time. Changes will be posted on this page.
+        </p>
+      </div>
+
+      <div className="bg-muted/50 p-5 rounded-2xl border border-border/50 mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-bold text-foreground m-0 mb-1.5">Contact Us</h2>
+          <p className="text-xs text-muted-foreground m-0 leading-relaxed">If you have any questions about this Privacy Policy, please reach out to us:</p>
+        </div>
+        <div className="space-y-1 text-xs text-foreground/90 font-bold shrink-0 sm:text-right">
+          <p className="flex sm:justify-end items-center gap-1.5">
+            <span className="text-muted-foreground font-medium">Email:</span> 
+            <a href="mailto:support@firstsmiletoys.com" className="text-primary hover:underline">support@firstsmiletoys.com</a>
+          </p>
+          <p>
+            <span className="text-muted-foreground font-medium">Address:</span> Genesis Mall, Bhiwadi – 301019, RJ
+          </p>
+        </div>
+      </div>
+    </div>
   ),
 });

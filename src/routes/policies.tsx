@@ -10,6 +10,7 @@ function PoliciesLayout() {
     { to: "/policies/shipping" as const, label: "Shipping & Delivery" },
     { to: "/policies/privacy" as const, label: "Privacy Policy" },
     { to: "/policies/terms" as const, label: "Terms & Conditions" },
+    { to: "/policies/legal" as const, label: "Legal Notice" },
   ];
   return (
     <div className="container mx-auto px-4 py-6 grid md:grid-cols-[240px_1fr] gap-4">
