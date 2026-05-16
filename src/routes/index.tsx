@@ -180,7 +180,7 @@ function HomePage() {
               </div>
               <div className="flex items-center gap-3 shrink-0">
                 {isAdmin && (
-                  <Link to="/admin/products" className="bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5">
+                  <Link to="/admin/products" className="bg-primary text-primary-foreground text-xs    px-4 py-2 rounded-full flex items-center gap-1.5">
                     <Plus className="size-3.5" /> Add Product
                   </Link>
                 )}
@@ -392,7 +392,7 @@ function HomePage() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-[13px] font-extrabold text-slate-800 truncate">{r.n}</div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 tracking-wide uppercase">
+                  <div className="flex items-center gap-1.5 text-[10px]    text-slate-400 tracking-wide uppercase">
                     <span>{r.c}</span>
                     <span className="opacity-50">•</span>
                     <span>{r.d}</span>

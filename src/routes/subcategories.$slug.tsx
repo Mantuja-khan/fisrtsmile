@@ -31,11 +31,11 @@ function SubCategoriesPage() {
   }
 
   const parent = categories.find((c) => c.slug === slug);
-  
+
   if (!parent) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-xl font-bold">Category not found</h2>
+        <h2 className="text-xl   ">Category not found</h2>
         <Link to="/" className="text-primary hover:underline mt-2 inline-block">Back to Home</Link>
       </div>
     );
@@ -46,7 +46,7 @@ function SubCategoriesPage() {
   return (
     <div className="min-h-[60vh] bg-slate-50 py-12">
       <div className="container mx-auto px-4 max-w-7xl">
-        
+
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="font-display text-4xl md:text-5xl text-foreground mb-2 uppercase tracking-wide">{parent.name}</h1>
@@ -54,17 +54,17 @@ function SubCategoriesPage() {
         </div>
 
         {children.length === 0 ? (
-           <div className="bg-white border border-border rounded-2xl p-12 text-center shadow-sm max-w-lg mx-auto">
-             <span className="text-5xl mb-4 block">🎁</span>
-             <h3 className="text-lg font-bold mb-4">Explore Products Directly</h3>
-             <Link 
-               to="/products" 
-               search={{ category: parent.slug } as never}
-               className="inline-block bg-primary text-white font-bold px-8 py-3 rounded-full shadow-card hover:brightness-110 transition"
-             >
-               View All {parent.name} Toys
-             </Link>
-           </div>
+          <div className="bg-white border border-border rounded-2xl p-12 text-center shadow-sm max-w-lg mx-auto">
+            <span className="text-5xl mb-4 block">🎁</span>
+            <h3 className="text-lg    mb-4">Explore Products Directly</h3>
+            <Link
+              to="/products"
+              search={{ category: parent.slug } as never}
+              className="inline-block bg-primary text-white    px-8 py-3 rounded-full shadow-card hover:brightness-110 transition"
+            >
+              View All {parent.name} Toys
+            </Link>
+          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {children.map((cat, index) => {
@@ -79,14 +79,14 @@ function SubCategoriesPage() {
                   {/* Image block is coded for when you add images inside the category item later */}
                   {cat.image && (
                     <div className="w-full aspect-square rounded-xl overflow-hidden mb-3 flex items-center justify-center bg-white/80">
-                      <img 
-                        src={resolveImage(cat.image)} 
-                        alt={cat.name} 
+                      <img
+                        src={resolveImage(cat.image)}
+                        alt={cat.name}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
                     </div>
                   )}
-                  <h3 className="font-bold text-sm md:text-base transition-colors uppercase tracking-wider leading-snug">{cat.name}</h3>
+                  <h3 className="   text-sm md:text-base transition-colors uppercase tracking-wider leading-snug">{cat.name}</h3>
                 </Link>
               );
             })}

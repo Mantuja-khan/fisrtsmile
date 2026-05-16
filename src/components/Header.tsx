@@ -163,7 +163,7 @@ export function Header() {
 
                 {catOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
-                    <div className="w-[400px] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
                         {categories.filter(c => !c.parent_id).map((parent) => (
                           <Link
@@ -171,7 +171,7 @@ export function Header() {
                             to="/subcategories/$slug"
                             params={{ slug: parent.slug } as never}
                             onClick={() => setCatOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950 font-extrabold text-[11px] tracking-wider uppercase transition-all rounded-xl"
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950  text-[11px] tracking-wider uppercase transition-all rounded-none"
                           >
                             <span className="size-4 flex items-center justify-center shrink-0">
                               {parent.icon ?? "🎁"}
@@ -207,7 +207,7 @@ export function Header() {
                 </button>
                 {brandOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="w-[400px] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
                         {BRANDS.map((b) => (
                           <Link
@@ -215,7 +215,7 @@ export function Header() {
                             to="/products"
                             search={{ brand: b } as never}
                             onClick={() => setBrandOpen(false)}
-                            className="block px-4 py-2.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-xl text-[12px] font-bold uppercase tracking-wider transition"
+                            className="block px-4 py-2.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-none text-[12px]  uppercase tracking-wider transition"
                           >
                             {b}
                           </Link>
@@ -248,7 +248,7 @@ export function Header() {
                 </button>
                 {ageOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="w-52 bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="w-52 bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-2 flex flex-col gap-1">
                         {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => (
                           <Link
@@ -256,7 +256,7 @@ export function Header() {
                             to="/products"
                             search={{ age: age } as never}
                             onClick={() => setAgeOpen(false)}
-                            className="block px-4 py-2.5 rounded-xl hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[12px] font-bold uppercase tracking-wider transition"
+                            className="block px-4 py-2.5 rounded-none hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[12px]    uppercase tracking-wider transition"
                           >
                             {age}
                           </Link>
@@ -338,7 +338,7 @@ export function Header() {
               <Link to="/cart" className="relative hidden md:flex flex-col items-center justify-center shrink-0 hover:opacity-80 transition-opacity text-slate-800">
                 <div className="relative">
                   <ShoppingCart className="size-6" />
-                  <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
+                  <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px]    rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
                     {cartCount}
                   </span>
                 </div>
@@ -408,14 +408,14 @@ export function Header() {
           <div className="flex-1 overflow-y-auto bg-white">
             <div className="flex flex-col">
               <Link to="/products" className="p-4 border-b border-slate-100 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <Grid3x3 className="size-5 text-slate-700" /> <span className="font-bold text-slate-800">All Categories</span>
+                <Grid3x3 className="size-5 text-slate-700" /> <span className="   text-slate-800">All Categories</span>
               </Link>
 
               {/* Shop by Age collapsible */}
               <div className="border-b border-slate-100 flex flex-col">
                 <button
                   onClick={() => setMobileAgeOpen(!mobileAgeOpen)}
-                  className="w-full p-4 flex items-center justify-between font-bold text-left text-slate-800"
+                  className="w-full p-4 flex items-center justify-between    text-left text-slate-800"
                 >
                   <span>Shop by Age</span>
                   <ChevronDown className={`size-4 text-slate-400 transition-transform ${mobileAgeOpen ? "rotate-180" : ""}`} />
@@ -427,7 +427,7 @@ export function Header() {
                         key={age}
                         to="/products"
                         search={{ age } as never}
-                        className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors font-semibold"
+                        className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors   "
                         onClick={() => { setMobileMenuOpen(false); setMobileAgeOpen(false); }}
                       >
                         {age}
@@ -441,7 +441,7 @@ export function Header() {
               <div className="border-b border-slate-100 flex flex-col">
                 <button
                   onClick={() => setMobileBrandOpen(!mobileBrandOpen)}
-                  className="w-full p-4 flex items-center justify-between font-bold text-left text-slate-800"
+                  className="w-full p-4 flex items-center justify-between    text-left text-slate-800"
                 >
                   <span>Shop by Brand</span>
                   <ChevronDown className={`size-4 text-slate-400 transition-transform ${mobileBrandOpen ? "rotate-180" : ""}`} />
@@ -453,7 +453,7 @@ export function Header() {
                         key={brand}
                         to="/products"
                         search={{ brand } as never}
-                        className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors font-semibold truncate"
+                        className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors    truncate"
                         onClick={() => { setMobileMenuOpen(false); setMobileBrandOpen(false); }}
                       >
                         {brand}
@@ -463,23 +463,23 @@ export function Header() {
                 )}
               </div>
 
-              <Link to="/coupons" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
+              <Link to="/coupons" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
 
               {user && (
                 <Link
                   to="/account"
                   search={{ view: 'orders' } as any}
-                  className="p-4 border-b border-slate-100 font-bold text-slate-800"
+                  className="p-4 border-b border-slate-100    text-slate-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   My Orders
                 </Link>
               )}
 
-              <Link to="/about" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
-              <Link to="/contact" className="p-4 border-b border-slate-100 font-bold text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
+              <Link to="/about" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+              <Link to="/contact" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
 
-              <Link to="/account" className="p-4 font-bold text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/account" className="p-4    text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <User className="size-5 text-slate-700" /> {user ? name : "Sign In"}
               </Link>
             </div>
@@ -531,10 +531,10 @@ export function Header() {
                 value={q}
                 onChange={(e) => { setQ(e.target.value); }}
                 placeholder="Search for toys, dolls, games..."
-                className="w-full px-4 py-3 bg-slate-100 border border-slate-200 focus:border-slate-300 focus:bg-white rounded-xl outline-none text-sm transition-all placeholder:text-slate-400 text-slate-800 font-bold"
+                className="w-full px-4 py-3 bg-slate-100 border border-slate-200 focus:border-slate-300 focus:bg-white rounded-xl outline-none text-sm transition-all placeholder:text-slate-400 text-slate-800   "
                 autoFocus
               />
-              <button type="submit" className="absolute right-2 top-1.5 bottom-1.5 bg-[#BFDDF0] hover:bg-[#BFDDF0]/80 text-slate-950 font-extrabold px-4 rounded-lg text-xs flex items-center transition-colors border border-[#BFDDF0]">
+              <button type="submit" className="absolute right-2 top-1.5 bottom-1.5 bg-[#BFDDF0] hover:bg-[#BFDDF0]/80 text-slate-950  px-4 rounded-lg text-xs flex items-center transition-colors border border-[#BFDDF0]">
                 Search
               </button>
             </form>
@@ -572,10 +572,10 @@ export function Header() {
                         <h5 className="text-xs font-black text-slate-800 truncate group-hover:text-slate-950 uppercase tracking-wide">
                           <HighlightText text={p.name} highlight={q} />
                         </h5>
-                        <p className="text-[10px] text-slate-400 font-bold tracking-wide">{p.category_name || "Toys"}</p>
+                        <p className="text-[10px] text-slate-400    tracking-wide">{p.category_name || "Toys"}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-sm font-black text-slate-950">₹{fp.toLocaleString("en-IN")}</span>
-                          {p.offerPct > 0 && <span className="text-[10px] line-through text-slate-400 font-bold">₹{p.mrp.toLocaleString("en-IN")}</span>}
+                          {p.offerPct > 0 && <span className="text-[10px] line-through text-slate-400   ">₹{p.mrp.toLocaleString("en-IN")}</span>}
                         </div>
                       </div>
                       <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 group-hover:text-[#BFDDF0] transition-all shrink-0" />

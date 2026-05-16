@@ -16,7 +16,7 @@ function WishlistPage() {
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-6">
-      <h1 className="text-2xl font-bold mb-4">My Wishlist ({items.length})</h1>
+      <h1 className="text-2xl    mb-4">My Wishlist ({items.length})</h1>
       {items.length === 0 ? (
         <div className="bg-surface rounded-xl shadow-card p-10 text-center">
           <div className="text-6xl mb-3">💝</div>

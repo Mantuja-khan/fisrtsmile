@@ -264,7 +264,7 @@ function AdminCategories() {
                 name="parent" 
                 defaultValue={editing?.parent?._id || editing?.parent || presetParentId || ""} 
                 key={editing?._id || presetParentId}
-                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
+                className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
               >
                 <option value="">— Top Level Category —</option>
                 {categories

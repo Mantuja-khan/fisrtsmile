@@ -15,7 +15,7 @@ export function DiscountPopup() {
 
   const generateAndSaveCoupon = (phoneToUse: string) => {
     if (!phoneToUse) return null;
-    
+
     // Check if already added for this phone to prevent duplication
     const existing = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
     const alreadyHas = existing.find((c: any) => c.phone === phoneToUse && c.code.startsWith("FS5OFF"));
@@ -45,7 +45,7 @@ export function DiscountPopup() {
     // Listen for real-time events from other components
     const onTrigger = () => checkAndShow();
     window.addEventListener("trigger-discount-popup", onTrigger);
-    
+
     return () => window.removeEventListener("trigger-discount-popup", onTrigger);
   }, [user]);
 
@@ -108,7 +108,7 @@ export function DiscountPopup() {
         <div className="w-full md:w-1/2 p-6 md:p-8 text-center flex flex-col justify-center items-center relative z-10 bg-white/40 md:bg-white backdrop-blur-sm md:backdrop-blur-none">
           <img src={logoImg} alt="First Smile" className="h-12 mb-4 object-contain" />
           <h2 className="font-display text-4xl mb-2 text-gray-800 tracking-wide uppercase">Wait!</h2>
-          <p className="text-xl text-gray-700 mb-2">Unlock your <span className="font-bold">5%</span> before you go.</p>
+          <p className="text-xl text-gray-700 mb-2">Unlock your <span className="  ">5%</span> before you go.</p>
           <p className="text-sm italic text-gray-600 mb-6 font-serif">
             Your little one's next favourite toy is just a step away.
           </p>
@@ -125,23 +125,23 @@ export function DiscountPopup() {
               />
               <button
                 type="submit"
-                className="w-full bg-[#009b4d] text-white font-bold py-3.5 rounded-full shadow-sm hover:brightness-110 transition text-lg"
+                className="w-full bg-[#009b4d] text-white    py-3.5 rounded-full shadow-sm hover:brightness-110 transition text-lg"
               >
                 Unlock the Offer
               </button>
             </form>
           ) : (
             <div className="animate-fade-in py-4 w-full">
-              <p className="text-lg font-bold text-primary mb-2">Offer Unlocked! 🎉</p>
+              <p className="text-lg    text-primary mb-2">Offer Unlocked! 🎉</p>
               <div className="bg-[#d4eedb] border border-[#009b4d] rounded-xl p-4 my-4">
-                <p className="text-xs text-[#009b4d] uppercase font-bold mb-1">Your Coupon Code</p>
-                <p className="text-2xl font-mono font-bold tracking-widest text-[#009b4d]">{generatedCoupon}</p>
+                <p className="text-xs text-[#009b4d] uppercase    mb-1">Your Coupon Code</p>
+                <p className="text-2xl font-mono    tracking-widest text-[#009b4d]">{generatedCoupon}</p>
               </div>
               <p className="text-sm text-muted-foreground">
                 You can find this code in your{" "}
                 <Link
                   to="/coupons"
-                  className="text-primary hover:underline font-bold"
+                  className="text-primary hover:underline   "
                   onClick={handleClose}
                 >
                   Coupons

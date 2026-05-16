@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
-import { 
-  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, EyeOff, Phone, Home, 
-  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard, ShieldCheck 
+import {
+  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, EyeOff, Phone, Home,
+  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard, ShieldCheck
 } from "lucide-react";
 import { redirectToPayU } from "@/utils/payu";
 import { useAuth } from "@/store/auth";
@@ -85,12 +85,12 @@ function AccountPage() {
     return (
       <div className="min-h-[calc(100vh-140px)] bg-[#F4F6F9] py-6 md:py-10">
         <div className="container mx-auto px-4 max-w-6xl">
-          
+
           <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
-            
+
             {/* Premium Left Sidebar Area */}
             <aside className="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col gap-6">
-              
+
               {/* Profile Info Header Card */}
               <div className="bg-white rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#BFDDF0] text-slate-900 border border-slate-200/60 flex items-center justify-center font-extrabold text-lg uppercase shadow-sm shrink-0">
@@ -104,16 +104,15 @@ function AccountPage() {
 
               {/* Side Nav Navigation Block */}
               <div className="bg-white rounded-2xl py-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col">
-                
+
                 {/* Isolated Top Nav: My Orders */}
                 <div className="px-3">
-                  <button 
+                  <button
                     onClick={() => setView("orders")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
-                      view === "orders" 
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "orders"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
                         : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <Package className={`w-[18px] h-[18px] ${view === "orders" ? "text-slate-900" : "text-slate-400"}`} />
@@ -131,13 +130,12 @@ function AccountPage() {
                 </div>
 
                 <div className="px-3 space-y-1">
-                  <button 
+                  <button
                     onClick={() => setView("profile")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
-                      view === "profile" 
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "profile"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
                         : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <User className={`w-[18px] h-[18px] ${view === "profile" ? "text-slate-900" : "text-slate-400"}`} />
@@ -146,13 +144,12 @@ function AccountPage() {
                     {view !== "profile" && <ChevronRight className="w-4 h-4 text-slate-300" />}
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => setView("addresses")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
-                      view === "addresses" 
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs" 
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "addresses"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
                         : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <MapPin className={`w-[18px] h-[18px] ${view === "addresses" ? "text-slate-900" : "text-slate-400"}`} />
@@ -171,7 +168,7 @@ function AccountPage() {
                       <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">Admin Panel</span>
                     </div>
                     <div className="px-3">
-                      <button 
+                      <button
                         onClick={() => navigate({ to: "/admin" })}
                         className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-extrabold text-sm text-slate-800 bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 hover:bg-[#BFDDF0]/50 transition"
                       >
@@ -183,7 +180,7 @@ function AccountPage() {
                 )}
 
                 <div className="border-t border-slate-100 mt-4 pt-2 px-3">
-                  <button 
+                  <button
                     onClick={signOut}
                     className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-sm text-rose-600 hover:bg-rose-50/80 transition"
                   >
@@ -205,8 +202,8 @@ function AccountPage() {
                     We use industry-standard measures to keep your information safe and secure.
                   </p>
                 </div>
-                <button 
-                  onClick={() => navigate({ to: "/policies/privacy" })} 
+                <button
+                  onClick={() => navigate({ to: "/policies/privacy" })}
                   className="text-xs font-extrabold text-slate-800 text-left hover:underline"
                 >
                   Learn more &gt;
@@ -495,7 +492,7 @@ function ProfileDetailsEngine() {
 
   return (
     <div className="p-6 md:p-10 relative overflow-hidden">
-      
+
       {/* Background Subtle Illustration Pattern */}
       <div className="absolute top-8 right-8 hidden md:block opacity-[0.15] pointer-events-none">
         <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#BFDDF0]">
@@ -518,7 +515,7 @@ function ProfileDetailsEngine() {
       </div>
 
       <form onSubmit={save} className="max-w-2xl space-y-7">
-        
+
         {/* Field: Full Name */}
         <div className="space-y-2">
           <div className="flex flex-col gap-0.5">
@@ -572,11 +569,10 @@ function ProfileDetailsEngine() {
               value={phone}
               onChange={e => setPhone(e.target.value)}
               placeholder="Enter your phone number"
-              className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${
-                user?.phone
+              className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${user?.phone
                   ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
                   : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
-              }`}
+                }`}
             />
             {Boolean(user?.phone) && (
               <div className="absolute right-3 flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold text-[10px] px-2 py-0.5 rounded-md shadow-xs pointer-events-none uppercase tracking-wide">
@@ -600,8 +596,8 @@ function ProfileDetailsEngine() {
 
         {/* Responsive Action Row Buttons */}
         <div className="pt-2 flex flex-wrap items-center gap-3">
-          <button 
-            disabled={busy} 
+          <button
+            disabled={busy}
             type="submit"
             className="inline-flex items-center gap-2 bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm border border-[#BFDDF0]/20 hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
@@ -609,7 +605,7 @@ function ProfileDetailsEngine() {
             <span>{busy ? "Saving Changes..." : "Save Changes"}</span>
           </button>
 
-          <button 
+          <button
             type="button"
             onClick={reset}
             className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm px-6 py-3 rounded-xl shadow-xs active:scale-95 transition"
@@ -703,7 +699,7 @@ function MyOrdersEngine() {
   };
 
   if (loading) return <div className="p-16 text-center text-slate-400 font-medium">Loading your orders...</div>;
-  
+
   if (orders.length === 0) {
     return (
       <div className="p-16 text-center">
@@ -756,7 +752,7 @@ function MyOrdersEngine() {
         const isCancelled = lstatus === "cancelled";
         const isDelivered = lstatus === "delivered";
         const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         const withinFourDays = diffDays <= 4;
         const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned";
 
@@ -900,8 +896,8 @@ function AddressesEngine() {
         </div>
 
         <div className="pt-2">
-          <button 
-            disabled={busy} 
+          <button
+            disabled={busy}
             className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
@@ -997,8 +993,8 @@ function PasswordEngine() {
         </div>
 
         <div className="pt-2">
-          <button 
-            disabled={busy} 
+          <button
+            disabled={busy}
             className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
@@ -1037,10 +1033,10 @@ function NotificationsEngine() {
       <form onSubmit={save} className="max-w-xl space-y-6">
         <div className="space-y-4">
           <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
-            <input 
-              type="checkbox" 
-              checked={emailNotif} 
-              onChange={e => setEmailNotif(e.target.checked)} 
+            <input
+              type="checkbox"
+              checked={emailNotif}
+              onChange={e => setEmailNotif(e.target.checked)}
               className="w-4 h-4 accent-[#802a8f] rounded"
             />
             <div>
@@ -1050,10 +1046,10 @@ function NotificationsEngine() {
           </label>
 
           <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
-            <input 
-              type="checkbox" 
-              checked={smsNotif} 
-              onChange={e => setSmsNotif(e.target.checked)} 
+            <input
+              type="checkbox"
+              checked={smsNotif}
+              onChange={e => setSmsNotif(e.target.checked)}
               className="w-4 h-4 accent-[#802a8f] rounded"
             />
             <div>
@@ -1064,7 +1060,7 @@ function NotificationsEngine() {
         </div>
 
         <div className="pt-2">
-          <button 
+          <button
             type="submit"
             className="inline-flex items-center gap-2 bg-slate-900 border border-[#BFDDF0]/20 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-md hover:bg-slate-800 active:scale-95 transition"
           >

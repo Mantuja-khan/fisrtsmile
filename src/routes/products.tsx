@@ -59,7 +59,7 @@ function ProductListPage() {
     if (search.brand) list = list.filter((p) => p.brand === search.brand);
     if (search.badge) {
       const qBadge = search.badge.toLowerCase().trim();
-      list = list.filter((p) => 
+      list = list.filter((p) =>
         p.badge && p.badge.toLowerCase().split(",").map(b => b.trim()).includes(qBadge)
       );
     }
@@ -85,16 +85,16 @@ function ProductListPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-surface rounded-xl shadow-card p-3.5 border border-border/50">
           <div className="text-sm font-medium flex items-center gap-2">
-            <span className="bg-muted px-2 py-0.5 rounded font-bold">{filtered.length}</span> products
+            <span className="bg-muted px-2 py-0.5 rounded   ">{filtered.length}</span> products
             {activeCategoryName && <span className="text-muted-foreground hidden sm:inline"> · {activeCategoryName}</span>}
-            {search.sale && <span className="text-emerald-600 font-bold hidden sm:inline"> · Sale Area</span>}
+            {search.sale && <span className="text-emerald-600    hidden sm:inline"> · Sale Area</span>}
           </div>
-          
+
           <div className="flex items-center gap-2 ml-auto">
             <select
               value={search.sort}
               onChange={(e) => update({ sort: e.target.value as Search["sort"] })}
-              className="text-sm font-medium border border-border bg-white rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="text-sm font-medium border border-border bg-white rounded-none px-2.5 py-1.5 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
               <option value="popular">Popular</option>
               <option value="price_asc">Price: Low to High</option>

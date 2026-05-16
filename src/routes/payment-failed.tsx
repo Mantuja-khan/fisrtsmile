@@ -12,12 +12,12 @@ function PaymentFailed() {
         <div className="size-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-600">
           <XCircle className="size-10" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Payment Cancelled / Failed</h1>
+        <h1 className="text-2xl    text-slate-900 mb-2">Payment Cancelled / Failed</h1>
         <p className="text-slate-500 mb-6">
           Oops! The payment session timed out or was declined. Please verify your card or bank funds and try again.
         </p>
         <div className="flex flex-col gap-3">
-          <Link to="/account" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition">
+          <Link to="/account" className="w-full bg-slate-900 text-white    py-3 rounded-xl hover:bg-slate-800 transition">
             Retry from My Orders
           </Link>
           <Link to="/contact" className="text-sm text-slate-500 font-medium hover:underline">

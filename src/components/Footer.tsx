@@ -7,9 +7,9 @@ export function Footer() {
   return (
     <footer className="mt-12 relative bg-[#0d1527] text-white overflow-hidden border-t border-slate-800">
       {/* Background Image with Blur, Darkened for optimal contrast */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center z-0 pointer-events-none select-none scale-105"
-        style={{ 
+        style={{
           backgroundImage: `url(${footerBg})`,
           filter: "blur(3px) brightness(0.65)",
           opacity: "0.5"
@@ -29,7 +29,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Categories</h4>
+            <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Categories</h4>
             <ul className="space-y-2.5 text-sm text-slate-300/80">
               <li><Link to="/products" className="hover:text-white transition-colors">All Products</Link></li>
               <li><Link to="/products" search={{ category: "Soft Toys" } as never} className="hover:text-white transition-colors">Soft Toys</Link></li>
@@ -39,7 +39,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Help</h4>
+            <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Help</h4>
             <ul className="space-y-2.5 text-sm text-slate-300/80">
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
               <li><Link to="/track" className="hover:text-white transition-colors">Track Order</Link></li>
@@ -52,7 +52,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Reach Us</h4>
+            <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Reach Us</h4>
             <ul className="space-y-3 text-sm text-slate-300/80">
               <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Mail className="size-4.5 shrink-0 text-slate-400" /> support@firstsmiletoys.com</li>
               <li className="flex items-center gap-2.5 hover:text-white transition-colors"><MessageCircle className="size-4.5 shrink-0 text-slate-400" /> +91 7827743263</li>

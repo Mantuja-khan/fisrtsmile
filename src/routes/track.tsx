@@ -45,7 +45,7 @@ function TrackPage() {
       // For now, I'll fetch all orders and filter or add a backend endpoint
       // Adding backend endpoint for track is better.
       const { data } = await api.get(`/orders/track/${num.trim().toUpperCase()}`);
-      
+
       if (!data) {
         toast.error("No order found with that ID");
         setOrder(null);
@@ -53,9 +53,9 @@ function TrackPage() {
         setOrder(data);
       }
     } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to load order");
+      toast.error(error.response?.data?.message || "Failed to load order");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   }, []);
 
@@ -68,13 +68,13 @@ function TrackPage() {
     if (!confirm("Cancel this order? This cannot be undone.")) return;
     setCancelling(true);
     try {
-        await api.put(`/orders/${order._id}/cancel`);
-        toast.success("Order cancelled. Refund (if prepaid) in 4–10 working days.");
-        setOrder({ ...order, status: "cancelled" });
+      await api.put(`/orders/${order._id}/cancel`);
+      toast.success("Order cancelled. Refund (if prepaid) in 4–10 working days.");
+      setOrder({ ...order, status: "cancelled" });
     } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to cancel order");
+      toast.error(error.response?.data?.message || "Failed to cancel order");
     } finally {
-        setCancelling(false);
+      setCancelling(false);
     }
   };
 
@@ -83,7 +83,7 @@ function TrackPage() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Track Your Order</h1>
+      <h1 className="text-2xl    mb-4">Track Your Order</h1>
       <form
         onSubmit={(e) => { e.preventDefault(); loadOrder(orderId); }}
         className="bg-surface rounded-xl shadow-card p-5 flex flex-col md:flex-row gap-3"
@@ -105,14 +105,13 @@ function TrackPage() {
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <div className="text-xs text-muted-foreground">Order ID</div>
-              <div className="font-bold">{order.order_number}</div>
+              <div className="  ">{order.order_number}</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Placed on {new Date(order.createdAt).toLocaleString("en-IN")} · ₹{Number(order.total).toLocaleString("en-IN")} · {order.payment_method.toUpperCase()}
               </div>
             </div>
-            <span className={`text-xs font-semibold px-2 py-1 rounded text-white ${
-              order.status === "cancelled" ? "bg-destructive" : order.status === "delivered" ? "bg-discount" : "bg-primary"
-            }`}>
+            <span className={`text-xs font-semibold px-2 py-1 rounded text-white ${order.status === "cancelled" ? "bg-destructive" : order.status === "delivered" ? "bg-discount" : "bg-primary"
+              }`}>
               {order.status.toUpperCase()}
             </span>
           </div>
@@ -129,9 +128,9 @@ function TrackPage() {
             <div className="mt-12 mb-8 relative">
               {/* Progress Track Line background */}
               <div className="absolute left-[12.5%] right-[12.5%] top-5 h-1 bg-muted rounded-full" />
-              
+
               {/* Animated / Filled Progress Line */}
-              <div 
+              <div
                 className="absolute left-[12.5%] top-5 h-1 bg-discount rounded-full transition-all duration-1000 ease-out"
                 style={{ width: currentIdx === -1 ? "0%" : `${(Math.max(0, currentIdx) / (STAGES.length - 1)) * 75}%` }}
               />
@@ -151,7 +150,7 @@ function TrackPage() {
                       </div>
                       {/* Label */}
                       <div className="mt-3 flex flex-col items-center">
-                        <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-wide transition-colors ${done ? "text-foreground" : "text-muted-foreground/70"}`}>
+                        <span className={`text-[11px] sm:text-xs    uppercase tracking-wide transition-colors ${done ? "text-foreground" : "text-muted-foreground/70"}`}>
                           {s.label}
                         </span>
                         {isActive && (
@@ -169,9 +168,9 @@ function TrackPage() {
 
           {/* Live Shiprocket Info */}
           {order.status !== "cancelled" && order.awb_code && (
-             <div className="mt-6 pt-6 border-t border-dashed border-border">
-               <LiveShiprocketTracking orderId={order._id} awb={order.awb_code} fallbackUrl={order.tracking_url} />
-             </div>
+            <div className="mt-6 pt-6 border-t border-dashed border-border">
+              <LiveShiprocketTracking orderId={order._id} awb={order.awb_code} fallbackUrl={order.tracking_url} />
+            </div>
           )}
 
           {canCancel && (
@@ -227,7 +226,7 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
   const trackingData = tracking?.tracking_data || {};
   const tracks = trackingData.shipment_track?.[0] || {};
   const activities = trackingData.shipment_track_activities || [];
-  
+
   const currentStatus = tracks.current_status || "Preparing dispatch";
   const courier = tracks.courier_name || "Shiprocket Partner";
 
@@ -236,13 +235,13 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
       <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-100">
         <div>
           <div className="flex items-center gap-2 mb-1">
-             <span className="text-[10px] font-extrabold tracking-widest text-white bg-indigo-600 px-2 py-0.5 rounded shadow-sm uppercase">Shiprocket Live</span>
-             <span className="text-xs text-slate-500 font-medium">Via {courier}</span>
+            <span className="text-[10px] font-extrabold tracking-widest text-white bg-indigo-600 px-2 py-0.5 rounded shadow-sm uppercase">Shiprocket Live</span>
+            <span className="text-xs text-slate-500 font-medium">Via {courier}</span>
           </div>
           <div className="text-lg font-extrabold text-slate-900 tracking-tight">AWB {awb}</div>
         </div>
         {fallbackUrl && (
-          <a href={fallbackUrl} target="_blank" rel="noreferrer" className="text-xs font-bold bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-50 shadow-sm">
+          <a href={fallbackUrl} target="_blank" rel="noreferrer" className="text-xs    bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-50 shadow-sm">
             View Full Details ↗
           </a>
         )}
@@ -255,40 +254,40 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
         </div>
       ) : error ? (
         <div className="text-center py-4 bg-amber-50 text-amber-700 text-xs rounded border border-amber-100">
-          <span className="font-bold">Note:</span> Tracking credentials verification in progress. {fallbackUrl ? "You can track manually below." : ""}
+          <span className="  ">Note:</span> Tracking credentials verification in progress. {fallbackUrl ? "You can track manually below." : ""}
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-           <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center gap-3">
-              <div className="size-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-emerald-200 shadow-md animate-pulse">
-                <Package className="size-4 text-white" />
-              </div>
-              <div>
-                <div className="text-[10px] text-emerald-700 uppercase font-bold tracking-wider">Current Status</div>
-                <div className="text-sm font-bold text-emerald-900">{currentStatus}</div>
-              </div>
-           </div>
+          <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center gap-3">
+            <div className="size-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-emerald-200 shadow-md animate-pulse">
+              <Package className="size-4 text-white" />
+            </div>
+            <div>
+              <div className="text-[10px] text-emerald-700 uppercase    tracking-wider">Current Status</div>
+              <div className="text-sm    text-emerald-900">{currentStatus}</div>
+            </div>
+          </div>
 
-           {activities.length > 0 ? (
-             <div className="p-5 space-y-6 relative before:content-[''] before:absolute before:left-[27px] before:top-[35px] before:bottom-[35px] before:w-0.5 before:bg-slate-100">
-               {activities.map((act: any, i: number) => (
-                 <div key={i} className="flex gap-4 relative z-10">
-                   <div className={`size-4 mt-1 rounded-full shrink-0 border-2 bg-white transition-colors ${i === 0 ? "border-emerald-500" : "border-slate-300"}`} />
-                   <div className="flex-1 min-w-0">
-                      <div className={`font-bold text-sm ${i === 0 ? "text-slate-900" : "text-slate-600"}`}>{act.activity}</div>
-                      <div className="flex items-center justify-between text-xs mt-0.5 font-medium">
-                         <span className="text-slate-500 flex items-center gap-1"><MapPin className="size-3" /> {act.location || "Distribution Center"}</span>
-                         <span className="text-slate-400 italic font-mono">{act.date ? new Date(act.date).toLocaleString("en-IN", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ""}</span>
-                      </div>
-                   </div>
-                 </div>
-               ))}
-             </div>
-           ) : (
-             <div className="p-6 text-center text-sm text-slate-500 italic font-medium">
-               Dispatched from source. Carrier will update scanning checkpoints shortly.
-             </div>
-           )}
+          {activities.length > 0 ? (
+            <div className="p-5 space-y-6 relative before:content-[''] before:absolute before:left-[27px] before:top-[35px] before:bottom-[35px] before:w-0.5 before:bg-slate-100">
+              {activities.map((act: any, i: number) => (
+                <div key={i} className="flex gap-4 relative z-10">
+                  <div className={`size-4 mt-1 rounded-full shrink-0 border-2 bg-white transition-colors ${i === 0 ? "border-emerald-500" : "border-slate-300"}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className={`   text-sm ${i === 0 ? "text-slate-900" : "text-slate-600"}`}>{act.activity}</div>
+                    <div className="flex items-center justify-between text-xs mt-0.5 font-medium">
+                      <span className="text-slate-500 flex items-center gap-1"><MapPin className="size-3" /> {act.location || "Distribution Center"}</span>
+                      <span className="text-slate-400 italic font-mono">{act.date ? new Date(act.date).toLocaleString("en-IN", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ""}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-sm text-slate-500 italic font-medium">
+              Dispatched from source. Carrier will update scanning checkpoints shortly.
+            </div>
+          )}
         </div>
       )}
     </div>

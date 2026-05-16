@@ -9,17 +9,17 @@ export const Route = createFileRoute("/policies/returns")({
         <div className="size-9 grid place-items-center bg-rose-50 text-rose-600 rounded-lg shrink-0">
           <RefreshCcw className="size-5" />
         </div>
-        <h1 className="text-2xl font-bold text-foreground m-0">Refund & Cancellation Policy</h1>
+        <h1 className="text-2xl    text-foreground m-0">Refund & Cancellation Policy</h1>
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 font-medium">
-        We want you to have a smooth experience while shopping with <strong>First Smile</strong>. <br/>
+        We want you to have a smooth experience while shopping with <strong>First Smile</strong>. <br />
         Please read the policy carefully before placing your order.
       </p>
 
       {/* Return/Exchange Eligibility */}
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0 flex items-center gap-2">
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0 flex items-center gap-2">
           <CheckCircle2 className="size-4 text-green-600" />
           Return / Exchange Eligibility
         </h2>
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/policies/returns")({
           <li>Product is damaged or defective</li>
           <li>Wrong product has been delivered</li>
         </ul>
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs font-bold text-amber-800 mt-2">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs    text-amber-800 mt-2">
           ⚠️ The request must be raised within 48 hours of delivery.
         </div>
       </div>
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/policies/returns")({
           <Video className="size-4 shrink-0" />
           Unboxing Video Requirement
         </h2>
-        <p className="text-xs font-bold text-rose-800 m-0">
+        <p className="text-xs    text-rose-800 m-0">
           An unboxing video is <strong>mandatory</strong> for all return or exchange requests.
         </p>
         <ul className="space-y-1 text-xs text-rose-800 list-disc pl-5 font-medium">
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/policies/returns")({
 
       {/* Exchange Policy */}
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Exchange Policy</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Exchange Policy</h2>
         <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
           <li>Exchange is allowed only for the same product.</li>
           <li>If the product is not available, store credit will be issued.</li>
@@ -63,11 +63,11 @@ export const Route = createFileRoute("/policies/returns")({
 
       {/* Not Eligible for Return / Exchange */}
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0 flex items-center gap-2">
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0 flex items-center gap-2">
           <AlertTriangle className="size-4 text-rose-500" />
           Not Eligible for Return / Exchange
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold text-muted-foreground">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs    text-muted-foreground">
           <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Used products</div>
           <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Products without original tags/packaging</div>
           <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Customized products</div>
@@ -78,11 +78,11 @@ export const Route = createFileRoute("/policies/returns")({
 
       {/* Return Process */}
       <div className="space-y-3 border-t border-border/30 pt-5">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Return Process</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Return Process</h2>
         <ol className="space-y-2 text-sm text-muted-foreground list-decimal pl-5">
-          <li><span className="font-bold text-foreground/80">Email your request</span> along with your Order ID.</li>
-          <li><span className="font-bold text-foreground/80">Share the unboxing video</span> and clear issue details.</li>
-          <li>After approval, <span className="font-bold text-foreground/80">return instructions</span> will be shared.</li>
+          <li><span className="   text-foreground/80">Email your request</span> along with your Order ID.</li>
+          <li><span className="   text-foreground/80">Share the unboxing video</span> and clear issue details.</li>
+          <li>After approval, <span className="   text-foreground/80">return instructions</span> will be shared.</li>
         </ol>
         <div className="text-xs font-medium text-muted-foreground italic pl-5 mt-2 space-y-1">
           <p>• Reverse pickup depends on courier service availability.</p>
@@ -92,7 +92,7 @@ export const Route = createFileRoute("/policies/returns")({
 
       {/* Refund Policy & Details */}
       <div className="space-y-3 border-t border-border/30 pt-5">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider m-0">Refund Policy</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Refund Policy</h2>
         <p className="text-sm text-muted-foreground m-0">Refunds are only applicable if:</p>
         <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5 font-medium">
           <li>The product is not available for exchange, or</li>
@@ -100,7 +100,7 @@ export const Route = createFileRoute("/policies/returns")({
         </ul>
 
         <div className="bg-[#f0f9ff] border border-[#bae6fd] text-[#0369a1] p-4 rounded-xl flex flex-col gap-1 mt-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest m-0 flex items-center gap-1.5">
+          <h3 className="text-xs    uppercase tracking-widest m-0 flex items-center gap-1.5">
             <Clock className="size-3.5" /> Refund Details
           </h3>
           <ul className="space-y-1 text-xs font-medium text-[#0c4a6e] list-disc pl-4 mt-1">
@@ -116,8 +116,8 @@ export const Route = createFileRoute("/policies/returns")({
           <Mail className="size-4" /> How to Request
         </h2>
         <div className="space-y-1 text-sm">
-          <p><span className="font-bold opacity-70 text-xs">Email:</span> <a href="mailto:support@firstsmiletoys.com" className="font-extrabold hover:underline text-rose-200">support@firstsmiletoys.com</a></p>
-          <p><span className="font-bold opacity-70 text-xs">Subject Line:</span> <code className="bg-white/10 px-2 py-0.5 rounded text-white font-mono text-xs">Return/Exchange Request – [Order ID]</code></p>
+          <p><span className="   opacity-70 text-xs">Email:</span> <a href="mailto:support@firstsmiletoys.com" className="font-extrabold hover:underline text-rose-200">support@firstsmiletoys.com</a></p>
+          <p><span className="   opacity-70 text-xs">Subject Line:</span> <code className="bg-white/10 px-2 py-0.5 rounded text-white font-mono text-xs">Return/Exchange Request – [Order ID]</code></p>
         </div>
       </div>
     </div>

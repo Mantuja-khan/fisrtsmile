@@ -150,7 +150,7 @@ function AdminBanners() {
           <div className="grid gap-3">
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Link Category / Subcategory</label>
-              <select name="category" defaultValue={editingBanner?.category?._id || ""} required className="w-full px-3 py-2 text-sm border border-input rounded bg-white">
+              <select name="category" defaultValue={editingBanner?.category?._id || ""} required className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white">
                 <option value="">— Select category/subcategory to open on click —</option>
                 {sortedCategories.map((c) => {
                   const parentName = c.parent ? (typeof c.parent === 'object' ? c.parent.name : 'Subcategory') : '';

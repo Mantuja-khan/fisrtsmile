@@ -55,7 +55,7 @@ function CouponsPage() {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Please log in</h2>
+        <h2 className="text-2xl    mb-4">Please log in</h2>
         <p className="text-muted-foreground">You need to log in to view your coupons.</p>
       </div>
     );
@@ -79,7 +79,7 @@ function CouponsPage() {
         <div className="bg-gradient-to-br from-[#802a8f]/5 via-white to-secondary/5 rounded-2xl p-6 border border-[#802a8f]/10 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="flex-1 max-w-md">
             <div className="inline-block px-2.5 py-1 bg-warning/20 text-warning-foreground text-[10px] font-extrabold uppercase rounded mb-2 tracking-wider">Available Offer</div>
-            <h2 className="text-xl font-bold text-foreground">Get 5% Instant Discount</h2>
+            <h2 className="text-xl    text-foreground">Get 5% Instant Discount</h2>
             <p className="text-sm text-muted-foreground mt-1">Unlock a 5% discount on all purchases by entering your mobile number.</p>
           </div>
           <form onSubmit={handleClaimOffer} className="flex gap-2 w-full md:w-auto shrink-0">
@@ -93,7 +93,7 @@ function CouponsPage() {
               onChange={e => setClaimPhone(e.target.value.replace(/\D/g, ''))}
               className="px-4 py-3 border border-border bg-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#802a8f]/30 max-w-[180px]"
             />
-            <button type="submit" className="px-5 py-3 bg-[#802a8f] text-white text-sm font-bold rounded-xl shadow-sm hover:brightness-110 transition shrink-0">Get Offer</button>
+            <button type="submit" className="px-5 py-3 bg-[#802a8f] text-white text-sm    rounded-xl shadow-sm hover:brightness-110 transition shrink-0">Get Offer</button>
           </form>
         </div>
       )}
@@ -103,7 +103,7 @@ function CouponsPage() {
           <div className="size-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
             <Ticket className="size-8 text-muted-foreground/50" />
           </div>
-          <h2 className="text-xl font-bold mb-2">No Active Coupons</h2>
+          <h2 className="text-xl    mb-2">No Active Coupons</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             You don't have any active coupons at the moment. Keep shopping to unlock new offers!
           </p>
@@ -118,10 +118,10 @@ function CouponsPage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-md mb-2 ${isUsed ? 'bg-gray-400/20 text-gray-500' : 'bg-[#802a8f]/20 text-[#802a8f]'}`}>
+                      <span className={`inline-block px-2 py-1 text-xs    uppercase rounded-md mb-2 ${isUsed ? 'bg-gray-400/20 text-gray-500' : 'bg-[#802a8f]/20 text-[#802a8f]'}`}>
                         {isUsed ? 'Used Offer' : 'Special Offer'}
                       </span>
-                      <h3 className="text-xl font-bold text-foreground">Get {coupon.discount}% Off</h3>
+                      <h3 className="text-xl    text-foreground">Get {coupon.discount}% Off</h3>
                       <p className="text-sm text-muted-foreground">Valid on all products</p>
                     </div>
                     <div className="size-10 rounded-full bg-white flex items-center justify-center shadow-sm text-xl border border-border">
@@ -130,14 +130,14 @@ function CouponsPage() {
                   </div>
 
                   <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-border border-dashed">
-                    <span className={`font-mono font-bold text-lg text-foreground tracking-wider ${isUsed ? 'line-through text-muted-foreground' : ''}`}>{coupon.code}</span>
+                    <span className={`font-mono    text-lg text-foreground tracking-wider ${isUsed ? 'line-through text-muted-foreground' : ''}`}>{coupon.code}</span>
                     <button
                       disabled={isUsed}
                       onClick={() => handleCopy(coupon.code)}
                       className={`p-2 text-muted-foreground hover:text-[#802a8f] transition rounded-lg ${isUsed ? 'bg-gray-100 cursor-not-allowed' : 'bg-muted'}`}
                     >
                       {isUsed ? (
-                        <span className="text-xs font-bold uppercase text-red-500 tracking-wider">Used</span>
+                        <span className="text-xs    uppercase text-red-500 tracking-wider">Used</span>
                       ) : copiedCode === coupon.code ? (
                         <CheckCircle2 className="size-5 text-green-500" />
                       ) : (

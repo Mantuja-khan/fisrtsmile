@@ -22,7 +22,7 @@ export function PageLoader() {
       >
         <div className="flex flex-col items-center gap-3">
           <div className="text-5xl animate-bounce">🧸</div>
-          <div className="text-xs font-bold tracking-widest text-foreground/80 uppercase">Loading…</div>
+          <div className="text-xs font-   tracking-widest text-foreground/80 uppercase">Loading…</div>
         </div>
       </div>
     </>

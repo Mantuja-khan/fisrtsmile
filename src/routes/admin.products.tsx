@@ -455,7 +455,7 @@ function AdminProducts() {
                   setParentCatId(val);
                   setSubCatId(val); // default subcategory to parent itself
                 }}
-                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
+                className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
               >
                 <option value="">— Select Parent —</option>
                 {categories
@@ -473,7 +473,7 @@ function AdminProducts() {
                 name="category" 
                 value={subCatId} 
                 onChange={(e) => setSubCatId(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
+                className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
               >
                 <option value={parentCatId}>— Same as Main —</option>
                 {parentCatId && categories
@@ -512,7 +512,7 @@ function AdminProducts() {
 
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Brand</label>
-              <select name="brand" defaultValue={editing?.brand ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded">
+              <select name="brand" defaultValue={editing?.brand ?? ""} className="w-full px-3 py-2 text-sm border border-input rounded-none">
                 <option value="">— No brand selected —</option>
                 {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
               </select>
@@ -754,7 +754,7 @@ function AdminProducts() {
                                updated[idx] = { ...updated[idx], category: val || null };
                                setPreviewRows(updated);
                              }}
-                             className={`w-full text-[11px] font-bold p-1.5 border rounded-md outline-none cursor-pointer bg-white shadow-sm ${
+                             className={`w-full text-[11px] font-bold p-1.5 border rounded-none outline-none cursor-pointer bg-white shadow-sm ${
                                r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
                              }`}
                           >
