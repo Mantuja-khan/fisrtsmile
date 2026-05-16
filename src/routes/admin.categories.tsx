@@ -48,6 +48,48 @@ function AdminCategories() {
   const [uploading, setUploading] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedStatus, setSeedStatus] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === categories.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(categories.map(c => c._id));
+    }
+  };
+
+  const deleteSelected = async () => {
+    if (!selectedIds.length) return;
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} categories? Products in these categories will become uncategorized.`)) return;
+
+    setIsBulkDeleting(true);
+    setSeedStatus(`Deleting ${selectedIds.length} categories...`);
+    
+    try {
+      let count = 0;
+      for (const id of selectedIds) {
+        count++;
+        setSeedStatus(`Deleting (${count}/${selectedIds.length})`);
+        await api.delete(`/categories/${id}`);
+      }
+      toast.success(`Successfully deleted ${selectedIds.length} categories!`);
+      setSelectedIds([]);
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete one or more categories.");
+    } finally {
+      setIsBulkDeleting(false);
+      setSeedStatus("");
+    }
+  };
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["admin-categories"],
