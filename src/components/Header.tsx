@@ -116,23 +116,13 @@ export function Header() {
       <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         }`}>
 
-        {/* Tiny Top Legal Header - Visible on Large Screens Only */}
-        <div className="hidden lg:block w-full bg-pink-100 text-slate-900 text-[10px] font-extrabold uppercase tracking-wider border-b border-pink-200 relative z-50 shadow-xs">
-          <div className="container mx-auto flex items-center justify-end gap-6 py-2 px-4">
-            <Link to="/policies/legal" className="hover:text-rose-600 transition-colors">Legal Notice</Link>
-            <Link to="/policies/terms" className="hover:text-rose-600 transition-colors">Terms & Conditions</Link>
-            <Link to="/policies/privacy" className="hover:text-rose-600 transition-colors">Privacy Policy</Link>
-            <Link to="/policies/returns" className="hover:text-rose-600 transition-colors">Refund Policy</Link>
-          </div>
-        </div>
-
         {/* Consolidated Light Blue Bar */}
         <div className="bg-[#BFDDF0] text-slate-900 relative shadow-md transition-all">
-          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-3 md:py-4">
+          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-4 md:py-5">
 
             {/* Left: Logo */}
             <Link to="/" className="flex items-center shrink-0">
-              <img src={logo} alt="First Smile" className="h-8 md:h-11 w-auto object-contain" />
+              <img src={logo} alt="First Smile" className="h-10 md:h-14 w-auto object-contain" />
             </Link>
 
             {/* Center: Desktop Consolidated Navigation */}
@@ -163,7 +153,7 @@ export function Header() {
                       if (root) setActiveCatId(root.id);
                     }
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${catOpen
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${catOpen
                     ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
                     : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
                     }`}
@@ -208,7 +198,7 @@ export function Header() {
               >
                 <button
                   onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${brandOpen
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${brandOpen
                     ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
                     : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
                     }`}
@@ -249,7 +239,7 @@ export function Header() {
               >
                 <button
                   onClick={() => { setAgeOpen((v) => !v); setBrandOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${ageOpen
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${ageOpen
                     ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
                     : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
                     }`}
@@ -281,7 +271,7 @@ export function Header() {
               <Link
                 to="/products"
                 search={{ sale: true } as never}
-                className="px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider text-rose-600 hover:bg-rose-50 transition-all"
+                className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-rose-600 hover:bg-rose-50 transition-all"
               >
                 Sale
               </Link>
@@ -289,7 +279,7 @@ export function Header() {
               {/* Coupons Link */}
               <Link
                 to="/coupons"
-                className="px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
+                className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
               >
                 Coupons
               </Link>
@@ -299,7 +289,7 @@ export function Header() {
                 <Link
                   to="/account"
                   search={{ view: 'orders' } as any}
-                  className="px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
+                  className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
                 >
                   Orders
                 </Link>
@@ -308,7 +298,7 @@ export function Header() {
               {/* About Link */}
               <Link
                 to="/about"
-                className="px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
+                className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
               >
                 About
               </Link>
@@ -316,7 +306,7 @@ export function Header() {
               {/* Contact Link */}
               <Link
                 to="/contact"
-                className="px-3 py-2 rounded-full text-xs font-black uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
+                className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
               >
                 Contact
               </Link>
@@ -331,8 +321,8 @@ export function Header() {
                 onClick={() => setSidebarSearchOpen(true)}
                 className="hidden md:flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:opacity-80 transition-opacity"
               >
-                <Search className="size-5.5 stroke-[2.2]" />
-                <span className="text-[9px] font-black uppercase tracking-wide mt-0.5">Search</span>
+                <Search className="size-6 stroke-[2.2]" />
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5">Search</span>
               </button>
 
               {/* Wishlist */}
@@ -340,26 +330,26 @@ export function Header() {
                 to="/wishlist"
                 className="hidden md:flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:opacity-80 transition-opacity relative"
               >
-                <Heart className="size-5.5 fill-[#FEFD99]" />
-                <span className="text-[9px] font-black uppercase tracking-wide mt-0.5">Wishlist</span>
+                <Heart className="size-6 fill-[#FEFD99]" />
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5">Wishlist</span>
               </Link>
 
               {/* Cart */}
               <Link to="/cart" className="relative hidden md:flex flex-col items-center justify-center shrink-0 hover:opacity-80 transition-opacity text-slate-800">
                 <div className="relative">
                   <ShoppingCart className="size-6" />
-                  <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px] font-black rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
+                  <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
                     {cartCount}
                   </span>
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-wide mt-0.5 hidden md:block">Cart</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5 hidden md:block">Cart</span>
               </Link>
 
               {/* User Login/Account */}
               <div className="relative hidden md:block shrink-0 hover:opacity-80 transition-opacity text-slate-800">
                 <Link to="/account" className="flex flex-col items-center justify-center">
-                  <User className="size-5.5" />
-                  <span className="text-[9px] font-black uppercase tracking-wide mt-0.5 max-w-[65px] truncate">
+                  <User className="size-6" />
+                  <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5 max-w-[65px] truncate">
                     {user ? name : "Sign In"}
                   </span>
                 </Link>

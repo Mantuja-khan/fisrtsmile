@@ -630,7 +630,7 @@ function ProfileDetailsEngine() {
 type MyOrder = {
   _id: string;
   order_number: string;
-  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned" | "exchange requested" | "exchanged";
+  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned";
   total: number;
   createdAt: string;
   payment_method: string;
@@ -702,20 +702,6 @@ function MyOrdersEngine() {
     }
   };
 
-  const requestExchange = async (id: string) => {
-    if (!confirm("Request an exchange for this order? Our support will contact you to arrange pickup & replacement.")) return;
-    setCancellingId(id);
-    try {
-      await api.put(`/orders/${id}/exchange`);
-      toast.success("Exchange request submitted successfully!");
-      load();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to submit exchange");
-    } finally {
-      setCancellingId(null);
-    }
-  };
-
   if (loading) return <div className="p-16 text-center text-slate-400 font-medium">Loading your orders...</div>;
   
   if (orders.length === 0) {
@@ -742,8 +728,6 @@ function MyOrdersEngine() {
       cancelled: "bg-rose-50 text-rose-700 border-rose-100",
       "return requested": "bg-indigo-50 text-indigo-700 border-indigo-100",
       "returned": "bg-slate-100 text-slate-700 border-slate-200",
-      "exchange requested": "bg-teal-50 text-teal-700 border-teal-100",
-      "exchanged": "bg-teal-100 text-teal-800 border-teal-200",
     };
     const key = s.toLowerCase() as keyof typeof map;
     return (
@@ -774,9 +758,7 @@ function MyOrdersEngine() {
         const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         const withinFourDays = diffDays <= 4;
-        const withinSevenDays = diffDays <= 7;
-        const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned" && lstatus !== "exchange requested" && lstatus !== "exchanged";
-        const canRequestExchange = isDelivered && withinSevenDays && lstatus !== "exchange requested" && lstatus !== "exchanged" && lstatus !== "return requested" && lstatus !== "returned";
+        const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned";
 
         return (
           <div key={o._id} className="p-6 md:px-8 hover:bg-slate-50/50 transition">
@@ -805,16 +787,7 @@ function MyOrdersEngine() {
                     Request Return
                   </button>
                 )}
-                {canRequestExchange && (
-                  <button
-                    onClick={() => requestExchange(o._id)}
-                    disabled={cancellingId === o._id}
-                    className="border border-teal-200 text-teal-700 font-bold px-3 py-1.5 rounded-lg hover:bg-teal-50 transition"
-                  >
-                    Request Exchange
-                  </button>
-                )}
-                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && lstatus !== "exchange requested" && lstatus !== "exchanged" && (
+                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && (
                   <button
                     onClick={() => cancel(o._id)}
                     disabled={cancellingId === o._id}

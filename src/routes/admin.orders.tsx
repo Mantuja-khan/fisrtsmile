@@ -5,7 +5,7 @@ import api from "@/services/api";
 import { toast } from "sonner";
 import { MessageCircle, Search, Filter } from "lucide-react";
 
-type OrderStatus = "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned" | "rejected" | "exchange requested" | "exchanged";
+type OrderStatus = "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned" | "rejected";
 
 type Order = {
   _id: string;
@@ -42,8 +42,6 @@ const statusColors: Record<OrderStatus, string> = {
   "return requested": "bg-purple-600 text-white",
   returned: "bg-slate-800 text-white",
   rejected: "bg-gray-400 text-white",
-  "exchange requested": "bg-teal-600 text-white",
-  exchanged: "bg-teal-800 text-white",
 };
 
 function AdminOrders() {
@@ -163,18 +161,6 @@ function AdminOrders() {
     }
   };
 
-  const resolveExchange = async (o: Order, action: "approve" | "reject") => {
-    const status = action === "approve" ? "Exchanged" : "Rejected";
-    if (!confirm(`Are you sure you want to ${action} this exchange request?`)) return;
-    try {
-      await api.put(`/orders/${o._id}/status`, { status });
-      toast.success(`Exchange request ${action}d!`);
-      qc.invalidateQueries({ queryKey: ["admin-orders"] });
-    } catch (error: any) {
-      toast.error("Failed to resolve exchange request");
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="bg-surface rounded-xl border border-border p-4 shadow-card space-y-4">
@@ -206,8 +192,7 @@ function AdminOrders() {
             { id: "shipped", label: "Shipped" },
             { id: "delivered", label: "Delivered" },
             { id: "cancelled", label: "Cancelled" },
-            { id: "return requested", label: "Returns" },
-            { id: "exchange requested", label: "Exchanges" }
+            { id: "return requested", label: "Returns" }
           ].map((f) => {
             const isActive = statusFilter === f.id;
             const count = getCount(f.id);
@@ -356,16 +341,6 @@ function AdminOrders() {
                       <div className="flex gap-2">
                         <button onClick={() => resolveReturn(o, "approve")} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded transition">Approve Return</button>
                         <button onClick={() => resolveReturn(o, "reject")} className="flex-1 border border-purple-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold py-2 rounded transition">Reject Request</button>
-                      </div>
-                    </div>
-                  )}
-
-                  {o.status.toLowerCase() === "exchange requested" && (
-                    <div className="mt-4 bg-teal-50 border border-teal-200 p-3 rounded shadow-sm animate-in zoom-in-95">
-                      <div className="text-xs font-bold text-teal-700 mb-2 uppercase tracking-wide">🔄 Resolve Exchange Request</div>
-                      <div className="flex gap-2">
-                        <button onClick={() => resolveExchange(o, "approve")} className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 rounded transition">Approve Exchange</button>
-                        <button onClick={() => resolveExchange(o, "reject")} className="flex-1 border border-teal-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold py-2 rounded transition">Reject Request</button>
                       </div>
                     </div>
                   )}

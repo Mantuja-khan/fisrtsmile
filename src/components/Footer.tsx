@@ -44,7 +44,7 @@ export function Footer() {
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
               <li><Link to="/track" className="hover:text-white transition-colors">Track Order</Link></li>
               <li><Link to="/policies/shipping" className="hover:text-white transition-colors">Shipping</Link></li>
-              <li><Link to="/policies/exchange" className="hover:text-white transition-colors">Returns & Exchange</Link></li>
+              <li><Link to="/policies/returns" className="hover:text-white transition-colors">Returns & Exchange</Link></li>
               <li><Link to="/policies/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/policies/terms" className="hover:text-white transition-colors">Terms of Use</Link></li>
               <li><Link to="/policies/legal" className="hover:text-white transition-colors">Legal Notice</Link></li>
