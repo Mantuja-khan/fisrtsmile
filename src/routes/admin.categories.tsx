@@ -51,46 +51,6 @@ function AdminCategories() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.length === categories.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(categories.map(c => c._id));
-    }
-  };
-
-  const deleteSelected = async () => {
-    if (!selectedIds.length) return;
-    if (!confirm(`Are you sure you want to delete ${selectedIds.length} categories? Products in these categories will become uncategorized.`)) return;
-
-    setIsBulkDeleting(true);
-    setSeedStatus(`Deleting ${selectedIds.length} categories...`);
-    
-    try {
-      let count = 0;
-      for (const id of selectedIds) {
-        count++;
-        setSeedStatus(`Deleting (${count}/${selectedIds.length})`);
-        await api.delete(`/categories/${id}`);
-      }
-      toast.success(`Successfully deleted ${selectedIds.length} categories!`);
-      setSelectedIds([]);
-      qc.invalidateQueries({ queryKey: ["admin-categories"] });
-      qc.invalidateQueries({ queryKey: ["categories"] });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete one or more categories.");
-    } finally {
-      setIsBulkDeleting(false);
-      setSeedStatus("");
-    }
-  };
-
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["admin-categories"],
     queryFn: async () => {
@@ -98,6 +58,44 @@ function AdminCategories() {
         return data as Category[];
     },
   });
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === categories.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(categories.map(c => c._id));
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Are you sure you want to delete these ${selectedIds.length} selected categories? Products in them will become uncategorized.`)) return;
+
+    setIsBulkDeleting(true);
+    try {
+        let deletedCount = 0;
+        for (const id of selectedIds) {
+            await api.delete(`/categories/${id}`);
+            deletedCount++;
+        }
+        toast.success(`${deletedCount} categories deleted successfully!`);
+        setSelectedIds([]);
+        qc.invalidateQueries({ queryKey: ["admin-categories"] });
+        qc.invalidateQueries({ queryKey: ["categories"] });
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Failed to delete all selected categories");
+        qc.invalidateQueries({ queryKey: ["admin-categories"] });
+        qc.invalidateQueries({ queryKey: ["categories"] });
+    } finally {
+        setIsBulkDeleting(false);
+    }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -159,6 +157,7 @@ function AdminCategories() {
     try {
         await api.delete(`/categories/${id}`);
         toast.success("Category deleted");
+        setSelectedIds(prev => prev.filter(x => x !== id));
         qc.invalidateQueries({ queryKey: ["admin-categories"] });
         qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
@@ -226,6 +225,7 @@ function AdminCategories() {
     } finally {
         setIsSeeding(false);
         setSeedStatus("");
+        setSelectedIds([]);
     }
   };
 
@@ -248,6 +248,23 @@ function AdminCategories() {
               "⚡ Seed Matrix Data"
             )}
           </button>
+          {selectedIds.length > 0 && (
+            <button
+              onClick={bulkDelete}
+              disabled={isBulkDeleting || isSeeding}
+              className="inline-flex items-center gap-1.5 bg-destructive hover:bg-destructive/90 disabled:bg-destructive/50 text-white px-3 py-2 rounded-none text-sm font-semibold transition"
+            >
+              {isBulkDeleting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="size-4" /> Delete Selected ({selectedIds.length})
+                </>
+              )}
+            </button>
+          )}
           <button
             onClick={() => { setEditing(null); setShowForm(true); setPresetParentId(""); }}
             disabled={isSeeding}
@@ -329,6 +346,19 @@ function AdminCategories() {
       )}
 
       <div className="bg-surface rounded-xl shadow-card divide-y divide-border overflow-hidden">
+        {categories.length > 0 && (
+          <div className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 text-sm font-semibold text-slate-700">
+            <input 
+              type="checkbox"
+              checked={categories.length > 0 && selectedIds.length === categories.length}
+              onChange={handleSelectAll}
+              className="size-4 accent-primary cursor-pointer rounded-none border-border"
+            />
+            <span className="cursor-pointer select-none" onClick={handleSelectAll}>
+              Select All Categories ({categories.length})
+            </span>
+          </div>
+        )}
         {categories
           .filter(cat => !cat.parent) // Get roots
           .map((root) => {
@@ -338,6 +368,12 @@ function AdminCategories() {
               <div key={root._id}>
                 {/* Parent Category Row */}
                 <div className="p-4 flex items-center gap-4 hover:bg-muted/30 transition bg-muted/5 border-l-4 border-primary">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedIds.includes(root._id)}
+                    onChange={() => handleToggleSelect(root._id)}
+                    className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
+                  />
                   <div className="size-12 shrink-0 rounded-lg border border-border bg-muted overflow-hidden flex items-center justify-center shadow-sm">
                     {root.image ? (
                       <img src={resolveImage(root.image)} alt="" className="size-full object-cover" />
@@ -378,6 +414,12 @@ function AdminCategories() {
                 {/* Children Loop */}
                 {children.map(child => (
                   <div key={child._id} className="p-3 pl-8 md:pl-14 flex items-center gap-3 hover:bg-muted/30 transition border-t border-border/50">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedIds.includes(child._id)}
+                      onChange={() => handleToggleSelect(child._id)}
+                      className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
+                    />
                     <span className="text-muted-foreground opacity-40 text-lg">↳</span>
                     <div className="size-10 shrink-0 rounded-full border border-border bg-surface overflow-hidden flex items-center justify-center shadow-sm scale-90">
                       {child.image ? (
@@ -405,6 +447,12 @@ function AdminCategories() {
         {/* If any orphaned sub-categories exist (parent not found/null but has parent value) display them here safely */}
         {categories.filter(cat => cat.parent && !categories.find(r => r._id === (cat.parent?._id || cat.parent))).map(cat => (
            <div key={cat._id} className="p-4 flex items-center gap-4 bg-yellow-50/30">
+              <input 
+                type="checkbox" 
+                checked={selectedIds.includes(cat._id)}
+                onChange={() => handleToggleSelect(cat._id)}
+                className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
+              />
               <div className="flex-1 font-semibold">{cat.name} <span className="text-xs text-destructive">(Orphaned Subcategory)</span></div>
               <button disabled={isSeeding} onClick={() => { setEditing(cat); setShowForm(true); }} className="p-2"><Pencil className="size-4 text-primary"/></button>
            </div>
