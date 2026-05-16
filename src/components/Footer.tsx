@@ -11,13 +11,13 @@ export function Footer() {
         className="absolute inset-0 bg-cover bg-center z-0 pointer-events-none select-none scale-105"
         style={{ 
           backgroundImage: `url(${footerBg})`,
-          filter: "blur(5px) brightness(0.45)",
-          opacity: "0.28"
+          filter: "blur(3px) brightness(0.65)",
+          opacity: "0.5"
         }}
       />
 
       {/* Content container */}
-      <div className="relative z-10 w-full bg-slate-950/30">
+      <div className="relative z-10 w-full bg-slate-950/40">
         <div className="container mx-auto px-4 py-12 grid gap-8 md:grid-cols-4">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export function Footer() {
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
               <li><Link to="/track" className="hover:text-white transition-colors">Track Order</Link></li>
               <li><Link to="/policies/shipping" className="hover:text-white transition-colors">Shipping</Link></li>
-              <li><Link to="/policies/returns" className="hover:text-white transition-colors">Returns & Exchange</Link></li>
+              <li><Link to="/policies/exchange" className="hover:text-white transition-colors">Returns & Exchange</Link></li>
               <li><Link to="/policies/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/policies/terms" className="hover:text-white transition-colors">Terms of Use</Link></li>
               <li><Link to="/policies/legal" className="hover:text-white transition-colors">Legal Notice</Link></li>

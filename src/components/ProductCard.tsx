@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
   const wished = isInWishlist(product.id);
   const finalPrice = effectivePrice(product.price, product.offerPct);
-  
+
   // Safely retrieve the current active search context for term highlighting
   const activeSearch = useSearch({ strict: false }) as any;
   const highlightTerm = activeSearch?.q || "";
@@ -41,10 +41,10 @@ export function ProductCard({ product }: { product: Product }) {
           .map(b => b.trim())
           .filter(b => Boolean(b) && !["best seller", "best seller product", "bestseller"].includes(b.toLowerCase()))
           .map((b) => (
-          <span key={b} className="text-[9px] sm:text-[10px] font-bold uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
-            {b}
-          </span>
-        ))}
+            <span key={b} className="text-[9px] sm:text-[10px] font-bold uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
+              {b}
+            </span>
+          ))}
         {!product.inStock && (
           <span className="text-[9px] sm:text-[10px] font-bold uppercase bg-slate-600 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
             Sold Out
@@ -113,7 +113,7 @@ export function ProductCard({ product }: { product: Product }) {
               Rs. {finalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] sm:text-[11px] text-gray-500 font-semibold lg:mt-0 mt-0.5">
-              M.R.P.: <span className="line-through ml-0.5">Rs. {product.mrp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="line-through ml-0.5">Rs. {product.mrp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
@@ -126,11 +126,10 @@ export function ProductCard({ product }: { product: Product }) {
                 toast.success("Added to cart 🛒");
               }
             }}
-            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extrabold uppercase tracking-widest transition-all duration-300 border rounded-full ${
-              product.inStock
+            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extrabold uppercase tracking-widest transition-all duration-300 border rounded-full ${product.inStock
                 ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
                 : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
-            }`}
+              }`}
           >
             {product.inStock ? "ADD TO CART" : "NOTIFY ME"}
           </button>

@@ -488,7 +488,7 @@ function AdminProducts() {
             <div className="md:col-span-2">
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Badges (Select Multiple)</label>
               <div className="flex flex-wrap gap-x-4 gap-y-2 p-2.5 border border-input rounded bg-slate-50/50">
-                {["Best Seller", "New", "Flash Deal", "Trending", "Top Rated"].map((b) => {
+                {["Best Seller", "New", "Trending"].map((b) => {
                   const isChecked = editing?.badge?.split(",").includes(b) ?? false;
                   return (
                     <label key={b} className="flex items-center gap-1.5 text-sm cursor-pointer font-medium text-slate-700">
@@ -581,9 +581,6 @@ function AdminProducts() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
                 <input type="checkbox" name="in_stock" defaultChecked={editing?.in_stock ?? true} className="size-4" /> In stock
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
-                <input type="checkbox" name="show_in_hero" defaultChecked={editing?.show_in_hero ?? false} className="size-4" /> Show in Hero
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer mt-4 text-emerald-600 font-medium">
                 <input type="checkbox" name="is_sale" defaultChecked={editing?.is_sale ?? false} className="size-4" /> Add to Flash / Sale Area
@@ -682,9 +679,6 @@ function AdminProducts() {
                     </div>
                   )}
                 </div>
-                <button onClick={() => toggleHero(p._id, p.show_in_hero)} className="p-2 hover:bg-warning/10 rounded-full transition" title="Toggle Hero Section">
-                  <Star className={`size-4 ${p.show_in_hero ? 'fill-warning text-warning' : 'text-muted-foreground'}`} />
-                </button>
                 <button onClick={() => toggleSale(p._id, p.is_sale)} className="p-2 hover:bg-emerald-100 rounded-full transition" title="Toggle Flash / Sale Area">
                   <Zap className={`size-4 ${p.is_sale ? 'fill-emerald-600 text-emerald-600 scale-110' : 'text-muted-foreground'}`} />
                 </button>

@@ -198,8 +198,8 @@ function HomePage() {
 
       {/* Trending Products Section */}
       {trendingProducts.length > 0 && (
-        <section className="container mx-auto px-4 py-4">
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-3xl shadow-card p-5 md:p-8 relative overflow-hidden">
+        <section className="w-full bg-gradient-to-r from-orange-50 to-amber-50 border-y border-orange-100 py-8 relative overflow-hidden my-4">
+          <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <div className="flex items-center gap-2">
@@ -218,9 +218,9 @@ function HomePage() {
 
       {/* Best Sellers Section */}
       {bestSellers.length > 0 && (
-        <section className="container mx-auto px-4 py-4">
-          <div className="bg-indigo-50/40 rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-indigo-100/40 p-5 md:p-8 relative overflow-hidden">
-            <div className="absolute -top-6 -right-6 size-32 rounded-full bg-indigo-400/5 blur-2xl pointer-events-none" />
+        <section className="w-full bg-indigo-50/40 border-y border-indigo-100/40 py-8 relative overflow-hidden my-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
+          <div className="absolute -top-6 -right-6 size-32 rounded-full bg-indigo-400/5 blur-2xl pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
             <div className="flex items-center justify-between mb-5 relative z-10">
               <div>
                 <div className="flex items-center gap-2">

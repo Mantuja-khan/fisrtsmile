@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema({
     payment_method: { type: String, required: true },
     status: {
         type: String,
-        enum: ['Placed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
+        enum: ['Placed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned', 'Exchange Requested', 'Exchanged'],
         default: 'Placed'
     },
     isPaid: { type: Boolean, default: false },

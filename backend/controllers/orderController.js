@@ -222,6 +222,29 @@ export const returnOrder = async (req, res) => {
     }
 };
 
+// @desc    Request Exchange order by user
+// @route   PUT /api/orders/:id/exchange
+// @access  Private
+export const exchangeOrder = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+        if (order.user && order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401).json({ message: 'Not authorized' });
+            return;
+        }
+        // Only allow exchange request if delivered
+        if (order.status.toLowerCase() !== 'delivered') {
+            res.status(400).json({ message: 'Only delivered orders can be exchanged' });
+            return;
+        }
+        order.status = 'Exchange Requested';
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
 
 // @desc    Track order live shipment via Shiprocket AWB
 // @route   GET /api/orders/:id/track-shipment
