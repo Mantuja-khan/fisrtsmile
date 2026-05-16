@@ -37,9 +37,12 @@ export function ProductCard({ product }: { product: Product }) {
             Sale {product.offerPct}%
           </span>
         )}
-        {product.badge && String(product.badge).split(",").filter(Boolean).map((b) => (
+        {product.badge && String(product.badge).split(",")
+          .map(b => b.trim())
+          .filter(b => Boolean(b) && !["best seller", "best seller product", "bestseller"].includes(b.toLowerCase()))
+          .map((b) => (
           <span key={b} className="text-[9px] sm:text-[10px] font-bold uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
-            {b.trim()}
+            {b}
           </span>
         ))}
         {!product.inStock && (

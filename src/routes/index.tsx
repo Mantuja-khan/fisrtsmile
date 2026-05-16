@@ -69,8 +69,9 @@ function HomePage() {
   }, []);
 
   const offers = products.filter((p) => p.isSale);
-  const offerProducts = products.filter((p) => p.mrp > p.price || p.offerPct > 0);
-  const featured = products.slice(0, 8);
+  const trendingProducts = products.filter(p =>
+    p.badge && p.badge.toLowerCase().split(",").some(b => ["trending", "trending product"].includes(b.trim()))
+  );
   const bestSellers = products.filter(p =>
     p.badge && p.badge.toLowerCase().split(",").some(b => ["best seller", "best seller product", "bestseller"].includes(b.trim()))
   );
@@ -195,38 +196,21 @@ function HomePage() {
         </section>
       )}
 
-      {/* Special Offers Section */}
-      {offerProducts.length > 0 && (
+      {/* Trending Products Section */}
+      {trendingProducts.length > 0 && (
         <section className="container mx-auto px-4 py-4">
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-3xl shadow-card p-5 md:p-8 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-3xl shadow-card p-5 md:p-8 relative overflow-hidden">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="size-6 text-purple-600 animate-spin-slow" />
-                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-purple-950">Special Offers</h2>
+                  <Rocket className="size-6 text-orange-600 animate-bounce" />
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-orange-950">Trending Products</h2>
                 </div>
               </div>
-              <Link to="/products" className="text-xs md:text-sm font-semibold text-purple-700 underline hover:opacity-80">View all offers →</Link>
+              <Link to="/products" search={{ badge: "Trending" } as never} className="text-xs md:text-sm font-semibold text-orange-700 underline hover:opacity-80">View more →</Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {offerProducts.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Featured Products */}
-      {featured.length > 0 && (
-        <section className="container mx-auto px-4 py-4">
-          <div className="bg-surface rounded-3xl shadow-card p-5 md:p-8">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h2 className="font-display text-xl md:text-3xl lg:text-4xl">Featured Toys</h2>
-              </div>
-              <Link to="/products" className="text-xs md:text-sm font-semibold text-primary underline hover:opacity-80">View more →</Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {featured.map((p) => <ProductCard key={p.id} product={p} />)}
+              {trendingProducts.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
         </section>

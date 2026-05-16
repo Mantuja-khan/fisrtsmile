@@ -117,7 +117,7 @@ export function Header() {
         }`}>
 
         {/* Tiny Top Legal Header - Visible on Large Screens Only */}
-        <div className="hidden lg:block w-full bg-white text-slate-900 text-[10px] font-extrabold uppercase tracking-wider border-b border-slate-100 relative z-50 shadow-xs">
+        <div className="hidden lg:block w-full bg-pink-100 text-slate-900 text-[10px] font-extrabold uppercase tracking-wider border-b border-pink-200 relative z-50 shadow-xs">
           <div className="container mx-auto flex items-center justify-end gap-6 py-2 px-4">
             <Link to="/policies/legal" className="hover:text-rose-600 transition-colors">Legal Notice</Link>
             <Link to="/policies/terms" className="hover:text-rose-600 transition-colors">Terms & Conditions</Link>
@@ -173,21 +173,23 @@ export function Header() {
 
                 {catOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
-                    <div className="w-64 bg-white text-foreground rounded-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col py-1.5">
-                      {categories.filter(c => !c.parent_id).map((parent) => (
-                        <Link
-                          key={parent.id}
-                          to="/subcategories/$slug"
-                          params={{ slug: parent.slug } as never}
-                          onClick={() => setCatOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#BFDDF0]/25 text-slate-700 hover:text-slate-950 font-extrabold text-[11px] tracking-wider uppercase transition-all border-b border-slate-50 last:border-0"
-                        >
-                          <span className="size-4 flex items-center justify-center shrink-0">
-                            {parent.icon ?? "🎁"}
-                          </span>
-                          <span>{parent.name}</span>
-                        </Link>
-                      ))}
+                    <div className="w-[400px] bg-white text-foreground rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                      <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
+                        {categories.filter(c => !c.parent_id).map((parent) => (
+                          <Link
+                            key={parent.id}
+                            to="/subcategories/$slug"
+                            params={{ slug: parent.slug } as never}
+                            onClick={() => setCatOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950 font-extrabold text-[11px] tracking-wider uppercase transition-all rounded-xl"
+                          >
+                            <span className="size-4 flex items-center justify-center shrink-0">
+                              {parent.icon ?? "🎁"}
+                            </span>
+                            <span className="truncate">{parent.name}</span>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
