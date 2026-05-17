@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts, useCategories, useBanners } from "@/hooks/useCatalog";
-import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus, Rocket } from "lucide-react";
+import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus, Rocket, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import { resolveImage } from "@/data/products";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
@@ -29,6 +29,39 @@ const AGE_RANGES = [
   { label: "7-9 years", value: "7-9 years", image: age7_9 },
   { label: "9-12 years", value: "9-12 years", image: age9_12 },
   { label: "12+ years", value: "12+ years", image: age12Plus },
+];
+
+const INSTAGRAM_REELS = [
+  {
+    id: "reel-1",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-child-playing-with-toys-in-a-crib-41761-large.mp4",
+    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    caption: "THIS KEPT MY CHILD BUSY LONGER THAN CARTOONS 😂",
+  },
+  {
+    id: "reel-2",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-little-child-playing-with-wooden-toys-at-home-43033-large.mp4",
+    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    caption: "PREMIUM WOODEN BLOCKS & LEARNING TOYS 🪵",
+  },
+  {
+    id: "reel-3",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-kids-hands-playing-with-colorful-building-blocks-42323-large.mp4",
+    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    caption: "CREATIVE & IMAGINATIVE PLAY FOR TODDLERS 🧩",
+  },
+  {
+    id: "reel-4",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-toddler-girl-playing-with-soft-plush-toys-in-bed-48866-large.mp4",
+    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    caption: "SUPER CUTE SOFT TOYS FOR THE PERFECT SLEEP 🧸",
+  },
+  {
+    id: "reel-5",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
+    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    caption: "SMART TOYS THAT BRING THE FIRST SMILE 😊",
+  }
 ];
 
 export const Route = createFileRoute("/")({
@@ -59,6 +92,17 @@ function HomePage() {
   const { data: categories = [] } = useCategories();
   const { data: banners = [] } = useBanners();
   const { isAdmin } = useAuth();
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollReels = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const [randomReviews, setRandomReviews] = useState<typeof ALL_TESTIMONIALS>([]);
 
@@ -209,8 +253,12 @@ function HomePage() {
               </div>
               <Link to="/products" search={{ badge: "Trending" } as never} className="text-xs md:text-sm font-semibold text-orange-700 underline hover:opacity-80">View more →</Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {trendingProducts.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x">
+              {trendingProducts.slice(0, 16).map((p) => (
+                <div key={p.id} className="w-[165px] sm:w-[220px] md:w-[250px] shrink-0 snap-start">
+                  <ProductCard product={p} />
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -236,8 +284,12 @@ function HomePage() {
                 View More →
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative z-10">
-              {bestSellers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x relative z-10">
+              {bestSellers.slice(0, 16).map((p) => (
+                <div key={p.id} className="w-[165px] sm:w-[220px] md:w-[250px] shrink-0 snap-start">
+                  <ProductCard product={p} />
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -360,6 +412,49 @@ function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Shop Our Reels Section */}
+      <section className="container mx-auto px-4 py-8 relative">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="font-display text-2xl md:text-3xl font-black text-slate-800 tracking-wide uppercase">
+              Shop Our Reels
+            </h2>
+          </div>
+        </div>
+
+        {/* Scroll Container */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex md:grid gap-3 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {INSTAGRAM_REELS.map((reel) => (
+            <a 
+              key={reel.id}
+              href={reel.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-[150px] sm:w-[180px] md:w-full shrink-0 block relative aspect-[9/16] overflow-hidden group snap-start bg-slate-100"
+            >
+              {/* Floating Instagram Shopping Bag Icon */}
+              <div className="absolute top-3 right-3 size-8 rounded-full bg-black/45 backdrop-blur-xs flex items-center justify-center text-white z-10 group-hover:scale-105 transition duration-300">
+                <ShoppingBag className="size-4" />
+              </div>
+
+              {/* Video Player */}
+              <video 
+                src={reel.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
+              />
+            </a>
+          ))}
+        </div>
+      </section>
 
       {/* Verified Testimonials (Dynamic Random Selector) */}
       <section className="container mx-auto px-4 py-12 bg-gradient-to-b from-transparent to-slate-50/40 rounded-3xl mt-6">

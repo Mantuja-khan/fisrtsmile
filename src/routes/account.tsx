@@ -110,8 +110,8 @@ function AccountPage() {
                   <button
                     onClick={() => setView("orders")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "orders"
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -133,8 +133,8 @@ function AccountPage() {
                   <button
                     onClick={() => setView("profile")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "profile"
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -147,8 +147,8 @@ function AccountPage() {
                   <button
                     onClick={() => setView("addresses")}
                     className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "addresses"
-                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -570,8 +570,8 @@ function ProfileDetailsEngine() {
               onChange={e => setPhone(e.target.value)}
               placeholder="Enter your phone number"
               className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${user?.phone
-                  ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
-                  : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
+                ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
+                : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
                 }`}
             />
             {Boolean(user?.phone) && (
