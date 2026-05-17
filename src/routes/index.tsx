@@ -426,7 +426,7 @@ function HomePage() {
         {/* Scroll Container */}
         <div 
           ref={scrollContainerRef}
-          className="flex md:grid gap-3 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
+          className="flex md:grid gap-3 md:gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {INSTAGRAM_REELS.map((reel) => (
@@ -435,7 +435,7 @@ function HomePage() {
               href={reel.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-[150px] sm:w-[180px] md:w-full shrink-0 block relative aspect-[9/16] overflow-hidden group snap-start bg-slate-100"
+              className="w-[150px] sm:w-[180px] md:w-full shrink-0 block relative aspect-[9/16] overflow-hidden group snap-start bg-slate-100 border-r border-b border-slate-950"
             >
               {/* Floating Instagram Shopping Bag Icon */}
               <div className="absolute top-3 right-3 size-8 rounded-full bg-black/45 backdrop-blur-xs flex items-center justify-center text-white z-10 group-hover:scale-105 transition duration-300">

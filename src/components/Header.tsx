@@ -118,11 +118,11 @@ export function Header() {
 
         {/* Consolidated Light Blue Bar */}
         <div className="bg-[#BFDDF0] text-slate-900 relative shadow-md transition-all">
-          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-4 md:py-5">
+          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-2 md:py-2.5">
 
             {/* Left: Logo */}
             <Link to="/" className="flex items-center shrink-0">
-              <img src={logo} alt="First Smile" className="h-10 md:h-14 w-auto object-contain" />
+              <img src={logo} alt="First Smile" className="h-14 md:h-20 w-auto object-contain" />
             </Link>
 
             {/* Center: Desktop Consolidated Navigation */}
