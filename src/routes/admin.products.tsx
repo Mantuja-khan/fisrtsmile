@@ -46,7 +46,7 @@ function AdminProducts() {
   const [uploading, setUploading] = useState(false);
   const [parentCatId, setParentCatId] = useState<string>("");
   const [subCatId, setSubCatId] = useState<string>("");
-  
+
   const [excelImporting, setExcelImporting] = useState(false);
   const [importProgress, setImportProgress] = useState("");
   const [previewRows, setPreviewRows] = useState<any[] | null>(null);
@@ -98,20 +98,20 @@ function AdminProducts() {
           const mapped = rawRows.map((r: any) => {
             const subcatName = String(getVal(r, ['subcategory', 'subcat', 'childcategory', 'childcat']) || '').trim();
             const maincatName = String(getVal(r, ['category', 'cat', 'parentcategory', 'maincategory']) || '').trim();
-            
+
             let matchedCat = null;
             if (subcatName) {
               matchedCat = categories.find((c: any) => c.name.toLowerCase() === subcatName.toLowerCase());
             }
-            
+
             if (!matchedCat && maincatName) {
               matchedCat = categories.find((c: any) => c.name.toLowerCase() === maincatName.toLowerCase());
             }
 
-            const displayCatName = subcatName 
+            const displayCatName = subcatName
               ? (maincatName ? `${maincatName} > ${subcatName}` : subcatName)
               : maincatName;
-            
+
             const parseBool = (val: any, fallback: boolean): boolean => {
               if (val === undefined || val === null || val === '') return fallback;
               if (typeof val === 'boolean') return val;
@@ -160,7 +160,7 @@ function AdminProducts() {
         }
       };
       reader.readAsBinaryString(file);
-      e.target.value = ""; 
+      e.target.value = "";
     } catch (err: any) {
       toast.error(err.message);
       setExcelImporting(false);
@@ -171,7 +171,7 @@ function AdminProducts() {
     if (!previewRows) return;
     setExcelImporting(true);
     setPreviewRows(null);
-    
+
     let count = 0;
     for (let i = 0; i < previewRows.length; i++) {
       const row = previewRows[i];
@@ -270,7 +270,7 @@ function AdminProducts() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget as HTMLFormElement);
-    
+
     // Parse gallery images (one per line)
     const galleryText = String(fd.get("gallery") || "");
     const images = galleryText.split("\n").map(s => s.trim()).filter(s => !!s);
@@ -355,32 +355,32 @@ function AdminProducts() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetField: "image" | "gallery") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     setUploading(true);
     try {
-       // COMPRESS FIRST: Converts to optimized JPEG, auto-limiting size under 1MB usually
-       const base64 = await compressImage(file, 1200, 0.8); 
-       
-       const { data } = await api.post("/upload", { 
-           image: base64, 
-           // sanitize name to have .jpg since compressor converts to jpeg
-           name: file.name.replace(/\.[^/.]+$/, "") + ".jpg" 
-       });
-       const relativePath = data.url;
-       
-       const inputElement = document.getElementById(targetField + "_input") as HTMLInputElement | HTMLTextAreaElement;
-       if (inputElement) {
-           if (targetField === "image") {
-               inputElement.value = relativePath;
-           } else {
-               inputElement.value = inputElement.value ? inputElement.value + "\n" + relativePath : relativePath;
-           }
-       }
-       toast.success("Image uploaded!");
+      // COMPRESS FIRST: Converts to optimized JPEG, auto-limiting size under 1MB usually
+      const base64 = await compressImage(file, 1200, 0.8);
+
+      const { data } = await api.post("/upload", {
+        image: base64,
+        // sanitize name to have .jpg since compressor converts to jpeg
+        name: file.name.replace(/\.[^/.]+$/, "") + ".jpg"
+      });
+      const relativePath = data.url;
+
+      const inputElement = document.getElementById(targetField + "_input") as HTMLInputElement | HTMLTextAreaElement;
+      if (inputElement) {
+        if (targetField === "image") {
+          inputElement.value = relativePath;
+        } else {
+          inputElement.value = inputElement.value ? inputElement.value + "\n" + relativePath : relativePath;
+        }
+      }
+      toast.success("Image uploaded!");
     } catch (error) {
-       toast.error("Failed to upload image");
+      toast.error("Failed to upload image");
     } finally {
-       setUploading(false);
+      setUploading(false);
     }
   };
 
@@ -409,12 +409,12 @@ function AdminProducts() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="font-bold text-lg">Products ({products.length})</h2>
         <div className="flex items-center gap-2 flex-wrap">
-          <input 
-            type="file" 
-            id="excel-import-input" 
-            accept=".xlsx, .xls, .csv" 
-            className="hidden" 
-            onChange={handleExcelImport} 
+          <input
+            type="file"
+            id="excel-import-input"
+            accept=".xlsx, .xls, .csv"
+            className="hidden"
+            onChange={handleExcelImport}
           />
           <button
             onClick={() => document.getElementById("excel-import-input")?.click()}
@@ -439,7 +439,7 @@ function AdminProducts() {
             <X className="size-4" />
           </button>
           <h3 className="font-semibold text-lg">{editing ? "Edit product" : "New product"}</h3>
-          
+
           <div className="grid md:grid-cols-2 gap-3">
             <div className="md:col-span-2">
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Product Name</label>
@@ -448,8 +448,8 @@ function AdminProducts() {
 
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Main Category</label>
-              <select 
-                value={parentCatId} 
+              <select
+                value={parentCatId}
                 onChange={(e) => {
                   const val = e.target.value;
                   setParentCatId(val);
@@ -469,9 +469,9 @@ function AdminProducts() {
 
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Subcategory <span className="text-[10px] italic font-normal">(Optional)</span></label>
-              <select 
-                name="category" 
-                value={subCatId} 
+              <select
+                name="category"
+                value={subCatId}
                 onChange={(e) => setSubCatId(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
               >
@@ -521,7 +521,7 @@ function AdminProducts() {
             <div className="md:col-span-2">
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Age Ranges (Select Multiple)</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-2 p-2.5 border border-input rounded bg-slate-50/50">
-                {["0-2 years", "2-4 years", "4-7 years", "7-9 years", "9-12 years", "12+ years"].map((age) => {
+                {["0-12 months", "1-3 years", "4-7 years", "8-10 years", "11-14 years", "14+"].map((age) => {
                   const isChecked = editing?.age_range?.split(",").includes(age) ?? false;
                   return (
                     <label key={age} className="flex items-center gap-1.5 text-sm cursor-pointer font-medium text-slate-700">
@@ -536,20 +536,20 @@ function AdminProducts() {
             <div className="grid grid-cols-2 gap-3 md:col-span-1">
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Offer Start <span className="text-[10px] font-normal italic lowercase">(Optional)</span></label>
-                <input 
-                  name="offer_starts_at" 
-                  type="datetime-local" 
-                  defaultValue={editing?.offer_starts_at ? new Date(editing.offer_starts_at).toISOString().slice(0,16) : ""} 
-                  className="w-full px-2 py-1.5 text-sm border border-input rounded" 
+                <input
+                  name="offer_starts_at"
+                  type="datetime-local"
+                  defaultValue={editing?.offer_starts_at ? new Date(editing.offer_starts_at).toISOString().slice(0, 16) : ""}
+                  className="w-full px-2 py-1.5 text-sm border border-input rounded"
                 />
               </div>
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Offer Expiry <span className="text-[10px] font-normal italic lowercase">(Optional)</span></label>
-                <input 
-                  name="offer_expires_at" 
-                  type="datetime-local" 
-                  defaultValue={editing?.offer_expires_at ? new Date(editing.offer_expires_at).toISOString().slice(0,16) : ""} 
-                  className="w-full px-2 py-1.5 text-sm border border-input rounded" 
+                <input
+                  name="offer_expires_at"
+                  type="datetime-local"
+                  defaultValue={editing?.offer_expires_at ? new Date(editing.offer_expires_at).toISOString().slice(0, 16) : ""}
+                  className="w-full px-2 py-1.5 text-sm border border-input rounded"
                 />
               </div>
             </div>
@@ -583,7 +583,7 @@ function AdminProducts() {
                 <input type="checkbox" name="in_stock" defaultChecked={editing?.in_stock ?? true} className="size-4" /> In stock
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer mt-4 text-emerald-600 font-medium">
-                <input type="checkbox" name="is_sale" defaultChecked={editing?.is_sale ?? false} className="size-4" /> Add to Flash / Sale Area
+                <input type="checkbox" name="is_sale" defaultChecked={editing?.is_sale ?? false} className="size-4" /> Add to Sale Area
               </label>
             </div>
 
@@ -606,12 +606,12 @@ function AdminProducts() {
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "gallery")} disabled={uploading} />
                 </label>
               </div>
-              <textarea 
+              <textarea
                 id="gallery_input"
-                name="gallery" 
-                defaultValue={editing?.images?.join("\n") ?? ""} 
-                placeholder="https://image1.jpg&#10;https://image2.jpg" 
-                className="w-full px-3 py-2 text-sm border border-input rounded min-h-24 whitespace-pre font-mono" 
+                name="gallery"
+                defaultValue={editing?.images?.join("\n") ?? ""}
+                placeholder="https://image1.jpg&#10;https://image2.jpg"
+                className="w-full px-3 py-2 text-sm border border-input rounded min-h-24 whitespace-pre font-mono"
               />
             </div>
 
@@ -637,17 +637,17 @@ function AdminProducts() {
           <div key={p._id} className="bg-surface sm:bg-transparent lg:bg-surface border sm:border-transparent lg:border-0 p-4 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-4 hover:bg-muted/30 transition rounded-xl lg:rounded-none border-border lg:border-b lg:last:border-b-0">
             <div className="flex gap-4 flex-1 min-w-0">
               <div className="relative shrink-0">
-                 <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border" />
-                 {p.images && p.images.length > 0 && (
-                   <span className="absolute -bottom-1 -right-1 bg-white rounded-full size-6 grid place-items-center shadow-sm border border-border text-[10px] font-bold">
-                     +{p.images.length}
-                   </span>
-                 )}
+                <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border" />
+                {p.images && p.images.length > 0 && (
+                  <span className="absolute -bottom-1 -right-1 bg-white rounded-full size-6 grid place-items-center shadow-sm border border-border text-[10px] font-bold">
+                    +{p.images.length}
+                  </span>
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm md:text-base line-clamp-1">{p.name}</div>
                 <div className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                  <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString("en-IN")}</span> 
+                  <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString("en-IN")}</span>
                   <span className="mx-1.5 opacity-50">/</span>
                   <span className="line-through">₹{Number(p.mrp).toLocaleString("en-IN")}</span>
                   <br className="lg:hidden" />
@@ -667,8 +667,8 @@ function AdminProducts() {
                     <div className="absolute right-0 top-10 z-20 bg-surface border border-border rounded-lg shadow-pop p-3 w-52">
                       <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Set Offer Price</div>
                       <form onSubmit={(e) => { e.preventDefault(); const val = Number(new FormData(e.currentTarget as any).get("offerPrice")); if (val && val < p.mrp) applyOfferPrice(p._id, val, p.mrp); }}>
-                         <input name="offerPrice" type="number" placeholder="New price (₹)" className="w-full text-sm p-1.5 border border-input rounded outline-none focus:border-primary" required />
-                         <button type="submit" className="w-full mt-2 bg-primary text-primary-foreground text-xs font-bold py-1.5 rounded hover:brightness-110">Apply Price</button>
+                        <input name="offerPrice" type="number" placeholder="New price (₹)" className="w-full text-sm p-1.5 border border-input rounded outline-none focus:border-primary" required />
+                        <button type="submit" className="w-full mt-2 bg-primary text-primary-foreground text-xs font-bold py-1.5 rounded hover:brightness-110">Apply Price</button>
                       </form>
                       <div className="text-[10px] text-center my-2 text-muted-foreground">OR SELECT %</div>
                       <div className="grid grid-cols-4 gap-1">
@@ -747,37 +747,36 @@ function AdminProducts() {
                       <td className="p-2.5 min-w-[220px]">
                         <div className="space-y-1">
                           <select
-                             value={r.category || ""}
-                             onChange={(e) => {
-                               const val = e.target.value;
-                               const updated = [...previewRows];
-                               updated[idx] = { ...updated[idx], category: val || null };
-                               setPreviewRows(updated);
-                             }}
-                             className={`w-full text-[11px] font-bold p-1.5 border rounded-none outline-none cursor-pointer bg-white shadow-sm ${
-                               r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
-                             }`}
+                            value={r.category || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const updated = [...previewRows];
+                              updated[idx] = { ...updated[idx], category: val || null };
+                              setPreviewRows(updated);
+                            }}
+                            className={`w-full text-[11px] font-bold p-1.5 border rounded-none outline-none cursor-pointer bg-white shadow-sm ${r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
+                              }`}
                           >
-                             <option value="">— Uncategorized —</option>
-                             {categories
-                               .filter((c: any) => !c.parent)
-                               .map((parent: any) => (
-                                 <optgroup key={parent._id} label={parent.name}>
-                                   <option value={parent._id}>{parent.name} (Main)</option>
-                                   {categories
-                                     .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
-                                     .map((child: any) => (
-                                       <option key={child._id} value={child._id}>↳ {child.name}</option>
-                                     ))
-                                   }
-                                 </optgroup>
-                               ))
-                             }
+                            <option value="">— Uncategorized —</option>
+                            {categories
+                              .filter((c: any) => !c.parent)
+                              .map((parent: any) => (
+                                <optgroup key={parent._id} label={parent.name}>
+                                  <option value={parent._id}>{parent.name} (Main)</option>
+                                  {categories
+                                    .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
+                                    .map((child: any) => (
+                                      <option key={child._id} value={child._id}>↳ {child.name}</option>
+                                    ))
+                                  }
+                                </optgroup>
+                              ))
+                            }
                           </select>
                           {r.categoryName && r.categoryName !== "None" && (
-                             <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
-                               Found: "{r.categoryName}"
-                             </div>
+                            <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
+                              Found: "{r.categoryName}"
+                            </div>
                           )}
                         </div>
                       </td>

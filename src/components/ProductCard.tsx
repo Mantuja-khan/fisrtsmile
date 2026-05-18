@@ -66,13 +66,21 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Image Container - Optimized square aspect */}
       <Link to="/product/$id" params={{ id: product.id }} className="block">
-        <div className="aspect-square bg-white p-1 sm:p-2 flex items-center justify-center overflow-hidden border-b border-gray-50">
+        <div className="aspect-square bg-white p-1 sm:p-2 flex items-center justify-center overflow-hidden border-b border-gray-50 relative">
           <img
             src={resolveImage(product.image)}
             alt={product.name}
             loading="lazy"
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+            className={`w-full h-full object-contain transition-all duration-500 ${product.images && product.images.length > 1 ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"}`}
           />
+          {product.images && product.images.length > 1 && (
+            <img
+              src={resolveImage(product.images[1])}
+              alt={product.name}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-contain transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105 p-1 sm:p-2 bg-white"
+            />
+          )}
         </div>
       </Link>
 

@@ -23,12 +23,12 @@ import age9_12 from "@/assets/9_12.png";
 import age12Plus from "@/assets/12+.png";
 
 const AGE_RANGES = [
-  { label: "0-2 years", value: "0-2 years", image: age0_2 },
-  { label: "2-4 years", value: "2-4 years", image: age2_4 },
+  { label: "0-12 months", value: "0-12 months", image: age0_2 },
+  { label: "1-3 years", value: "1-3 years", image: age2_4 },
   { label: "4-7 years", value: "4-7 years", image: age4_7 },
-  { label: "7-9 years", value: "7-9 years", image: age7_9 },
-  { label: "9-12 years", value: "9-12 years", image: age9_12 },
-  { label: "12+ years", value: "12+ years", image: age12Plus },
+  { label: "8-10 years", value: "8-10 years", image: age7_9 },
+  { label: "11-14 years", value: "11-14 years", image: age9_12 },
+  { label: "14+", value: "14+ years", image: age12Plus },
 ];
 
 const INSTAGRAM_REELS = [
@@ -207,38 +207,6 @@ function HomePage() {
       </div>
 
       {/* Trust strip */}
-
-
-      {/* Flash sale / offers */}
-      {offers.length > 0 && (
-        <section className="container mx-auto px-4 py-8">
-          <div className="bg-gradient-warm rounded-3xl p-5 md:p-8 shadow-pop relative overflow-hidden">
-            <div className="absolute -top-8 -right-8 size-40 rounded-full bg-white/15 blur-2xl" />
-            <div className="flex items-center justify-between mb-5 relative">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Zap className="size-6 fill-destructive text-destructive animate-pulse" />
-                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl">Flash Sale</h2>
-                </div>
-                <p className="text-xs md:text-sm opacity-80 mt-1">Limited time. Limited stock. Grab yours now!</p>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                {isAdmin && (
-                  <Link to="/admin/products" className="bg-primary text-primary-foreground text-xs    px-4 py-2 rounded-full flex items-center gap-1.5">
-                    <Plus className="size-3.5" /> Add Product
-                  </Link>
-                )}
-                <Link to="/products" search={{ sale: true } as never} className="text-xs md:text-sm font-semibold underline opacity-90 hover:opacity-100">
-                  View all →
-                </Link>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 relative">
-              {offers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Trending Products Section */}
       {trendingProducts.length > 0 && (
@@ -424,13 +392,13 @@ function HomePage() {
         </div>
 
         {/* Scroll Container */}
-        <div 
+        <div
           ref={scrollContainerRef}
           className="flex md:grid gap-3 md:gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {INSTAGRAM_REELS.map((reel) => (
-            <a 
+            <a
               key={reel.id}
               href={reel.instagramUrl}
               target="_blank"
@@ -443,7 +411,7 @@ function HomePage() {
               </div>
 
               {/* Video Player */}
-              <video 
+              <video
                 src={reel.videoUrl}
                 autoPlay
                 loop

@@ -21,7 +21,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-12 grid gap-8 md:grid-cols-4">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <img src={logo} alt="First Smile Logo" className="h-10 md:h-12 w-auto object-contain" />
+              <img src={logo} alt="First Smile Logo" className="h-16 md:h-20 w-auto object-contain" />
             </div>
             <p className="text-sm text-slate-300/90 leading-relaxed">
               India's playful destination for premium toys. Bringing smiles, one toy at a time.

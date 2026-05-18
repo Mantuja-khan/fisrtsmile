@@ -10,6 +10,7 @@ type Search = {
   brand?: string;
   badge?: string;
   age?: string;
+  age_range?: string;
   sale?: boolean;
   minPrice?: number;
   maxPrice?: number;
@@ -23,7 +24,8 @@ export const Route = createFileRoute("/products")({
     category: typeof s.category === "string" ? s.category : undefined,
     brand: typeof s.brand === "string" ? s.brand : undefined,
     badge: typeof s.badge === "string" ? s.badge : undefined,
-    age: typeof s.age === "string" ? s.age : undefined,
+    age: typeof s.age === "string" ? s.age : (typeof s.age_range === "string" ? s.age_range : undefined),
+    age_range: typeof s.age_range === "string" ? s.age_range : undefined,
     sale: s.sale === true || s.sale === "true" ? true : undefined,
     minPrice: typeof s.minPrice === "number" ? s.minPrice : undefined,
     maxPrice: typeof s.maxPrice === "number" ? s.maxPrice : undefined,
@@ -63,7 +65,13 @@ function ProductListPage() {
         p.badge && p.badge.toLowerCase().split(",").map(b => b.trim()).includes(qBadge)
       );
     }
-    if (search.age) list = list.filter((p) => p.ageRange === search.age);
+    if (search.age) {
+      list = list.filter((p) => {
+        if (!p.ageRange) return false;
+        const ranges = String(p.ageRange).split(",").map(r => r.trim()).filter(Boolean);
+        return ranges.includes(search.age!) || p.ageRange === "All";
+      });
+    }
     if (search.sale) list = list.filter((p) => p.isSale);
     if (search.minPrice !== undefined) list = list.filter((p) => effectivePrice(p.price, p.offerPct) >= search.minPrice!);
     if (search.maxPrice !== undefined) list = list.filter((p) => effectivePrice(p.price, p.offerPct) <= search.maxPrice!);
