@@ -139,28 +139,28 @@ function AdminProducts() {
               return ['true', '1', 'yes', 'y', 'in stock', 'on'].includes(s);
             };
 
+            const primaryImgRaw = getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']);
+            const primaryImgCleaned = cleanStr(primaryImgRaw);
+            const parsedPrimaryList = primaryImgCleaned
+              ? primaryImgCleaned.split(/[,\n|]+/).map(url => cleanStr(url)).filter(url => !!url)
+              : [];
+
             const galleryRaw = getVal(r, ['images', 'gallery', 'additionalimages', 'otherimages', 'pics']);
             const galleryCleaned = cleanStr(galleryRaw);
-            let parsedGallery = galleryCleaned
+            const parsedGalleryList = galleryCleaned
               ? galleryCleaned.split(/[,\n|]+/).map(url => cleanStr(url)).filter(url => !!url)
               : [];
 
-            let primaryImg = cleanStr(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']));
-            
-            if (parsedGallery.length > 0) {
-              if (!primaryImg) {
-                primaryImg = parsedGallery[0];
-              }
-              if (!parsedGallery.includes(primaryImg)) {
-                parsedGallery = [primaryImg, ...parsedGallery];
-              } else {
-                const idx = parsedGallery.indexOf(primaryImg);
-                if (idx > 0) {
-                  parsedGallery.splice(idx, 1);
-                  parsedGallery = [primaryImg, ...parsedGallery];
-                }
-              }
-            }
+            const allImagesUnique: string[] = [];
+            parsedPrimaryList.forEach(url => {
+              if (!allImagesUnique.includes(url)) allImagesUnique.push(url);
+            });
+            parsedGalleryList.forEach(url => {
+              if (!allImagesUnique.includes(url)) allImagesUnique.push(url);
+            });
+
+            const primaryImg = allImagesUnique.length > 0 ? allImagesUnique[0] : "";
+            const parsedGallery = allImagesUnique;
 
             const nameRaw = getVal(r, ['name', 'productname', 'item', 'title']);
             const priceRaw = getVal(r, ['price', 'sellingprice', 'rate']);
@@ -1037,7 +1037,7 @@ function AdminProducts() {
                 )}
 
                 {/* Table */}
-                <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-white">
+                <div className="border border-border rounded-xl overflow-x-auto shadow-sm bg-white">
                   <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1400px]">
                     <thead>
                       <tr className="bg-slate-50 border-b border-border font-bold text-slate-600 text-xs">
