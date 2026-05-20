@@ -113,6 +113,100 @@ function AdminProducts() {
             return undefined;
           };
 
+          const normalizeAgeRange = (raw: any): { ageRange: string | null; unrecognized: string[] } => {
+            if (raw === undefined || raw === null || String(raw).trim() === "") {
+              return { ageRange: null, unrecognized: [] };
+            }
+            
+            // Clean up standard separators like comma, semicolon, slash, pipe
+            const parts = String(raw)
+              .split(/[,\n|;]+/)
+              .map(p => p.trim())
+              .filter(p => !!p);
+              
+            const normalizedTags: string[] = [];
+            const unrecognized: string[] = [];
+            
+            for (const p of parts) {
+              const lower = p.toLowerCase();
+              
+              // 0-18 month
+              if (
+                (lower.includes("0") && lower.includes("18") && (lower.includes("month") || lower.includes("m"))) ||
+                (lower.includes("0") && lower.includes("18") && !lower.includes("36"))
+              ) {
+                if (!normalizedTags.includes("0-18 month")) normalizedTags.push("0-18 month");
+              }
+              // 18-36 month
+              else if (
+                (lower.includes("18") && lower.includes("36") && (lower.includes("month") || lower.includes("m"))) ||
+                (lower.includes("18") && lower.includes("36"))
+              ) {
+                if (!normalizedTags.includes("18-36 month")) normalizedTags.push("18-36 month");
+              }
+              // 3-5 year
+              else if (
+                lower.includes("3") && lower.includes("5") && (lower.includes("year") || lower.includes("y") || lower.includes("yr"))
+              ) {
+                if (!normalizedTags.includes("3-5 year")) normalizedTags.push("3-5 year");
+              }
+              // 5-7 year
+              else if (
+                lower.includes("5") && lower.includes("7") && (lower.includes("year") || lower.includes("y") || lower.includes("yr"))
+              ) {
+                if (!normalizedTags.includes("5-7 year")) normalizedTags.push("5-7 year");
+              }
+              // 7-9 year
+              else if (
+                lower.includes("7") && lower.includes("9") && (lower.includes("year") || lower.includes("y") || lower.includes("yr"))
+              ) {
+                if (!normalizedTags.includes("7-9 year")) normalizedTags.push("7-9 year");
+              }
+              // 9-12 year
+              else if (
+                lower.includes("9") && lower.includes("12") && !lower.includes("+") && !lower.includes("plus") && !lower.includes("above") && (lower.includes("year") || lower.includes("y") || lower.includes("yr"))
+              ) {
+                if (!normalizedTags.includes("9-12 year")) normalizedTags.push("9-12 year");
+              }
+              // 12 +years
+              else if (
+                (lower.includes("12") && (lower.includes("+") || lower.includes("plus") || lower.includes("above") || lower.includes("over") || lower.includes("more"))) ||
+                (lower.startsWith("12") && (lower.includes("year") || lower.includes("y") || lower.includes("yr")) && (lower.includes("+") || lower.includes("above") || lower.includes("over") || lower.includes("more") || lower.endsWith("+") || lower.includes("year+")) ) ||
+                (lower.replace(/\s+/g, "").includes("12year+")) ||
+                (lower.replace(/\s+/g, "").includes("12+year")) ||
+                (lower.replace(/\s+/g, "").includes("12+"))
+              ) {
+                if (!normalizedTags.includes("12 +years")) normalizedTags.push("12 +years");
+              }
+              // Fallbacks or direct mappings if they match clean values perfectly
+              else {
+                const clean = p.replace(/\s+/g, "");
+                if (clean === "0-18month" || clean === "0to18month") {
+                  if (!normalizedTags.includes("0-18 month")) normalizedTags.push("0-18 month");
+                } else if (clean === "18-36month" || clean === "18to36month") {
+                  if (!normalizedTags.includes("18-36 month")) normalizedTags.push("18-36 month");
+                } else if (clean === "3-5year" || clean === "3to5year") {
+                  if (!normalizedTags.includes("3-5 year")) normalizedTags.push("3-5 year");
+                } else if (clean === "5-7year" || clean === "5to7year") {
+                  if (!normalizedTags.includes("5-7 year")) normalizedTags.push("5-7 year");
+                } else if (clean === "7-9year" || clean === "7to9year") {
+                  if (!normalizedTags.includes("7-9 year")) normalizedTags.push("7-9 year");
+                } else if (clean === "9-12year" || clean === "9to12year") {
+                  if (!normalizedTags.includes("9-12 year")) normalizedTags.push("9-12 year");
+                } else if (clean === "12+years" || clean === "12+year" || clean === "12year+" || clean === "12years+" || clean === "12+yr" || clean === "12yr+") {
+                  if (!normalizedTags.includes("12 +years")) normalizedTags.push("12 +years");
+                } else {
+                  unrecognized.push(p);
+                }
+              }
+            }
+            
+            return {
+              ageRange: normalizedTags.length > 0 ? normalizedTags.join(",") : null,
+              unrecognized
+            };
+          };
+
           const mapped = rawRows.map((r: any) => {
             const rawSubcat = getVal(r, ['subcategory', 'subcat', 'childcategory', 'childcat']);
             const rawMaincat = getVal(r, ['category', 'cat', 'parentcategory', 'maincategory']);
@@ -177,7 +271,10 @@ function AdminProducts() {
             const description = cleanStr(descRaw);
             const badge = cleanStr(getVal(r, ['badge', 'badges', 'tag', 'tags'])) || null;
             const brand = cleanStr(brandRaw) || null;
-            const age_range = cleanStr(getVal(r, ['agerange', 'age', 'years', 'ages'])) || null;
+            
+            const age_range_raw = getVal(r, ['agerange', 'age', 'years', 'ages']);
+            const ageRangeRes = normalizeAgeRange(age_range_raw);
+            const age_range = ageRangeRes.ageRange;
 
             const rawWeight = getVal(r, ['weight', 'wt']);
             const rawLength = getVal(r, ['length', 'len', 'l']);
@@ -278,6 +375,11 @@ function AdminProducts() {
               if (displayCatName && displayCatName !== "None") {
                 warnings.push(`Category "${displayCatName}" not found in system (will be uncategorized)`);
               }
+            }
+
+            // 7. Age range warnings
+            if (ageRangeRes.unrecognized.length > 0) {
+              warnings.push(`Unrecognized age value(s) ignored: ${ageRangeRes.unrecognized.join(", ")}`);
             }
 
             return {
