@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Zap, Upload, Loader2, FileSpreadsheet, CheckSquare } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Zap, Upload, Loader2, FileSpreadsheet, CheckSquare, AlertTriangle, CheckCircle2, AlertCircle } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
 import { BRANDS } from "@/data/brands";
@@ -121,34 +121,150 @@ function AdminProducts() {
             };
 
             const galleryRaw = String(getVal(r, ['images', 'gallery', 'additionalimages', 'otherimages', 'pics']) || '');
-            const parsedGallery = galleryRaw
+            let parsedGallery = galleryRaw
               ? galleryRaw.split(/[,\n|]+/).map(url => url.trim()).filter(url => !!url)
               : [];
 
+            let primaryImg = String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || '').trim();
+            
+            if (parsedGallery.length > 0) {
+              if (!primaryImg) {
+                primaryImg = parsedGallery[0];
+              }
+              if (!parsedGallery.includes(primaryImg)) {
+                parsedGallery = [primaryImg, ...parsedGallery];
+              } else {
+                const idx = parsedGallery.indexOf(primaryImg);
+                if (idx > 0) {
+                  parsedGallery.splice(idx, 1);
+                  parsedGallery = [primaryImg, ...parsedGallery];
+                }
+              }
+            }
+
+            const nameRaw = getVal(r, ['name', 'productname', 'item', 'title']);
+            const priceRaw = getVal(r, ['price', 'sellingprice', 'rate']);
+            const mrpRaw = getVal(r, ['mrp', 'originalprice', 'marketprice', 'retailprice']);
+            const descRaw = getVal(r, ['description', 'desc', 'about', 'detail']);
+            const brandRaw = getVal(r, ['brand', 'company', 'make']);
+
+            // Filter out entirely empty rows (often happens at the end of Excel sheets)
+            if (!nameRaw && priceRaw === undefined && mrpRaw === undefined && !descRaw && !brandRaw && !displayCatName && !primaryImg && parsedGallery.length === 0) {
+              return null;
+            }
+
+            const name = String(nameRaw || '').trim();
+            const description = String(descRaw || '').trim();
+            const badge = String(getVal(r, ['badge', 'badges', 'tag', 'tags']) || '').trim() || null;
+            const brand = String(brandRaw || '').trim() || null;
+            const age_range = String(getVal(r, ['agerange', 'age', 'years', 'ages']) || '').trim() || null;
+
+            const rawWeight = getVal(r, ['weight', 'wt']);
+            const rawLength = getVal(r, ['length', 'len', 'l']);
+            const rawBreadth = getVal(r, ['breadth', 'width', 'b', 'w']);
+            const rawHeight = getVal(r, ['height', 'ht', 'h']);
+
+            const weight = rawWeight !== undefined && rawWeight !== null && rawWeight !== '' ? Number(rawWeight) : null;
+            const length = rawLength !== undefined && rawLength !== null && rawLength !== '' ? Number(rawLength) : null;
+            const breadth = rawBreadth !== undefined && rawBreadth !== null && rawBreadth !== '' ? Number(rawBreadth) : null;
+            const height = rawHeight !== undefined && rawHeight !== null && rawHeight !== '' ? Number(rawHeight) : null;
+
+            const priceNum = priceRaw !== undefined && priceRaw !== null && priceRaw !== '' ? Number(priceRaw) : NaN;
+            const mrpNum = mrpRaw !== undefined && mrpRaw !== null && mrpRaw !== '' ? Number(mrpRaw) : NaN;
+
+            const errors: string[] = [];
+            const warnings: string[] = [];
+
+            // 1. Name validation
+            if (!name) {
+              errors.push("Product name is missing");
+            }
+
+            // 2. Price validation
+            if (priceRaw === undefined || priceRaw === null || priceRaw === '') {
+              errors.push("Price is missing");
+            } else if (isNaN(priceNum)) {
+              errors.push("Price must be a valid number");
+            } else if (priceNum <= 0) {
+              errors.push("Price must be greater than 0");
+            }
+
+            // 3. MRP validation
+            if (mrpRaw !== undefined && mrpRaw !== null && mrpRaw !== '') {
+              if (isNaN(mrpNum)) {
+                errors.push("MRP must be a valid number");
+              } else if (mrpNum < 0) {
+                errors.push("MRP cannot be negative");
+              } else if (!isNaN(priceNum) && mrpNum < priceNum) {
+                warnings.push(`MRP (₹${mrpNum}) is lower than Price (₹${priceNum})`);
+              }
+            }
+
+            // 4. Dimensions validation
+            const hasAnyDim = length !== null || breadth !== null || height !== null;
+            const hasAllDims = length !== null && breadth !== null && height !== null;
+
+            if (hasAnyDim) {
+              if (!hasAllDims) {
+                errors.push("Incomplete dimensions (Provide all Length, Breadth, and Height together)");
+              } else {
+                if (isNaN(length) || length <= 0) {
+                  errors.push("Length (L) must be a positive number");
+                }
+                if (isNaN(breadth) || breadth <= 0) {
+                  errors.push("Breadth (B) must be a positive number");
+                }
+                if (isNaN(height) || height <= 0) {
+                  errors.push("Height (H) must be a positive number");
+                }
+              }
+            }
+
+            // 5. Weight validation
+            if (weight !== null && (isNaN(weight) || weight <= 0)) {
+              errors.push("Weight must be a positive number");
+            }
+
+            // 6. Category mapping warning
+            if (!matchedCat) {
+              if (displayCatName && displayCatName !== "None") {
+                warnings.push(`Category "${displayCatName}" not found in system (will be uncategorized)`);
+              } else {
+                warnings.push("No category specified (will be uncategorized)");
+              }
+            }
+
+            // 7. Image warnings
+            if (!primaryImg && parsedGallery.length === 0) {
+              warnings.push("No product images found");
+            }
+
             return {
-              name: String(getVal(r, ['name', 'productname', 'item', 'title']) || '').trim(),
-              description: String(getVal(r, ['description', 'desc', 'about', 'detail']) || '').trim(),
-              price: Number(getVal(r, ['price', 'sellingprice', 'rate']) || 0),
-              mrp: Number(getVal(r, ['mrp', 'originalprice', 'marketprice', 'retailprice']) || 0),
-              image: String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || '').trim(),
+              name: name || "— Unnamed Product —",
+              description,
+              price: isNaN(priceNum) ? 0 : priceNum,
+              mrp: isNaN(mrpNum) ? 0 : mrpNum,
+              image: primaryImg || null,
               images: parsedGallery,
-              badge: String(getVal(r, ['badge', 'badges', 'tag', 'tags']) || '').trim() || null,
-              brand: String(getVal(r, ['brand', 'company', 'make']) || '').trim() || null,
-              age_range: String(getVal(r, ['agerange', 'age', 'years', 'ages']) || '').trim() || null,
-              weight: getVal(r, ['weight', 'wt']) ? Number(getVal(r, ['weight', 'wt'])) : null,
-              length: getVal(r, ['length', 'len', 'l']) ? Number(getVal(r, ['length', 'len', 'l'])) : null,
-              breadth: getVal(r, ['breadth', 'width', 'b', 'w']) ? Number(getVal(r, ['breadth', 'width', 'b', 'w'])) : null,
-              height: getVal(r, ['height', 'ht', 'h']) ? Number(getVal(r, ['height', 'ht', 'h'])) : null,
+              badge,
+              brand,
+              age_range,
+              weight,
+              length,
+              breadth,
+              height,
               category: matchedCat ? matchedCat._id : null,
               categoryName: displayCatName || "None",
               in_stock: parseBool(getVal(r, ['instock', 'stock', 'available']), true),
               show_in_hero: parseBool(getVal(r, ['showinhero', 'hero', 'banner']), false),
-              is_sale: parseBool(getVal(r, ['issale', 'flashsale', 'sale', 'discountarea']), false)
+              is_sale: parseBool(getVal(r, ['issale', 'flashsale', 'sale', 'discountarea']), false),
+              errors,
+              warnings
             };
-          }).filter((item: any) => !!item.name);
+          }).filter((item: any) => item !== null);
 
           if (!mapped.length) {
-            toast.error("No products parsed successfully (Name header required).");
+            toast.error("No valid rows parsed successfully.");
             setExcelImporting(false);
           } else {
             setPreviewRows(mapped);
@@ -170,13 +286,20 @@ function AdminProducts() {
 
   const confirmImport = async () => {
     if (!previewRows) return;
+
+    const validRows = previewRows.filter(r => !r.errors || r.errors.length === 0);
+    if (validRows.length === 0) {
+      toast.error("No valid products to import! Please fix critical errors.");
+      return;
+    }
+
     setExcelImporting(true);
     setPreviewRows(null);
 
     let count = 0;
-    for (let i = 0; i < previewRows.length; i++) {
-      const row = previewRows[i];
-      setImportProgress(`Importing ${i + 1} of ${previewRows.length}: ${row.name}`);
+    for (let i = 0; i < validRows.length; i++) {
+      const row = validRows[i];
+      setImportProgress(`Importing ${i + 1} of ${validRows.length}: ${row.name}`);
       try {
         await api.post("/products", {
           name: row.name,
@@ -206,6 +329,12 @@ function AdminProducts() {
     setExcelImporting(false);
     setImportProgress("");
     toast.success(`Imported ${count} products successfully!`);
+
+    const totalSkipped = previewRows.length - validRows.length;
+    if (totalSkipped > 0) {
+      toast.warning(`Skipped ${totalSkipped} products due to critical errors.`);
+    }
+
     invalidate();
   };
 
@@ -778,120 +907,302 @@ function AdminProducts() {
       )}
 
       {/* Products Excel Preview Grid Modal */}
-      {previewRows && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9998] p-4 overflow-y-auto">
-          <div className="bg-surface text-foreground rounded-xl shadow-2xl max-w-5xl w-full flex flex-col max-h-[90vh]">
-            <div className="p-4 md:p-6 border-b border-border flex items-center justify-between bg-emerald-50 rounded-t-xl">
-              <div>
-                <h3 className="font-extrabold text-xl text-emerald-900 flex items-center gap-2">
-                  <FileSpreadsheet className="size-5" /> Spreadsheet Preview
-                </h3>
-                <p className="text-xs text-emerald-700 mt-0.5">Found {previewRows.length} products. Review and map below.</p>
-              </div>
-              <button onClick={() => setPreviewRows(null)} className="p-1.5 bg-white/80 hover:bg-white rounded-full transition text-emerald-800 border border-emerald-200">
-                <X className="size-4" />
-              </button>
-            </div>
+      {previewRows && (() => {
+        const totalRows = previewRows.length;
+        const errRows = previewRows.filter(r => r.errors && r.errors.length > 0);
+        const warnRows = previewRows.filter(r => r.warnings && r.warnings.length > 0 && (!r.errors || r.errors.length === 0));
+        const errorCount = errRows.length;
+        const warningCount = previewRows.filter(r => r.warnings && r.warnings.length > 0).length;
+        const validCount = totalRows - errorCount;
 
-            <div className="flex-1 overflow-auto p-4">
-              <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1000px]">
-                <thead>
-                  <tr className="bg-muted border-b border-border font-bold text-muted-foreground">
-                    <th className="p-2.5">Product Name</th>
-                    <th className="p-2.5">Category</th>
-                    <th className="p-2.5">Brand</th>
-                    <th className="p-2.5 text-right">Price</th>
-                    <th className="p-2.5 text-right">MRP</th>
-                    <th className="p-2.5">Images</th>
-                    <th className="p-2.5">Size/Badges/Ages</th>
-                    <th className="p-2.5">Flags</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50 font-medium text-foreground">
-                  {previewRows.map((r, idx) => (
-                    <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-2.5 text-foreground font-bold max-w-[200px] truncate" title={r.name}>{r.name}</td>
-                      <td className="p-2.5 min-w-[220px]">
-                        <div className="space-y-1">
-                          <select
-                            value={r.category || ""}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              const updated = [...previewRows];
-                              updated[idx] = { ...updated[idx], category: val || null };
-                              setPreviewRows(updated);
-                            }}
-                            className={`w-full text-[11px] font-bold p-1.5 border rounded-none outline-none cursor-pointer bg-white shadow-sm ${r.category ? "border-emerald-300 bg-emerald-50/30 text-emerald-800" : "border-amber-300 bg-amber-50/30 text-amber-800"
-                              }`}
-                          >
-                            <option value="">— Uncategorized —</option>
-                            {categories
-                              .filter((c: any) => !c.parent)
-                              .map((parent: any) => (
-                                <optgroup key={parent._id} label={parent.name}>
-                                  <option value={parent._id}>{parent.name} (Main)</option>
+        return (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9998] p-4 overflow-y-auto">
+            <div className="bg-surface text-foreground rounded-2xl shadow-2xl max-w-6xl w-full flex flex-col max-h-[92vh] border border-border animate-in fade-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="p-4 md:p-6 border-b border-border flex items-center justify-between bg-emerald-50/80 backdrop-blur-md rounded-t-2xl">
+                <div>
+                  <h3 className="font-extrabold text-xl text-emerald-950 flex items-center gap-2">
+                    <FileSpreadsheet className="size-6 text-emerald-700" /> Excel Import Preview & Validation
+                  </h3>
+                  <p className="text-xs text-emerald-800 mt-1 font-semibold">
+                    Review and verify product attributes before importing them to the database.
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setPreviewRows(null)} 
+                  className="p-2 hover:bg-emerald-100 rounded-full transition-colors text-emerald-850 border border-emerald-200 bg-white/50"
+                  title="Close preview"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-auto p-4 md:p-6 space-y-5">
+                {/* Visual Stats Deck */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 shadow-sm flex items-center gap-3">
+                    <div className="bg-slate-100 rounded-lg p-2 text-slate-700">
+                      <FileSpreadsheet className="size-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Total Rows</div>
+                      <div className="text-lg font-black text-slate-900">{totalRows}</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3.5 shadow-sm flex items-center gap-3">
+                    <div className="bg-emerald-100/60 rounded-lg p-2 text-emerald-700">
+                      <CheckCircle2 className="size-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Valid to Import</div>
+                      <div className="text-lg font-black text-emerald-900">{validCount}</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-3.5 shadow-sm flex items-center gap-3">
+                    <div className="bg-amber-100/60 rounded-lg p-2 text-amber-700">
+                      <AlertTriangle className="size-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Warnings Found</div>
+                      <div className="text-lg font-black text-amber-900">{warningCount}</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-rose-50/60 border border-rose-200 rounded-xl p-3.5 shadow-sm flex items-center gap-3">
+                    <div className="bg-rose-100/60 rounded-lg p-2 text-rose-700">
+                      <AlertCircle className="size-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-rose-600 tracking-wider">Critical Errors</div>
+                      <div className="text-lg font-black text-rose-900">{errorCount}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning / Suggestion banner */}
+                {errorCount > 0 && (
+                  <div className="bg-rose-50/90 border border-rose-200 text-rose-900 rounded-xl p-4 text-xs md:text-sm flex items-start gap-2.5 shadow-sm">
+                    <AlertTriangle className="size-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1 font-medium">
+                      <div className="font-extrabold text-rose-950">Spreadsheet has {errorCount} rows with critical errors!</div>
+                      <p className="text-rose-800 leading-relaxed">
+                        These rows are highlighted in <span className="bg-rose-100 text-rose-950 px-1 py-0.5 rounded font-extrabold">light red</span> and will be **automatically skipped** to avoid system errors. You can import the remaining **{validCount}** valid products immediately, or close this preview to correct your Excel spreadsheet and re-upload.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Table */}
+                <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-white">
+                  <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1100px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-border font-bold text-slate-600 text-xs">
+                        <th className="p-3">Product Name</th>
+                        <th className="p-3">Category</th>
+                        <th className="p-3">Brand</th>
+                        <th className="p-3 text-right">Price / MRP</th>
+                        <th className="p-3">Size (L x B x H)</th>
+                        <th className="p-3">Images & Flags</th>
+                        <th className="p-3">Errors & Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50 font-medium text-foreground">
+                      {previewRows.map((r, idx) => {
+                        const hasErrors = r.errors && r.errors.length > 0;
+                        const hasWarnings = r.warnings && r.warnings.length > 0;
+                        
+                        let rowClass = "hover:bg-slate-50/50 transition-colors";
+                        if (hasErrors) {
+                          rowClass = "bg-rose-50/40 hover:bg-rose-100/30 text-rose-950 transition-colors";
+                        } else if (hasWarnings) {
+                          rowClass = "bg-amber-50/30 hover:bg-amber-100/30 text-amber-950 transition-colors";
+                        }
+
+                        return (
+                          <tr key={idx} className={rowClass}>
+                            {/* Product Name */}
+                            <td className="p-3 max-w-[220px] truncate" title={r.name}>
+                              <div className="font-extrabold text-slate-900 text-xs md:text-sm">{r.name}</div>
+                              {r.description && (
+                                <div className="text-[10px] text-slate-500 truncate mt-0.5 font-normal">
+                                  {r.description}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Category Mapping */}
+                            <td className="p-3 min-w-[240px]">
+                              <div className="space-y-1">
+                                <select
+                                  value={r.category || ""}
+                                  disabled={hasErrors && r.errors.includes("Product name is missing")}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const updated = [...previewRows];
+                                    updated[idx] = { ...updated[idx], category: val || null };
+                                    setPreviewRows(updated);
+                                  }}
+                                  className={`w-full text-[11px] font-bold p-1.5 border rounded-md outline-none cursor-pointer bg-white shadow-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 ${
+                                    r.category 
+                                      ? "border-emerald-300 bg-emerald-50/20 text-emerald-900" 
+                                      : "border-amber-300 bg-amber-50/20 text-amber-900"
+                                  }`}
+                                >
+                                  <option value="">— Uncategorized —</option>
                                   {categories
-                                    .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
-                                    .map((child: any) => (
-                                      <option key={child._id} value={child._id}>↳ {child.name}</option>
+                                    .filter((c: any) => !c.parent)
+                                    .map((parent: any) => (
+                                      <optgroup key={parent._id} label={parent.name}>
+                                        <option value={parent._id}>{parent.name} (Main)</option>
+                                        {categories
+                                          .filter((c: any) => (c.parent?._id === parent._id || c.parent === parent._id))
+                                          .map((child: any) => (
+                                            <option key={child._id} value={child._id}>↳ {child.name}</option>
+                                          ))
+                                        }
+                                      </optgroup>
                                     ))
                                   }
-                                </optgroup>
-                              ))
-                            }
-                          </select>
-                          {r.categoryName && r.categoryName !== "None" && (
-                            <div className="text-[9px] text-slate-500 font-medium italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
-                              Found: "{r.categoryName}"
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-2.5 text-muted-foreground">{r.brand || "—"}</td>
-                      <td className="p-2.5 text-right font-bold">₹{r.price.toLocaleString()}</td>
-                      <td className="p-2.5 text-right text-muted-foreground">₹{r.mrp.toLocaleString()}</td>
-                      <td className="p-2.5 text-muted-foreground text-[11px]">
-                        <div className="font-bold text-slate-700 whitespace-nowrap">{r.image ? "✓ Main Image" : "— No Main"}</div>
-                        {r.images && r.images.length > 0 && (
-                          <div className="text-emerald-600 font-bold mt-0.5">+{r.images.length} gallery imgs</div>
-                        )}
-                      </td>
-                      <td className="p-2.5 text-[11px] max-w-[180px] truncate">
-                        {r.length || r.breadth || r.height ? (
-                          <div className="text-emerald-700 font-bold mb-1">
-                            📏 {r.length || 0} x {r.breadth || 0} x {r.height || 0} cm
-                          </div>
-                        ) : null}
-                        {r.badge && <div className="text-slate-800 font-bold">🏷️ {r.badge}</div>}
-                        {r.age_range && <div className="text-indigo-600 mt-0.5 font-bold">👶 {r.age_range}</div>}
-                        {(!r.badge && !r.age_range && !r.length && !r.breadth && !r.height) && <span className="text-slate-400">—</span>}
-                      </td>
-                      <td className="p-2.5 text-[11px]">
-                        <div className="flex flex-wrap gap-1 font-bold">
-                          {r.in_stock ? (
-                            <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200 text-[9px]">IN-STOCK</span>
-                          ) : (
-                            <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200 text-[9px]">OUT</span>
-                          )}
-                          {r.show_in_hero && <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-200 text-[9px]">HERO</span>}
-                          {r.is_sale && <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 text-[9px]">SALE</span>}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                                </select>
+                                {r.categoryName && r.categoryName !== "None" && (
+                                  <div className="text-[9px] text-slate-500 font-semibold italic ml-1 truncate max-w-[200px]" title={`Excel data: ${r.categoryName}`}>
+                                    Spreadsheet: "{r.categoryName}"
+                                  </div>
+                                )}
+                              </div>
+                            </td>
 
-            <div className="p-4 md:p-6 border-t border-border bg-slate-50 flex items-center justify-between rounded-b-xl shrink-0">
-              <button onClick={() => setPreviewRows(null)} className="text-slate-600 hover:text-slate-900 font-bold text-sm px-4 py-2 transition-colors">Cancel</button>
-              <button onClick={confirmImport} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-2">
-                <Upload className="size-4" /> Import {previewRows.length} Products
-              </button>
+                            {/* Brand */}
+                            <td className="p-3 text-slate-700 text-xs">{r.brand || "—"}</td>
+
+                            {/* Price / MRP */}
+                            <td className="p-3 text-right">
+                              <div className="font-extrabold text-slate-900 text-xs md:text-sm">
+                                ₹{Number(r.price).toLocaleString("en-IN")}
+                              </div>
+                              {r.mrp > 0 && (
+                                <div className="text-[10px] text-slate-400 font-medium line-through">
+                                  ₹{Number(r.mrp).toLocaleString("en-IN")}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Size (L x B x H) */}
+                            <td className="p-3">
+                              {r.length || r.breadth || r.height ? (
+                                <div className="space-y-0.5">
+                                  <div className="font-extrabold text-slate-800 text-xs flex items-center gap-1">
+                                    <span>
+                                      {r.length || 0} <span className="text-slate-400 font-normal">x</span> {r.breadth || 0} <span className="text-slate-400 font-normal">x</span> {r.height || 0}
+                                    </span>
+                                    <span className="text-slate-500 text-[10px] font-medium font-mono">cm</span>
+                                  </div>
+                                  <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                                    L x B x H
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-slate-400 font-medium italic text-[11px]">— Empty —</span>
+                              )}
+                            </td>
+
+                            {/* Images & Flags */}
+                            <td className="p-3 text-[11px]">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-1.5 font-bold">
+                                  {r.image ? (
+                                    <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 text-[9px] flex items-center gap-0.5">
+                                      📸 Image
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 text-[9px]">
+                                      No Image
+                                    </span>
+                                  )}
+                                  {r.images && r.images.length > 0 && (
+                                    <span className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 text-[9px]">
+                                      +{r.images.length} gallery
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex flex-wrap gap-1 font-bold">
+                                  {r.in_stock ? (
+                                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded text-[9px]">STOCK</span>
+                                  ) : (
+                                    <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded text-[9px]">OUT</span>
+                                  )}
+                                  {r.show_in_hero && <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-[9px]">HERO</span>}
+                                  {r.is_sale && <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[9px]">SALE</span>}
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Errors & Status */}
+                            <td className="p-3 max-w-[280px]">
+                              <div className="flex flex-col gap-1">
+                                {r.errors && r.errors.map((err, i) => (
+                                  <span key={i} className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-rose-200 w-fit">
+                                    <AlertCircle className="size-3 text-rose-600 shrink-0" /> {err}
+                                  </span>
+                                ))}
+                                {r.warnings && r.warnings.map((warn, i) => (
+                                  <span key={i} className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-amber-200 w-fit">
+                                    <AlertTriangle className="size-3 text-amber-600 shrink-0" /> {warn}
+                                  </span>
+                                ))}
+                                {(!r.errors?.length && !r.warnings?.length) && (
+                                  <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-emerald-250 w-fit">
+                                    <CheckCircle2 className="size-3 text-emerald-600 shrink-0" /> Ready
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 md:p-6 border-t border-border bg-slate-50 flex items-center justify-between rounded-b-2xl shrink-0">
+                <button 
+                  onClick={() => setPreviewRows(null)} 
+                  className="text-slate-600 hover:text-slate-900 font-extrabold text-sm px-4 py-2 hover:bg-slate-100 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+                <div className="flex items-center gap-3">
+                  {errorCount > 0 && (
+                    <span className="text-xs text-rose-600 font-extrabold hidden sm:inline-block">
+                      ⚠️ {errorCount} products with errors will be skipped
+                    </span>
+                  )}
+                  <button 
+                    onClick={confirmImport} 
+                    disabled={validCount === 0}
+                    className={`font-extrabold text-sm px-6 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 ${
+                      validCount > 0 
+                        ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer hover:shadow-lg hover:scale-[1.01]" 
+                        : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    }`}
+                  >
+                    <Upload className="size-4" /> 
+                    {errorCount > 0 
+                      ? `Import ${validCount} Valid Products` 
+                      : `Import All ${totalRows} Products`
+                    }
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

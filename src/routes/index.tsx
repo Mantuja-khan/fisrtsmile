@@ -23,12 +23,13 @@ import age9_12 from "@/assets/9_12.png";
 import age12Plus from "@/assets/12+.png";
 
 const AGE_RANGES = [
-  { label: "0-12 months", value: "0-12 months", image: age0_2 },
-  { label: "1-3 years", value: "1-3 years", image: age2_4 },
-  { label: "4-7 years", value: "4-7 years", image: age4_7 },
-  { label: "8-10 years", value: "8-10 years", image: age7_9 },
-  { label: "11-14 years", value: "11-14 years", image: age9_12 },
-  { label: "14+", value: "14+ years", image: age12Plus },
+  { label: "0-18 month", value: "0-18 month", image: age0_2 },
+  { label: "18-36 month", value: "18-36 month", image: age2_4 },
+  { label: "3-5 year", value: "3-5 year", image: age4_7 },
+  { label: "5-7 year", value: "5-7 year", image: age4_7 },
+  { label: "7-9 year", value: "7-9 year", image: age7_9 },
+  { label: "9-12 year", value: "9-12 year", image: age9_12 },
+  { label: "12 +years", value: "12 +years", image: age12Plus },
 ];
 
 const INSTAGRAM_REELS = [
@@ -307,12 +308,12 @@ function HomePage() {
           <p className="text-sm text-muted-foreground mt-1">Find perfect toys suited for every stage</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
           {AGE_RANGES.map((age, i) => (
             <Link
               key={i}
               to="/products"
-              search={{ age_range: age.value } as never}
+              search={{ age: age.value } as never}
               className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
               <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100">

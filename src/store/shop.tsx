@@ -67,7 +67,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
             price: Number(r.price),
             mrp: Number(r.mrp),
             image: img,
-            images: [img, img, img],
+            images: (r.images && r.images.length > 0) 
+              ? r.images.map((pImg: string) => resolveImage(pImg)) 
+              : [img],
             rating: Number(r.rating),
             ratingCount: r.rating_count,
             inStock: r.in_stock,

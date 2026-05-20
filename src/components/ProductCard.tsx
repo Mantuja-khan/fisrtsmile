@@ -71,14 +71,14 @@ export function ProductCard({ product }: { product: Product }) {
             src={resolveImage(product.image)}
             alt={product.name}
             loading="lazy"
-            className={`w-full h-full object-contain transition-all duration-500 ${product.images && product.images.length > 1 ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"}`}
+            className={`w-full h-full object-contain ${product.images && product.images.length > 1 ? "group-hover:hidden" : ""}`}
           />
           {product.images && product.images.length > 1 && (
             <img
               src={resolveImage(product.images[1])}
               alt={product.name}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-contain transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105 p-1 sm:p-2 bg-white"
+              className="absolute inset-0 w-full h-full object-contain hidden group-hover:block p-1 sm:p-2 bg-white"
             />
           )}
         </div>
