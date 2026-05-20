@@ -69,7 +69,7 @@ function ProductPage() {
                 <img
                   src={resolveImage(product.images[activeImg])}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
             </div>
