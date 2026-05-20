@@ -87,6 +87,23 @@ function AdminProducts() {
             return;
           }
 
+          const cleanStr = (val: any): string => {
+            if (val === undefined || val === null) return "";
+            let s = String(val).trim();
+            if (s.startsWith('"') && s.endsWith('"')) {
+              s = s.slice(1, -1);
+            } else if (s.startsWith("'") && s.endsWith("'")) {
+              s = s.slice(1, -1);
+            }
+            return s.trim();
+          };
+
+          const cleanNum = (val: any): number => {
+            if (val === undefined || val === null || val === '') return NaN;
+            let s = String(val).replace(/["']/g, "").trim();
+            return Number(s);
+          };
+
           const getVal = (row: any, keys: string[]) => {
             const keysInRow = Object.keys(row);
             for (const k of keys) {
@@ -97,16 +114,18 @@ function AdminProducts() {
           };
 
           const mapped = rawRows.map((r: any) => {
-            const subcatName = String(getVal(r, ['subcategory', 'subcat', 'childcategory', 'childcat']) || '').trim();
-            const maincatName = String(getVal(r, ['category', 'cat', 'parentcategory', 'maincategory']) || '').trim();
+            const rawSubcat = getVal(r, ['subcategory', 'subcat', 'childcategory', 'childcat']);
+            const rawMaincat = getVal(r, ['category', 'cat', 'parentcategory', 'maincategory']);
+            const subcatName = cleanStr(rawSubcat);
+            const maincatName = cleanStr(rawMaincat);
 
             let matchedCat = null;
             if (subcatName) {
-              matchedCat = categories.find((c: any) => c.name.toLowerCase() === subcatName.toLowerCase());
+              matchedCat = categories.find((c: any) => cleanStr(c.name).toLowerCase() === subcatName.toLowerCase());
             }
 
             if (!matchedCat && maincatName) {
-              matchedCat = categories.find((c: any) => c.name.toLowerCase() === maincatName.toLowerCase());
+              matchedCat = categories.find((c: any) => cleanStr(c.name).toLowerCase() === maincatName.toLowerCase());
             }
 
             const displayCatName = subcatName
@@ -116,16 +135,17 @@ function AdminProducts() {
             const parseBool = (val: any, fallback: boolean): boolean => {
               if (val === undefined || val === null || val === '') return fallback;
               if (typeof val === 'boolean') return val;
-              const s = String(val).toLowerCase().trim();
+              const s = cleanStr(val).toLowerCase();
               return ['true', '1', 'yes', 'y', 'in stock', 'on'].includes(s);
             };
 
-            const galleryRaw = String(getVal(r, ['images', 'gallery', 'additionalimages', 'otherimages', 'pics']) || '');
-            let parsedGallery = galleryRaw
-              ? galleryRaw.split(/[,\n|]+/).map(url => url.trim()).filter(url => !!url)
+            const galleryRaw = getVal(r, ['images', 'gallery', 'additionalimages', 'otherimages', 'pics']);
+            const galleryCleaned = cleanStr(galleryRaw);
+            let parsedGallery = galleryCleaned
+              ? galleryCleaned.split(/[,\n|]+/).map(url => cleanStr(url)).filter(url => !!url)
               : [];
 
-            let primaryImg = String(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']) || '').trim();
+            let primaryImg = cleanStr(getVal(r, ['image', 'img', 'url', 'imageurl', 'pic', 'picture']));
             
             if (parsedGallery.length > 0) {
               if (!primaryImg) {
@@ -153,106 +173,127 @@ function AdminProducts() {
               return null;
             }
 
-            const name = String(nameRaw || '').trim();
-            const description = String(descRaw || '').trim();
-            const badge = String(getVal(r, ['badge', 'badges', 'tag', 'tags']) || '').trim() || null;
-            const brand = String(brandRaw || '').trim() || null;
-            const age_range = String(getVal(r, ['agerange', 'age', 'years', 'ages']) || '').trim() || null;
+            const name = cleanStr(nameRaw);
+            const description = cleanStr(descRaw);
+            const badge = cleanStr(getVal(r, ['badge', 'badges', 'tag', 'tags'])) || null;
+            const brand = cleanStr(brandRaw) || null;
+            const age_range = cleanStr(getVal(r, ['agerange', 'age', 'years', 'ages'])) || null;
 
             const rawWeight = getVal(r, ['weight', 'wt']);
             const rawLength = getVal(r, ['length', 'len', 'l']);
             const rawBreadth = getVal(r, ['breadth', 'width', 'b', 'w']);
             const rawHeight = getVal(r, ['height', 'ht', 'h']);
 
-            const weight = rawWeight !== undefined && rawWeight !== null && rawWeight !== '' ? Number(rawWeight) : null;
-            const length = rawLength !== undefined && rawLength !== null && rawLength !== '' ? Number(rawLength) : null;
-            const breadth = rawBreadth !== undefined && rawBreadth !== null && rawBreadth !== '' ? Number(rawBreadth) : null;
-            const height = rawHeight !== undefined && rawHeight !== null && rawHeight !== '' ? Number(rawHeight) : null;
+            const weight = rawWeight !== undefined && rawWeight !== null && rawWeight !== '' ? cleanNum(rawWeight) : null;
+            const length = rawLength !== undefined && rawLength !== null && rawLength !== '' ? cleanNum(rawLength) : null;
+            const breadth = rawBreadth !== undefined && rawBreadth !== null && rawBreadth !== '' ? cleanNum(rawBreadth) : null;
+            const height = rawHeight !== undefined && rawHeight !== null && rawHeight !== '' ? cleanNum(rawHeight) : null;
 
-            const priceNum = priceRaw !== undefined && priceRaw !== null && priceRaw !== '' ? Number(priceRaw) : NaN;
-            const mrpNum = mrpRaw !== undefined && mrpRaw !== null && mrpRaw !== '' ? Number(mrpRaw) : NaN;
+            const priceNum = cleanNum(priceRaw);
+            const mrpNum = cleanNum(mrpRaw);
 
             const errors: string[] = [];
             const warnings: string[] = [];
 
             // 1. Name validation
-            if (!name) {
-              errors.push("Product name is missing");
+            let finalName = name;
+            if (!finalName) {
+              finalName = "— Unnamed Product —";
+              warnings.push("Product name is missing, defaulted to 'Unnamed Product'");
             }
 
             // 2. Price validation
-            if (priceRaw === undefined || priceRaw === null || priceRaw === '') {
-              errors.push("Price is missing");
+            let finalPrice = priceNum;
+            if (priceRaw === undefined || priceRaw === null || String(priceRaw).trim() === '') {
+              finalPrice = 0;
+              warnings.push("Price is missing, defaulted to 0");
             } else if (isNaN(priceNum)) {
-              errors.push("Price must be a valid number");
-            } else if (priceNum <= 0) {
-              errors.push("Price must be greater than 0");
+              finalPrice = 0;
+              warnings.push("Price is invalid, defaulted to 0");
+            } else if (priceNum < 0) {
+              finalPrice = 0;
+              warnings.push("Price cannot be negative, defaulted to 0");
             }
 
             // 3. MRP validation
-            if (mrpRaw !== undefined && mrpRaw !== null && mrpRaw !== '') {
+            let finalMrp = null;
+            if (mrpRaw !== undefined && mrpRaw !== null && String(mrpRaw).trim() !== '') {
               if (isNaN(mrpNum)) {
-                errors.push("MRP must be a valid number");
+                warnings.push("MRP must be a valid number, ignored");
               } else if (mrpNum < 0) {
-                errors.push("MRP cannot be negative");
-              } else if (!isNaN(priceNum) && mrpNum < priceNum) {
-                warnings.push(`MRP (₹${mrpNum}) is lower than Price (₹${priceNum})`);
+                warnings.push("MRP cannot be negative, ignored");
+              } else {
+                finalMrp = mrpNum;
+                if (finalPrice > 0 && mrpNum < finalPrice) {
+                  warnings.push(`MRP (₹${mrpNum}) is lower than Price (₹${finalPrice})`);
+                }
               }
             }
 
-            // 4. Dimensions validation
+            // 4. Dimensions validation (Only warn if partially provided, and clear them so they import as blank/null)
             const hasAnyDim = length !== null || breadth !== null || height !== null;
             const hasAllDims = length !== null && breadth !== null && height !== null;
 
+            let parsedLength = length;
+            let parsedBreadth = breadth;
+            let parsedHeight = height;
+
             if (hasAnyDim) {
               if (!hasAllDims) {
-                errors.push("Incomplete dimensions (Provide all Length, Breadth, and Height together)");
+                warnings.push("Incomplete dimensions (Provide Length, Breadth, and Height together). Dimensions cleared.");
+                parsedLength = null;
+                parsedBreadth = null;
+                parsedHeight = null;
               } else {
                 if (isNaN(length) || length <= 0) {
-                  errors.push("Length (L) must be a positive number");
+                  warnings.push("Length (L) must be a positive number. Dimensions cleared.");
+                  parsedLength = null;
+                  parsedBreadth = null;
+                  parsedHeight = null;
                 }
                 if (isNaN(breadth) || breadth <= 0) {
-                  errors.push("Breadth (B) must be a positive number");
+                  warnings.push("Breadth (B) must be a positive number. Dimensions cleared.");
+                  parsedLength = null;
+                  parsedBreadth = null;
+                  parsedHeight = null;
                 }
                 if (isNaN(height) || height <= 0) {
-                  errors.push("Height (H) must be a positive number");
+                  warnings.push("Height (H) must be a positive number. Dimensions cleared.");
+                  parsedLength = null;
+                  parsedBreadth = null;
+                  parsedHeight = null;
                 }
               }
             }
 
             // 5. Weight validation
+            let parsedWeight = weight;
             if (weight !== null && (isNaN(weight) || weight <= 0)) {
-              errors.push("Weight must be a positive number");
+              warnings.push("Weight must be a positive number. Weight cleared.");
+              parsedWeight = null;
             }
 
             // 6. Category mapping warning
             if (!matchedCat) {
               if (displayCatName && displayCatName !== "None") {
                 warnings.push(`Category "${displayCatName}" not found in system (will be uncategorized)`);
-              } else {
-                warnings.push("No category specified (will be uncategorized)");
               }
             }
 
-            // 7. Image warnings
-            if (!primaryImg && parsedGallery.length === 0) {
-              warnings.push("No product images found");
-            }
-
             return {
-              name: name || "— Unnamed Product —",
+              name: finalName,
               description,
-              price: isNaN(priceNum) ? 0 : priceNum,
-              mrp: isNaN(mrpNum) ? 0 : mrpNum,
+              price: finalPrice,
+              mrp: finalMrp || finalPrice,
               image: primaryImg || null,
               images: parsedGallery,
               badge,
               brand,
               age_range,
-              weight,
-              length,
-              breadth,
-              height,
+              weight: parsedWeight,
+              length: parsedLength,
+              breadth: parsedBreadth,
+              height: parsedHeight,
               category: matchedCat ? matchedCat._id : null,
               categoryName: displayCatName || "None",
               in_stock: parseBool(getVal(r, ['instock', 'stock', 'available']), true),
