@@ -1038,15 +1038,18 @@ function AdminProducts() {
 
                 {/* Table */}
                 <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-white">
-                  <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1100px]">
+                  <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[1400px]">
                     <thead>
                       <tr className="bg-slate-50 border-b border-border font-bold text-slate-600 text-xs">
                         <th className="p-3">Product Name</th>
-                        <th className="p-3">Category</th>
-                        <th className="p-3">Brand</th>
+                        <th className="p-3">Category & Sub Cat</th>
+                        <th className="p-3">Badges</th>
                         <th className="p-3 text-right">Price / MRP</th>
-                        <th className="p-3">Size (L x B x H)</th>
-                        <th className="p-3">Images & Flags</th>
+                        <th className="p-3">Brand</th>
+                        <th className="p-3">Age Range</th>
+                        <th className="p-3">Description</th>
+                        <th className="p-3">Size & Weight</th>
+                        <th className="p-3">Images (Gallery)</th>
                         <th className="p-3">Errors & Status</th>
                       </tr>
                     </thead>
@@ -1065,17 +1068,12 @@ function AdminProducts() {
                         return (
                           <tr key={idx} className={rowClass}>
                             {/* Product Name */}
-                            <td className="p-3 max-w-[220px] truncate" title={r.name}>
+                            <td className="p-3 max-w-[200px] truncate" title={r.name}>
                               <div className="font-extrabold text-slate-900 text-xs md:text-sm">{r.name}</div>
-                              {r.description && (
-                                <div className="text-[10px] text-slate-500 truncate mt-0.5 font-normal">
-                                  {r.description}
-                                </div>
-                              )}
                             </td>
 
                             {/* Category Mapping */}
-                            <td className="p-3 min-w-[240px]">
+                            <td className="p-3 min-w-[220px]">
                               <div className="space-y-1">
                                 <select
                                   value={r.category || ""}
@@ -1109,15 +1107,27 @@ function AdminProducts() {
                                   }
                                 </select>
                                 {r.categoryName && r.categoryName !== "None" && (
-                                  <div className="text-[9px] text-slate-500 font-semibold italic ml-1 truncate max-w-[200px]" title={`Excel data: ${r.categoryName}`}>
-                                    Spreadsheet: "{r.categoryName}"
+                                  <div className="text-[9px] text-slate-500 font-semibold italic ml-1 truncate max-w-[190px]" title={`Excel data: ${r.categoryName}`}>
+                                    Excel: "{r.categoryName}"
                                   </div>
                                 )}
                               </div>
                             </td>
 
-                            {/* Brand */}
-                            <td className="p-3 text-slate-700 text-xs">{r.brand || "—"}</td>
+                            {/* Badges */}
+                            <td className="p-3">
+                              {r.badge ? (
+                                <div className="flex flex-wrap gap-1 max-w-[120px]">
+                                  {String(r.badge).split(",").map((b: string) => (
+                                    <span key={b} className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-200 whitespace-nowrap">
+                                      {b.trim()}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-slate-400 font-medium italic text-[11px]">— None —</span>
+                              )}
+                            </td>
 
                             {/* Price / MRP */}
                             <td className="p-3 text-right">
@@ -1131,58 +1141,85 @@ function AdminProducts() {
                               )}
                             </td>
 
-                            {/* Size (L x B x H) */}
+                            {/* Brand */}
+                            <td className="p-3 text-slate-700 text-xs font-semibold">{r.brand || <span className="text-slate-400 font-medium italic">— None —</span>}</td>
+
+                            {/* Age Range */}
                             <td className="p-3">
-                              {r.length || r.breadth || r.height ? (
-                                <div className="space-y-0.5">
-                                  <div className="font-extrabold text-slate-800 text-xs flex items-center gap-1">
-                                    <span>
-                                      {r.length || 0} <span className="text-slate-400 font-normal">x</span> {r.breadth || 0} <span className="text-slate-400 font-normal">x</span> {r.height || 0}
+                              {r.age_range ? (
+                                <div className="flex flex-wrap gap-1 max-w-[150px]">
+                                  {String(r.age_range).split(",").map((a: string) => (
+                                    <span key={a} className="bg-[#BFDDF0]/40 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#BFDDF0]/60 whitespace-nowrap">
+                                      {a.trim()}
                                     </span>
-                                    <span className="text-slate-500 text-[10px] font-medium font-mono">cm</span>
-                                  </div>
-                                  <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
-                                    L x B x H
-                                  </div>
+                                  ))}
                                 </div>
+                              ) : (
+                                <span className="text-slate-400 font-medium italic text-[11px]">— None —</span>
+                              )}
+                            </td>
+
+                            {/* Description */}
+                            <td className="p-3 max-w-[200px]" title={r.description}>
+                              {r.description ? (
+                                <span className="text-slate-600 text-xs font-normal line-clamp-2 leading-relaxed">{r.description}</span>
                               ) : (
                                 <span className="text-slate-400 font-medium italic text-[11px]">— Empty —</span>
                               )}
                             </td>
 
-                            {/* Images & Flags */}
-                            <td className="p-3 text-[11px]">
+                            {/* Size & Weight */}
+                            <td className="p-3">
                               <div className="space-y-1">
-                                <div className="flex items-center gap-1.5 font-bold">
-                                  {r.image ? (
-                                    <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 text-[9px] flex items-center gap-0.5">
-                                      📸 Image
+                                {r.length || r.breadth || r.height ? (
+                                  <div className="font-extrabold text-slate-800 text-xs flex items-center gap-1">
+                                    <span>
+                                      {r.length || 0} x {r.breadth || 0} x {r.height || 0}
                                     </span>
-                                  ) : (
-                                    <span className="text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 text-[9px]">
-                                      No Image
-                                    </span>
-                                  )}
-                                  {r.images && r.images.length > 0 && (
-                                    <span className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 text-[9px]">
-                                      +{r.images.length} gallery
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="flex flex-wrap gap-1 font-bold">
-                                  {r.in_stock ? (
-                                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded text-[9px]">STOCK</span>
-                                  ) : (
-                                    <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded text-[9px]">OUT</span>
-                                  )}
-                                  {r.show_in_hero && <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-[9px]">HERO</span>}
-                                  {r.is_sale && <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[9px]">SALE</span>}
-                                </div>
+                                    <span className="text-slate-500 text-[10px] font-medium font-mono">cm</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-400 font-medium italic text-[11px] block">— No Dim —</span>
+                                )}
+                                {r.weight !== null ? (
+                                  <div className="text-[10px] text-slate-600 font-bold bg-slate-100 px-1 py-0.5 rounded border border-slate-200 w-fit">
+                                    Weight: {r.weight} KG
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-400 font-medium italic text-[11px] block">— No Wt —</span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Images & Gallery */}
+                            <td className="p-3 min-w-[160px]">
+                              <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+                                {r.image ? (
+                                  <div className="relative group/img cursor-pointer size-9 rounded-md overflow-hidden border border-emerald-300 shadow-xs" title="Primary Image">
+                                    <img src={resolveImage(r.image)} alt="" className="w-full h-full object-cover" />
+                                    <span className="absolute bottom-0 right-0 bg-emerald-600 text-white font-extrabold text-[8px] leading-none px-1 py-0.5 rounded-tl shadow-sm">P</span>
+                                  </div>
+                                ) : (
+                                  <div className="size-9 rounded-md border border-dashed border-slate-300 bg-slate-50/50 flex items-center justify-center text-slate-400" title="No Primary Image">
+                                    <span className="text-[8px] font-black uppercase text-center leading-none">No P</span>
+                                  </div>
+                                )}
+                                
+                                {r.images && r.images.length > 0 && r.images.filter((img: string) => img !== r.image).map((img: string, gIdx: number) => (
+                                  <div key={gIdx} className="relative size-9 rounded-md overflow-hidden border border-indigo-200 shadow-xs" title={`Gallery Image ${gIdx + 1}`}>
+                                    <img src={resolveImage(img)} alt="" className="w-full h-full object-cover" />
+                                    <span className="absolute bottom-0 right-0 bg-indigo-600 text-white font-extrabold text-[8px] leading-none px-1 py-0.5 rounded-tl shadow-sm">G</span>
+                                  </div>
+                                ))}
+                                
+                                {(!r.image && (!r.images || r.images.length === 0)) && (
+                                  <span className="text-slate-400 font-medium italic text-[11px]">— No Images —</span>
+                                )}
                               </div>
                             </td>
 
                             {/* Errors & Status */}
-                            <td className="p-3 max-w-[280px]">
+                            <td className="p-3 max-w-[240px]">
                               <div className="flex flex-col gap-1">
                                 {r.errors && r.errors.map((err, i) => (
                                   <span key={i} className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-rose-200 w-fit">
