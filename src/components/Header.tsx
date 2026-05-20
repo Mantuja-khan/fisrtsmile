@@ -250,7 +250,7 @@ export function Header() {
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="w-52 bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-2 flex flex-col gap-1">
-                        {["0-12 months", "1-3 years", "4-7 years", "8-10 years", "11-14 years", "14+"].map((age) => (
+                        {["0-18 month", "18-36 month", "3-5 year", "5-7 year", "7-9 year", "9-12 year", "12 +years"].map((age) => (
                           <Link
                             key={age}
                             to="/products"
@@ -422,7 +422,7 @@ export function Header() {
                 </button>
                 {mobileAgeOpen && (
                   <div className="bg-slate-50/70 border-t border-slate-100 flex flex-col pl-8 pr-4 py-2 gap-2.5">
-                    {["0-12 months", "1-3 years", "4-7 years", "8-10 years", "11-14 years", "14+"].map(age => (
+                    {["0-18 month", "18-36 month", "3-5 year", "5-7 year", "7-9 year", "9-12 year", "12 +years"].map(age => (
                       <Link
                         key={age}
                         to="/products"

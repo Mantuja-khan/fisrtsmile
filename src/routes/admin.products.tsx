@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Zap, Upload, Loader2, FileSpreadsheet } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Tag, ImageIcon, Star, Zap, Upload, Loader2, FileSpreadsheet, CheckSquare } from "lucide-react";
 import { resolveImage } from "@/data/products";
 import { compressImage } from "@/utils/imageCompressor";
 import { BRANDS } from "@/data/brands";
@@ -46,6 +46,7 @@ function AdminProducts() {
   const [uploading, setUploading] = useState(false);
   const [parentCatId, setParentCatId] = useState<string>("");
   const [subCatId, setSubCatId] = useState<string>("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [excelImporting, setExcelImporting] = useState(false);
   const [importProgress, setImportProgress] = useState("");
@@ -135,9 +136,9 @@ function AdminProducts() {
               brand: String(getVal(r, ['brand', 'company', 'make']) || '').trim() || null,
               age_range: String(getVal(r, ['agerange', 'age', 'years', 'ages']) || '').trim() || null,
               weight: getVal(r, ['weight', 'wt']) ? Number(getVal(r, ['weight', 'wt'])) : null,
-              length: getVal(r, ['length', 'len']) ? Number(getVal(r, ['length', 'len'])) : null,
-              breadth: getVal(r, ['breadth', 'width']) ? Number(getVal(r, ['breadth', 'width'])) : null,
-              height: getVal(r, ['height', 'ht']) ? Number(getVal(r, ['height', 'ht'])) : null,
+              length: getVal(r, ['length', 'len', 'l']) ? Number(getVal(r, ['length', 'len', 'l'])) : null,
+              breadth: getVal(r, ['breadth', 'width', 'b', 'w']) ? Number(getVal(r, ['breadth', 'width', 'b', 'w'])) : null,
+              height: getVal(r, ['height', 'ht', 'h']) ? Number(getVal(r, ['height', 'ht', 'h'])) : null,
               category: matchedCat ? matchedCat._id : null,
               categoryName: displayCatName || "None",
               in_stock: parseBool(getVal(r, ['instock', 'stock', 'available']), true),
@@ -300,7 +301,6 @@ function AdminProducts() {
     if (!payload.name) return toast.error("Name required");
     if (payload.price < 0 || (payload.mrp !== null && payload.mrp < 0)) return toast.error("Prices must be ≥ 0");
 
-
     try {
       if (editing) {
         await api.put(`/products/${editing._id}`, payload);
@@ -322,9 +322,42 @@ function AdminProducts() {
     try {
       await api.delete(`/products/${id}`);
       toast.success("Deleted");
+      setSelectedIds(prev => prev.filter(selId => selId !== id));
       invalidate();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to delete product");
+    }
+  };
+
+  const removeMultiple = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Delete ${selectedIds.length} selected products? This action cannot be undone.`)) return;
+    
+    let deletedCount = 0;
+    for (const id of selectedIds) {
+      try {
+        await api.delete(`/products/${id}`);
+        deletedCount++;
+      } catch (error) {
+        console.error("Failed to delete product ID:", id);
+      }
+    }
+    toast.success(`Successfully deleted ${deletedCount} products`);
+    setSelectedIds([]);
+    invalidate();
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(selId => selId !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAll = () => {
+    if (selectedIds.length === products.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(products.map(p => p._id));
     }
   };
 
@@ -407,7 +440,17 @@ function AdminProducts() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="font-bold text-lg">Products ({products.length})</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="font-bold text-lg">Products ({products.length})</h2>
+          {selectedIds.length > 0 && (
+            <button
+              onClick={removeMultiple}
+              className="inline-flex items-center gap-1.5 bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 py-1.5 rounded-md text-sm font-semibold transition"
+            >
+              <Trash2 className="size-4" /> Delete {selectedIds.length} Selected
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
             type="file"
@@ -521,8 +564,8 @@ function AdminProducts() {
             <div className="md:col-span-2">
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Age Ranges (Select Multiple)</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-2 p-2.5 border border-input rounded bg-slate-50/50">
-                {["0-12 months", "1-3 years", "4-7 years", "8-10 years", "11-14 years", "14+"].map((age) => {
-                  const isChecked = editing?.age_range?.split(",").includes(age) ?? false;
+                {["0-18 month", "18-36 month", "3-5 year", "5-7 year", "7-9 year", "9-12 year", "12 +years"].map((age) => {
+                  const isChecked = editing?.age_range?.split(",").map(a => a.trim()).includes(age) ?? false;
                   return (
                     <label key={age} className="flex items-center gap-1.5 text-sm cursor-pointer font-medium text-slate-700">
                       <input type="checkbox" name="age_range" value={age} defaultChecked={isChecked} className="size-4 accent-primary" />
@@ -554,28 +597,29 @@ function AdminProducts() {
               </div>
             </div>
 
-            <div className="md:col-span-2 bg-slate-50 p-3 rounded border border-slate-200">
-              <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2 flex items-center gap-1">
-                📦 Shipping Dimensions & Weight
+            <div className="md:col-span-2 bg-indigo-50/50 p-4 rounded border border-indigo-100">
+              <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wide mb-3 flex items-center gap-2">
+                📏 PRODUCT SIZE (L, B, H) & WEIGHT
               </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Weight (KG)</label>
-                  <input name="weight" type="number" step="0.01" defaultValue={editing?.weight ?? ""} placeholder="e.g. 0.5" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                  <label className="text-[11px] font-bold text-indigo-800 uppercase block mb-1">L - Length (CM)</label>
+                  <input name="length" type="number" defaultValue={editing?.length ?? ""} placeholder="e.g. 15" className="w-full px-3 py-2 text-sm border border-indigo-200 rounded outline-none focus:border-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Length (CM)</label>
-                  <input name="length" type="number" defaultValue={editing?.length ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                  <label className="text-[11px] font-bold text-indigo-800 uppercase block mb-1">B - Breadth (CM)</label>
+                  <input name="breadth" type="number" defaultValue={editing?.breadth ?? ""} placeholder="e.g. 10" className="w-full px-3 py-2 text-sm border border-indigo-200 rounded outline-none focus:border-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Breadth (CM)</label>
-                  <input name="breadth" type="number" defaultValue={editing?.breadth ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                  <label className="text-[11px] font-bold text-indigo-800 uppercase block mb-1">H - Height (CM)</label>
+                  <input name="height" type="number" defaultValue={editing?.height ?? ""} placeholder="e.g. 5" className="w-full px-3 py-2 text-sm border border-indigo-200 rounded outline-none focus:border-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Height (CM)</label>
-                  <input name="height" type="number" defaultValue={editing?.height ?? ""} placeholder="e.g. 10" className="w-full px-2 py-1.5 text-sm border border-input rounded" />
+                  <label className="text-[11px] font-bold text-indigo-800 uppercase block mb-1">Weight (KG)</label>
+                  <input name="weight" type="number" step="0.01" defaultValue={editing?.weight ?? ""} placeholder="e.g. 0.5" className="w-full px-3 py-2 text-sm border border-indigo-200 rounded outline-none focus:border-indigo-400" />
                 </div>
               </div>
+              <p className="text-[10px] text-indigo-600 mt-2 italic">Note: These sizes (Length x Breadth x Height) help in calculating accurate shipping costs.</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -632,12 +676,35 @@ function AdminProducts() {
         </form>
       )}
 
+      {products.length > 0 && (
+        <div className="flex items-center gap-2 mb-2 px-1">
+          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              className="size-4 rounded accent-primary cursor-pointer"
+              checked={selectedIds.length === products.length}
+              onChange={toggleAll}
+            />
+            Select All
+          </label>
+        </div>
+      )}
+
       <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-1">
         {products.map((p) => (
-          <div key={p._id} className="bg-surface sm:bg-transparent lg:bg-surface border sm:border-transparent lg:border-0 p-4 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-4 hover:bg-muted/30 transition rounded-xl lg:rounded-none border-border lg:border-b lg:last:border-b-0">
-            <div className="flex gap-4 flex-1 min-w-0">
+          <div key={p._id} className="bg-surface sm:bg-transparent lg:bg-surface border sm:border-transparent lg:border-0 p-4 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-4 hover:bg-muted/30 transition rounded-xl lg:rounded-none border-border lg:border-b lg:last:border-b-0 relative">
+            <div className="absolute top-3 right-3 lg:static lg:mr-2">
+              <input 
+                type="checkbox" 
+                className="size-4.5 rounded accent-primary cursor-pointer"
+                checked={selectedIds.includes(p._id)}
+                onChange={() => toggleSelection(p._id)}
+              />
+            </div>
+            
+            <div className="flex gap-4 flex-1 min-w-0 pr-6 lg:pr-0 cursor-pointer" onClick={() => toggleSelection(p._id)}>
               <div className="relative shrink-0">
-                <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border" />
+                <img src={resolveImage(p.image)} alt="" className="size-16 rounded-lg object-cover bg-muted border border-border pointer-events-none" />
                 {p.images && p.images.length > 0 && (
                   <span className="absolute -bottom-1 -right-1 bg-white rounded-full size-6 grid place-items-center shadow-sm border border-border text-[10px] font-bold">
                     +{p.images.length}
@@ -736,7 +803,7 @@ function AdminProducts() {
                     <th className="p-2.5 text-right">Price</th>
                     <th className="p-2.5 text-right">MRP</th>
                     <th className="p-2.5">Images</th>
-                    <th className="p-2.5">Badges & Ages</th>
+                    <th className="p-2.5">Size/Badges/Ages</th>
                     <th className="p-2.5">Flags</th>
                   </tr>
                 </thead>
@@ -790,23 +857,24 @@ function AdminProducts() {
                         )}
                       </td>
                       <td className="p-2.5 text-[11px] max-w-[180px] truncate">
+                        {r.length || r.breadth || r.height ? (
+                          <div className="text-emerald-700 font-bold mb-1">
+                            📏 {r.length || 0} x {r.breadth || 0} x {r.height || 0} cm
+                          </div>
+                        ) : null}
                         {r.badge && <div className="text-slate-800 font-bold">🏷️ {r.badge}</div>}
                         {r.age_range && <div className="text-indigo-600 mt-0.5 font-bold">👶 {r.age_range}</div>}
-                        {(!r.badge && !r.age_range) && <span className="text-slate-400">—</span>}
+                        {(!r.badge && !r.age_range && !r.length && !r.breadth && !r.height) && <span className="text-slate-400">—</span>}
                       </td>
                       <td className="p-2.5 text-[11px]">
                         <div className="flex flex-wrap gap-1 font-bold">
                           {r.in_stock ? (
                             <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200 text-[9px]">IN-STOCK</span>
                           ) : (
-                            <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 text-[9px]">OUT</span>
+                            <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200 text-[9px]">OUT</span>
                           )}
-                          {r.show_in_hero && (
-                            <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 text-[9px]">HERO</span>
-                          )}
-                          {r.is_sale && (
-                            <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200 text-[9px]">SALE</span>
-                          )}
+                          {r.show_in_hero && <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-200 text-[9px]">HERO</span>}
+                          {r.is_sale && <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 text-[9px]">SALE</span>}
                         </div>
                       </td>
                     </tr>
@@ -815,12 +883,10 @@ function AdminProducts() {
               </table>
             </div>
 
-            <div className="p-4 border-t border-border flex items-center justify-end gap-3 bg-muted/10 rounded-b-xl">
-              <button onClick={() => setPreviewRows(null)} className="px-4 py-2 rounded-lg border border-input hover:bg-white transition font-semibold text-sm text-muted-foreground">
-                Cancel
-              </button>
-              <button onClick={confirmImport} className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 transition text-white font-bold text-sm shadow-sm flex items-center gap-2">
-                <Upload className="size-4" /> Confirm & Import Now
+            <div className="p-4 md:p-6 border-t border-border bg-slate-50 flex items-center justify-between rounded-b-xl shrink-0">
+              <button onClick={() => setPreviewRows(null)} className="text-slate-600 hover:text-slate-900 font-bold text-sm px-4 py-2 transition-colors">Cancel</button>
+              <button onClick={confirmImport} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-2">
+                <Upload className="size-4" /> Import {previewRows.length} Products
               </button>
             </div>
           </div>

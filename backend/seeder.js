@@ -20,7 +20,6 @@ const importData = async () => {
             role: 'admin',
         };
         await User.create(adminUser);
-
         console.log('Admin User Imported!');
         process.exit();
     } catch (error) {

@@ -188,9 +188,7 @@ function AccountPage() {
                     <span>Sign Out</span>
                   </button>
                 </div>
-
               </div>
-
               {/* Safety / Security Guarantee Banner */}
               <div className="bg-[#BFDDF0]/30 border border-[#BFDDF0]/50 rounded-2xl p-5 flex flex-col gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white text-slate-800 flex items-center justify-center shadow-sm">
