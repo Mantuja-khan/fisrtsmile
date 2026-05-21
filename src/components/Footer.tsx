@@ -21,7 +21,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-12 grid gap-8 md:grid-cols-4">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <img src={logo} alt="First Smile Logo" className="h-16 md:h-20 w-auto object-contain" />
+              <img src={logo} alt="Toy Haat Logo" className="h-16 md:h-20 w-auto object-contain" />
             </div>
             <p className="text-sm text-slate-300/90 leading-relaxed">
               India's playful destination for premium toys. Bringing smiles, one toy at a time.
@@ -54,9 +54,9 @@ export function Footer() {
           <div>
             <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Reach Us</h4>
             <ul className="space-y-3 text-sm text-slate-300/80">
-              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Mail className="size-4.5 shrink-0 text-slate-400" /> support@firstsmiletoys.com</li>
+              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Mail className="size-4.5 shrink-0 text-slate-400" /> support@toyhaat.com</li>
               <li className="flex items-center gap-2.5 hover:text-white transition-colors"><MessageCircle className="size-4.5 shrink-0 text-slate-400" /> +91 7827743263</li>
-              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Instagram className="size-4.5 shrink-0 text-slate-400" /> @Firstsmile19</li>
+              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Instagram className="size-4.5 shrink-0 text-slate-400" /> @toyhaat</li>
             </ul>
           </div>
         </div>
@@ -65,7 +65,7 @@ export function Footer() {
         <div className="border-t border-white/10 bg-slate-950/40 backdrop-blur-xs">
           <div className="container mx-auto px-4 py-5 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3">
             <div className="flex gap-4">
-              <span>© {new Date().getFullYear()} First Smile. Indian jurisdiction. Users must be 18+.</span>
+              <span>© {new Date().getFullYear()} Toy Haat. Indian jurisdiction. Users must be 18+.</span>
             </div>
             <span className="font-medium text-slate-300 flex items-center gap-1">Made with <span className="text-rose-500 animate-pulse">❤️</span> for little explorers</span>
           </div>

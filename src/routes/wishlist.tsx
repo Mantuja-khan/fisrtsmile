@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import type { Product } from "@/data/products";
 
 export const Route = createFileRoute("/wishlist")({
-  head: () => ({ meta: [{ title: "Wishlist — First Smile" }] }),
+  head: () => ({ meta: [{ title: "Wishlist — Toy Haat" }] }),
   component: WishlistPage,
 });
 

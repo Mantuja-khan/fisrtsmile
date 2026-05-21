@@ -19,7 +19,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/account")({
   validateSearch: (search) => searchSchema.parse(search),
-  head: () => ({ meta: [{ title: "My Account — First Smile" }] }),
+  head: () => ({ meta: [{ title: "My Account — Toy Haat" }] }),
   component: AccountPage,
 });
 
@@ -271,7 +271,7 @@ function AccountPage() {
         if (!v.success) { toast.error(v.error.issues[0].message); return; }
         const { error } = await signUp(v.data.email, v.data.password, v.data.fullName, v.data.phone, v.data.otp);
         if (error) { toast.error(error); return; }
-        toast.success("Account created! 🎉 Welcome to First Smile.");
+        toast.success("Account created! 🎉 Welcome to Toy Haat.");
         localStorage.setItem("signup_phone", v.data.phone);
         localStorage.setItem("show_signup_discount_popup", "true");
         window.dispatchEvent(new Event("trigger-discount-popup"));
@@ -326,7 +326,7 @@ function AccountPage() {
             <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
               {mode === "login" ? "USER LOGIN" : mode === "signup" ? "CREATE ACCOUNT" : "RESET PASSWORD"}
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">Welcome to First Smile</p>
+            <p className="text-xs text-muted-foreground mt-1">Welcome to Toy Haat</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">

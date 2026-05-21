@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/policies/terms")({
-  head: () => ({ meta: [{ title: "Terms & Conditions — First Smile Toys" }] }),
+  head: () => ({ meta: [{ title: "Terms & Conditions — Toy Haat" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-primary/10">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/policies/terms")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 m-0 font-medium">
-        By accessing and using the First Smile website, you agree to the terms mentioned below. Please read them carefully before placing an order.
+        By accessing and using the Toy Haat website, you agree to the terms mentioned below. Please read them carefully before placing an order.
       </p>
 
       <div className="space-y-2">
@@ -69,14 +69,14 @@ export const Route = createFileRoute("/policies/terms")({
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Intellectual Property</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          All content on this website, including text, images, and design, belongs to First Smile. It must not be copied, reused, or distributed without permission.
+          All content on this website, including text, images, and design, belongs to Toy Haat. It must not be copied, reused, or distributed without permission.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Limitation of Liability</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          First Smile will not be responsible for any indirect or incidental damages arising from the use of our products or services.
+          Toy Haat will not be responsible for any indirect or incidental damages arising from the use of our products or services.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export const Route = createFileRoute("/policies/terms")({
         <div className="space-y-1 text-xs text-foreground/90    shrink-0 sm:text-right">
           <p className="flex sm:justify-end items-center gap-1.5">
             <span className="text-muted-foreground font-medium">Email:</span>
-            <a href="mailto:support@firstsmiletoys.com" className="text-primary hover:underline">support@firstsmiletoys.com</a>
+            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline">support@toyhaat.com</a>
           </p>
           <p>
             <span className="text-muted-foreground font-medium">Address:</span> Genesis Mall, Bhiwadi – 301019, RJ

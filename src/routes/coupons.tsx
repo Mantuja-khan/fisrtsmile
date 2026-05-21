@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/coupons")({
-  head: () => ({ meta: [{ title: "My Coupons — First Smile" }] }),
+  head: () => ({ meta: [{ title: "My Coupons — Toy Haat" }] }),
   component: CouponsPage,
 });
 
@@ -17,14 +17,14 @@ function CouponsPage() {
   const [claimPhone, setClaimPhone] = useState("");
 
   const loadCoupons = () => {
-    const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+    const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
     if (user && user.phone) {
       setCoupons(saved.filter((c: any) => c.phone === user.phone));
     }
   };
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+    const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
     if (user && user.phone) {
       const hasCoupon = saved.some((c: any) => c.phone === user.phone);
       setIsOfferClaimed(hasCoupon);
@@ -43,9 +43,9 @@ function CouponsPage() {
     }
 
     const code = "FS5OFF-" + Math.floor(1000 + Math.random() * 9000);
-    const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+    const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
     saved.push({ code, discount: 5, active: true, phone: claimPhone });
-    localStorage.setItem("firstsmile_coupons", JSON.stringify(saved));
+    localStorage.setItem("toyhaat_coupons", JSON.stringify(saved));
 
     setIsOfferClaimed(true);
     loadCoupons();

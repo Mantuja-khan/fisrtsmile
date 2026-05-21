@@ -5,8 +5,8 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact & Support — First Smile Toys" },
-      { name: "description", content: "Reach First Smile support via email, WhatsApp, or visit our store at Genesis Mall, Bhiwadi. We're here to help!" },
+      { title: "Contact & Support — Toy Haat" },
+      { name: "description", content: "Reach Toy Haat support via email, WhatsApp, or visit our store at Genesis Mall, Bhiwadi. We're here to help!" },
     ],
   }),
   component: ContactPage,
@@ -46,8 +46,8 @@ function ContactPage() {
             </div>
             <div className="space-y-1">
               <h3 className="font-bold text-lg text-foreground">Email Support</h3>
-              <a href="mailto:support@firstsmiletoys.com" className="text-primary hover:underline font-semibold block text-base md:text-lg">
-                support@firstsmiletoys.com
+              <a href="mailto:support@toyhaat.com" className="text-primary hover:underline font-semibold block text-base md:text-lg">
+                support@toyhaat.com
               </a>
               <p className="text-sm text-muted-foreground">
                 Response time: Within 24 working hours
@@ -89,7 +89,7 @@ function ContactPage() {
             <div>
               <h3 className="font-bold text-lg text-foreground mb-2">Business Address</h3>
               <div className="text-foreground/80 font-medium leading-relaxed text-sm md:text-base space-y-0.5">
-                <p className="font-bold text-foreground">First Smile Toys</p>
+                <p className="font-bold text-foreground">Toy Haat</p>
                 <p>Genesis Mall</p>
                 <p>Bhiwadi – 301019</p>
                 <p>Rajasthan, India</p>
@@ -220,7 +220,7 @@ function ContactPage() {
         </div>
         <div className="rounded-2xl overflow-hidden shadow-card border border-border/50 bg-surface aspect-[16/9] md:aspect-[21/9] w-full min-h-[350px]">
           <iframe
-            title="First Smile Toys Location - Genesis Mall"
+            title="Toy Haat Location - Genesis Mall"
             src="https://maps.google.com/maps?q=Genesis%20Mall,%20Bhiwadi,%20Rajasthan%20301019&t=&z=15&ie=UTF8&iwloc=&output=embed"
             className="w-full h-full border-0"
             allowFullScreen

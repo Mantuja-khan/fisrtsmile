@@ -36,41 +36,41 @@ const INSTAGRAM_REELS = [
   {
     id: "reel-1",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-child-playing-with-toys-in-a-crib-41761-large.mp4",
-    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "THIS KEPT MY CHILD BUSY LONGER THAN CARTOONS 😂",
   },
   {
     id: "reel-2",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-little-child-playing-with-wooden-toys-at-home-43033-large.mp4",
-    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "PREMIUM WOODEN BLOCKS & LEARNING TOYS 🪵",
   },
   {
     id: "reel-3",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-kids-hands-playing-with-colorful-building-blocks-42323-large.mp4",
-    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "CREATIVE & IMAGINATIVE PLAY FOR TODDLERS 🧩",
   },
   {
     id: "reel-4",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-toddler-girl-playing-with-soft-plush-toys-in-bed-48866-large.mp4",
-    instagramUrl: "https://www.instagram.com/firstsmile19/",
+    instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "SUPER CUTE SOFT TOYS FOR THE PERFECT SLEEP 🧸",
   },
   {
     id: "reel-5",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
-    instagramUrl: "https://www.instagram.com/firstsmile19/",
-    caption: "SMART TOYS THAT BRING THE FIRST SMILE 😊",
+    instagramUrl: "https://www.instagram.com/toyhaat/",
+    caption: "SMART TOYS BY TOY HAAT 😊",
   }
 ];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "First Smile — Shop Toys Online | Dolls, Vehicles, Soft Toys & more" },
+      { title: "Toy Haat — Shop Toys Online | Dolls, Vehicles, Soft Toys & more" },
       { name: "description", content: "Discover thousands of toys at unbeatable prices. Free shipping on prepaid orders." },
-      { property: "og:title", content: "First Smile — Shop Toys Online" },
+      { property: "og:title", content: "Toy Haat — Shop Toys Online" },
       { property: "og:description", content: "Discover thousands of toys at unbeatable prices." },
     ],
   }),
@@ -85,7 +85,7 @@ const ALL_TESTIMONIALS = [
   { n: "Sneha Patel", c: "Ahmedabad", r: 5, t: "Extremely happy with the learning board sets. Best e-commerce site to buy safe toys in India.", d: "3 days ago", i: "👩" },
   { n: "Deepak Nair", c: "Chennai", r: 5, t: "Got my order within 48 hours! Very safe packaging. Kids absolutely loved the puzzle gifts.", d: "4 days ago", i: "👨" },
   { n: "Ananya Sen", c: "Kolkata", r: 5, t: "Value for money deals are crazy good. Got three premium brand dolls under ₹999. Genuine products!", d: "2 days ago", i: "👧" },
-  { n: "Rohit Varma", c: "Pune", r: 5, t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work First Smile!", d: "1 week ago", i: "🧑" },
+  { n: "Rohit Varma", c: "Pune", r: 5, t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work Toy Haat!", d: "1 week ago", i: "🧑" },
 ];
 
 function HomePage() {
@@ -178,7 +178,7 @@ function HomePage() {
         ) : (
           <div className="container mx-auto px-4 py-8 md:py-14 text-center">
             <h1 className="font-display text-4xl md:text-6xl text-primary drop-shadow-md">
-              Welcome to First Smile
+              Welcome to Toy Haat
             </h1>
             <p className="mt-3 text-sm md:text-lg text-muted-foreground max-w-md mx-auto">
               Premium toys, fast delivery across India.

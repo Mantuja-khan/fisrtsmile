@@ -5,8 +5,8 @@ import { Sparkles, Target, ShieldCheck, Heart, User, Mail, MessageCircle, CheckC
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — First Smile Toys" },
-      { name: "description", content: "Where Play Meets Purpose. Founded by Avinash Shah, First Smile selects toys that spark creativity and support learning." },
+      { title: "About Us — Toy Haat" },
+      { name: "description", content: "Where Play Meets Purpose. Founded by Avinash Shah, Toy Haat selects toys that spark creativity and support learning." },
     ],
   }),
   component: AboutPage,
@@ -64,9 +64,9 @@ function AboutPage() {
             <div className="inline-flex items-center gap-2 text-primary bg-primary/5 px-2.5 py-1 rounded-md font-medium text-xs tracking-wider uppercase">
               <Target className="size-3.5" /> Our Philosophy
             </div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">About First Smile</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">About Toy Haat</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded in 2019, First Smile was created with one simple idea – <strong className="text-slate-800 font-medium">play should not just entertain… it should help a child grow.</strong>
+              Founded in 2019, Toy Haat was created with one simple idea – <strong className="text-slate-800 font-medium">play should not just entertain… it should help a child grow.</strong>
             </p>
             <p className="text-slate-600 text-sm leading-relaxed">
               That’s why every product you see here is carefully selected to:
@@ -174,10 +174,10 @@ function AboutPage() {
               </div>
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">A Simple Idea That Started It All</h2>
               <p className="text-slate-300 text-sm leading-relaxed">
-                First Smile was founded by <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear goal – to bring better play options for children.
+                Toy Haat was founded by <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear goal – to bring better play options for children.
               </p>
               <p className="text-slate-300 text-sm leading-relaxed">
-                He saw that many toys only keep kids busy, but don’t really help them learn or grow. So he built First Smile to offer products that:
+                He saw that many toys only keep kids busy, but don’t really help them learn or grow. So he built Toy Haat to offer products that:
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {["Have real value", "Thoughtfully designed", "Make both happy"].map((text, i) => (
@@ -195,8 +195,8 @@ function AboutPage() {
                 <div className="flex flex-col items-center justify-center text-center gap-2.5 p-6 select-none">
                   <div className="size-14 rounded-full bg-amber-300 text-slate-950 flex items-center justify-center font-bold text-xl">AS</div>
                   <div>
-                    <p className="font-medium text-base text-white">Avinash Shah</p>
-                    <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">Founder, First Smile</p>
+                    <p className="text-slate-300 font-medium text-base text-white">Avinash Shah</p>
+                    <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">Founder, Toy Haat</p>
                   </div>
                 </div>
               </div>
@@ -221,7 +221,7 @@ function AboutPage() {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Email Support</p>
-                <a href="mailto:support@firstsmiletoys.com" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">support@firstsmiletoys.com</a>
+                <a href="mailto:support@toyhaat.com" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">support@toyhaat.com</a>
               </div>
             </div>
 

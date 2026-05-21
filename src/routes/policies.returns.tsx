@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { RefreshCcw, Video, CheckCircle2, AlertTriangle, Clock, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/policies/returns")({
-  head: () => ({ meta: [{ title: "Refund & Cancellation Policy — First Smile Toys" }] }),
+  head: () => ({ meta: [{ title: "Refund & Cancellation Policy — Toy Haat" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-rose-100">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/policies/returns")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 font-medium">
-        We want you to have a smooth experience while shopping with <strong>First Smile</strong>. <br />
+        We want you to have a smooth experience while shopping with <strong>Toy Haat</strong>. <br />
         Please read the policy carefully before placing your order.
       </p>
 
@@ -116,7 +116,7 @@ export const Route = createFileRoute("/policies/returns")({
           <Mail className="size-4" /> How to Request
         </h2>
         <div className="space-y-1 text-sm">
-          <p><span className="   opacity-70 text-xs">Email:</span> <a href="mailto:support@firstsmiletoys.com" className="font-extrabold hover:underline text-rose-200">support@firstsmiletoys.com</a></p>
+          <p><span className="   opacity-70 text-xs">Email:</span> <a href="mailto:support@toyhaat.com" className="font-extrabold hover:underline text-rose-200">support@toyhaat.com</a></p>
           <p><span className="   opacity-70 text-xs">Subject Line:</span> <code className="bg-white/10 px-2 py-0.5 rounded text-white font-mono text-xs">Return/Exchange Request – [Order ID]</code></p>
         </div>
       </div>

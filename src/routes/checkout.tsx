@@ -10,7 +10,7 @@ import { effectivePrice, resolveImage } from "@/data/products";
 import { redirectToPayU } from "@/utils/payu";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — First Smile" }] }),
+  head: () => ({ meta: [{ title: "Checkout — Toy Haat" }] }),
   component: CheckoutPage,
 });
 
@@ -35,7 +35,7 @@ function CheckoutPage() {
 
   const applyCoupon = () => {
     if (!couponCode) return;
-    const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+    const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
     const found = saved.find((c: any) => c.code === couponCode && c.active);
     if (found) {
       if (found.phone && user?.phone && found.phone !== user.phone) {
@@ -145,9 +145,9 @@ function CheckoutPage() {
         // CLEAR LOCAL STATE BEFORE REDIRECT so user doesn't see double cart
         clearCart();
         if (appliedCoupon) {
-            const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+            const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
             const updated = saved.map((c: any) => c.code === appliedCoupon.code ? { ...c, active: false } : c);
-            localStorage.setItem("firstsmile_coupons", JSON.stringify(updated));
+            localStorage.setItem("toyhaat_coupons", JSON.stringify(updated));
         }
 
         // Execute secure dynamic POST to PayU
@@ -156,9 +156,9 @@ function CheckoutPage() {
       } else {
         clearCart();
         if (appliedCoupon) {
-          const saved = JSON.parse(localStorage.getItem("firstsmile_coupons") || "[]");
+          const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
           const updated = saved.map((c: any) => c.code === appliedCoupon.code ? { ...c, active: false } : c);
-          localStorage.setItem("firstsmile_coupons", JSON.stringify(updated));
+          localStorage.setItem("toyhaat_coupons", JSON.stringify(updated));
         }
         toast.success(`Order placed! ID: ${data.order_number}`);
         navigate({ to: "/track", search: { orderId: data.order_number } as never });

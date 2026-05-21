@@ -132,23 +132,23 @@ export const getEmailTemplate = (title, content) => {
         <div class="wrapper">
             <div class="container">
                 <div class="header">
-                    <!-- First Smile Logo via CID Attachment -->
-                    <img src="cid:firstsmile_logo" alt="First Smile" />
+                    <!-- Toy Haat Logo via CID Attachment -->
+                    <img src="cid:firstsmile_logo" alt="Toy Haat" />
                 </div>
                 <div class="content">
                     ${content}
                     
                     <div class="signature">
                         Best Regards,<br>
-                        <strong>Team First Smile</strong>
+                        <strong>Team Toy Haat</strong>
                     </div>
                 </div>
                 <div class="footer">
-                    <p>© ${new Date().getFullYear()} First Smile. All Rights Reserved.</p>
+                    <p>© ${new Date().getFullYear()} Toy Haat. All Rights Reserved.</p>
                     <p>Bringing smiles, one toy at a time.</p>
                     <div class="social-links">
-                        <a href="mailto:firstsmile19@gmail.com">Email Us</a> | 
-                        <a href="https://instagram.com/Firstsmile19">Instagram</a>
+                        <a href="mailto:toyhaat@gmail.com">Email Us</a> | 
+                        <a href="https://instagram.com/toyhaat">Instagram</a>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,7 @@ export const sendEmail = async (to, subject, text, html) => {
         const logoPath = path.join(__dirname, '../../src/assets/firstsmile_logo.png');
         
         await transporter.sendMail({
-            from: `"First Smile" <${process.env.EMAIL_USER}>`,
+            from: `"Toy Haat" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             text,

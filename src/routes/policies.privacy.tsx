@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LockKeyhole } from "lucide-react";
 
 export const Route = createFileRoute("/policies/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — First Smile Toys" }] }),
+  head: () => ({ meta: [{ title: "Privacy Policy — Toy Haat" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-primary/10">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/policies/privacy")({
       </p>
 
       <p className="text-base leading-relaxed text-foreground/80 m-0 font-medium">
-        At First Smile, we value your trust and are committed to protecting your personal information.
+        At Toy Haat, we value your trust and are committed to protecting your personal information.
       </p>
 
       <div className="space-y-2">
@@ -102,7 +102,7 @@ export const Route = createFileRoute("/policies/privacy")({
         <div className="space-y-1 text-xs text-foreground/90    shrink-0 sm:text-right">
           <p className="flex sm:justify-end items-center gap-1.5">
             <span className="text-muted-foreground    ">Email:</span>
-            <a href="mailto:support@firstsmiletoys.com" className="text-primary hover:underline">support@firstsmiletoys.com</a>
+            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline">support@toyhaat.com</a>
           </p>
           <p>
             <span className="text-muted-foreground    ">Address:</span> Genesis Mall, Bhiwadi – 301019, RJ

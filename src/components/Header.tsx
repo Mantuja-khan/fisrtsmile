@@ -110,19 +110,17 @@ export function Header() {
   }, [q, products]);
 
   const name = user?.full_name || user?.email?.split("@")[0] || "User";
-
+  const announcements = ["Get 5% off on your first order", "COD Charge should be 60 rupees", "New arrivals every week"]; const [annIndex, setAnnIndex] = useState(0); useEffect(() => { const timer = setInterval(() => setAnnIndex(i => (i + 1) % announcements.length), 4000); return () => clearInterval(timer); }, []);
   return (
     <>
-      <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
-        }`}>
-
+      <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
+        <div className="bg-[#1E3A8A] text-slate-100 text-center py-1 font-semibold text-sm w-full">{announcements[annIndex]}</div>
         {/* Consolidated Light Blue Bar */}
         <div className="bg-[#BFDDF0] text-slate-900 relative shadow-md transition-all">
-          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-2 md:py-2.5">
-
+          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-0.5 md:py-1">
             {/* Left: Logo */}
             <Link to="/" className="flex items-center shrink-0">
-              <img src={logo} alt="First Smile" className="h-14 md:h-20 w-auto object-contain" />
+              <img src={logo} alt="Toy Haat" className="h-10 md:h-12 w-auto object-contain" />
             </Link>
 
             {/* Center: Desktop Consolidated Navigation */}
@@ -322,7 +320,7 @@ export function Header() {
                 className="hidden md:flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:opacity-80 transition-opacity"
               >
                 <Search className="size-6 stroke-[2.2]" />
-                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5">Search</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5"></span>
               </button>
 
               {/* Wishlist */}
@@ -331,7 +329,7 @@ export function Header() {
                 className="hidden md:flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:opacity-80 transition-opacity relative"
               >
                 <Heart className="size-6 fill-[#FEFD99]" />
-                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5">Wishlist</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5"></span>
               </Link>
 
               {/* Cart */}
@@ -342,7 +340,7 @@ export function Header() {
                     {cartCount}
                   </span>
                 </div>
-                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5 hidden md:block">Cart</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide mt-0.5 hidden md:block"></span>
               </Link>
 
               {/* User Login/Account */}
@@ -480,7 +478,7 @@ export function Header() {
               <Link to="/contact" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
 
               <Link to="/account" className="p-4    text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <User className="size-5 text-slate-700" /> {user ? name : "Sign In"}
+                <User className="size-5 text-slate-700" /> {user ? name : ""}
               </Link>
             </div>
           </div>

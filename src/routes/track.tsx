@@ -19,7 +19,7 @@ type OrderRow = {
 export const Route = createFileRoute("/track")({
   validateSearch: (s: Record<string, unknown>): { orderId?: string } =>
     typeof s.orderId === "string" ? { orderId: s.orderId } : {},
-  head: () => ({ meta: [{ title: "Track Order — First Smile" }] }),
+  head: () => ({ meta: [{ title: "Track Order — Toy Haat" }] }),
   component: TrackPage,
 });
 

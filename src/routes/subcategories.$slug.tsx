@@ -4,7 +4,7 @@ import { resolveImage } from "@/data/products";
 
 export const Route = createFileRoute("/subcategories/$slug")({
   head: () => ({
-    meta: [{ title: "Sub Categories — First Smile" }],
+    meta: [{ title: "Sub Categories — Toy Haat" }],
   }),
   component: SubCategoriesPage,
 });

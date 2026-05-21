@@ -34,7 +34,7 @@ export const Route = createFileRoute("/products")({
   }),
   head: () => ({
     meta: [
-      { title: "All Toys — Shop Online | First Smile" },
+      { title: "All Toys — Shop Online | Toy Haat" },
       { name: "description", content: "Browse our complete toy catalog." },
     ],
   }),

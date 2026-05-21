@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/policies/legal")({
-  head: () => ({ meta: [{ title: "Legal Notice — First Smile Toys" }] }),
+  head: () => ({ meta: [{ title: "Legal Notice — Toy Haat" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-primary/10">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/policies/legal")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 m-0 font-medium">
-        This website is owned and operated by <strong>First Smile Toys</strong>. <br />
+        This website is owned and operated by <strong>Toy Haat</strong>. <br />
         By accessing this website, you agree to the terms, policies, and notices stated here.
       </p>
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/policies/legal")({
         <div className="space-y-1.5 text-sm text-muted-foreground">
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Business Name:</span>
-            <span>First Smile Toys</span>
+            <span>Toy Haat</span>
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Address:</span>
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/policies/legal")({
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Email:</span>
-            <a href="mailto:support@firstsmiletoys.com" className="text-primary hover:underline font-semibold">support@firstsmiletoys.com</a>
+            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline font-semibold">support@toyhaat.com</a>
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">WhatsApp:</span>
@@ -61,7 +61,7 @@ export const Route = createFileRoute("/policies/legal")({
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Intellectual Property</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          All content on this website, including text, images, logos, and design, is the property of <strong>First Smile</strong>.
+          All content on this website, including text, images, logos, and design, is the property of <strong>Toy Haat</strong>.
           It must not be copied, reproduced, or used without written permission.
         </p>
       </div>
@@ -81,7 +81,7 @@ export const Route = createFileRoute("/policies/legal")({
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Limitation of Liability</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          First Smile is not responsible for any indirect or incidental damages arising from the use of this website or products.
+          Toy Haat is not responsible for any indirect or incidental damages arising from the use of this website or products.
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export const Route = createFileRoute("/policies/legal")({
           For any legal or general queries, please reach out to us directly at:
         </p>
         <div className="space-y-1 text-xs mt-1">
-          <p><span className="   opacity-80">Email:</span> <a href="mailto:support@firstsmiletoys.com" className="underline hover:text-black">support@firstsmiletoys.com</a></p>
+          <p><span className="   opacity-80">Email:</span> <a href="mailto:support@toyhaat.com" className="underline hover:text-black">support@toyhaat.com</a></p>
           <p><span className="   opacity-80">Address:</span> Genesis Mall, Bhiwadi – 301019, Rajasthan, India</p>
         </div>
       </div>

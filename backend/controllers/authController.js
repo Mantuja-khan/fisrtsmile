@@ -94,12 +94,12 @@ export const registerUser = async (req, res) => {
 
     if (user) {
         // Send Welcome Email (Fire and forget asynchronously)
-        const welcomeTitle = 'Welcome to First Smile! 🎉';
-        const welcomeText = `Welcome ${full_name} to First Smile! Your account has been successfully created. We are excited to help you bring smiles, one toy at a time.`;
+        const welcomeTitle = 'Welcome to Toy Haat! 🎉';
+        const welcomeText = `Welcome ${full_name} to Toy Haat! Your account has been successfully created. We are excited to help you bring smiles, one toy at a time.`;
         const welcomeHtml = getEmailTemplate(welcomeTitle, `
-            <h1>Welcome to First Smile! 🎈</h1>
+            <h1>Welcome to Toy Haat! 🎈</h1>
             <p>Dear <strong>${full_name}</strong>,</p>
-            <p>Thank you for joining the <strong>First Smile</strong> family! Your account has been successfully created.</p>
+            <p>Thank you for joining the <strong>Toy Haat</strong> family! Your account has been successfully created.</p>
             <p>Explore our wide collections of premium, educational, and joyful toys curated just for you.</p>
             <div style="text-align: center; margin: 30px 0;">
                 <a href="https://toyhaat.com" class="btn">Start Exploring Our Toys</a>
@@ -260,12 +260,12 @@ export const sendOTP = async (req, res) => {
     await OTP.deleteMany({ email: normalizedEmail });
     await OTP.create({ email: normalizedEmail, otp });
 
-    const title = 'Verification Code — First Smile';
+    const title = 'Verification Code — Toy Haat';
     const text = `Your verification code is: ${otp}. This code is valid for 10 minutes.`;
     const html = getEmailTemplate(title, `
         <h1>Account Verification</h1>
         <p>Hello there,</p>
-        <p>Thank you for choosing <strong>First Smile</strong>. To complete your verification, please use the one-time passcode (OTP) below:</p>
+        <p>Thank you for choosing <strong>Toy Haat</strong>. To complete your verification, please use the one-time passcode (OTP) below:</p>
         <div class="otp-box">${otp}</div>
         <p>This code is valid for <strong>10 minutes</strong>. For security, please do not share this code with anyone.</p>
     `);

@@ -8,7 +8,7 @@ import loginBg from "@/assets/loginsignup.png";
 import loginHereImg from "@/assets/loginhere.png";
 
 export const Route = createFileRoute("/admin/login")({
-  head: () => ({ meta: [{ title: "Admin Login — First Smile" }] }),
+  head: () => ({ meta: [{ title: "Admin Login — Toy Haat" }] }),
   component: AdminLoginPage,
 });
 
@@ -98,7 +98,7 @@ function AdminLoginPage() {
             <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
               ADMIN LOGIN PANEL
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">Welcome back to First Smile Admin Area</p>
+            <p className="text-xs text-muted-foreground mt-1">Welcome back to Toy Haat Admin Area</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
