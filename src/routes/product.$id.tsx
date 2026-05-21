@@ -39,8 +39,8 @@ function ProductPage() {
   }
 
   const wished = isInWishlist(product.id);
-  const finalPrice = effectivePrice(product.price, product.offerPct);
-  const off = discountPct(finalPrice, product.mrp);
+  const finalPrice = product.price; // Use admin-defined selling price directly
+  const off = discountPct(product.price, product.mrp);
   const related = products.filter((p: Product) => p.category_id === product.category_id && p.id !== product.id).slice(0, 4);
 
   return (
@@ -266,7 +266,7 @@ function ProductPage() {
             </>
           )}
 
-          <div className="w-full h-full flex items-center justify-center p-6 md:p-12">
+          <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-1 md:py-1.5">
             <img
               src={resolveImage(product.images[activeImg])}
               alt={product.name}
