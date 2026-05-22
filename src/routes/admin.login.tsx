@@ -53,7 +53,11 @@ function AdminLoginPage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">
+        Loading...
+      </div>
+    );
   }
 
   // Logged in as a non-admin — show clear message
@@ -64,8 +68,8 @@ function AdminLoginPage() {
           <Shield className="size-12 mx-auto text-rose-500 mb-3" />
           <h1 className="text-xl font-bold text-slate-800">Not an admin account</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            You are signed in as <span className="font-medium">{user.email}</span> which does not have admin
-            privileges.
+            You are signed in as <span className="font-medium">{user.email}</span> which does not
+            have admin privileges.
           </p>
           <button
             onClick={signOut}
@@ -98,7 +102,9 @@ function AdminLoginPage() {
             <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
               ADMIN LOGIN PANEL
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">Welcome back to Toy Haat Admin Area</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Welcome back to Toy Haat Admin Area
+            </p>
           </div>
 
           <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">

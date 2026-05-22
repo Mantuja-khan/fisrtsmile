@@ -31,9 +31,7 @@ export function SpecialOffersPopup() {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-
       <div className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden border border-white/20 animate-in zoom-in-95 duration-300 flex flex-col">
-
         {/* Glossy Header Bar */}
         <div className="bg-gradient-to-br from-[#BFDDF0] to-[#FEFD99] p-6 text-center relative overflow-hidden border-b border-[#BFDDF0]/50">
           <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
@@ -49,9 +47,12 @@ export function SpecialOffersPopup() {
               <Percent className="size-3" /> Limited Time
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-black text-slate-950 tracking-wide flex items-center gap-2">
-              <Sparkles className="size-6 fill-slate-950 text-slate-950" /> Best Offers! <Sparkles className="size-6 fill-slate-950 text-slate-950" />
+              <Sparkles className="size-6 fill-slate-950 text-slate-950" /> Best Offers!{" "}
+              <Sparkles className="size-6 fill-slate-950 text-slate-950" />
             </h2>
-            <p className="text-slate-800/80 text-sm font-   mt-1">Don't miss out on our biggest discounts today.</p>
+            <p className="text-slate-800/80 text-sm font-   mt-1">
+              Don't miss out on our biggest discounts today.
+            </p>
           </div>
         </div>
 
@@ -82,8 +83,12 @@ export function SpecialOffersPopup() {
                   </div>
 
                   <div className="min-w-0 flex-1 space-y-1">
-                    <h3 className="font-extra   text-slate-800 text-sm md:text-base truncate group-hover:text-slate-950 transition-colors">{p.name}</h3>
-                    <p className="text-xs text-slate-400 font-medium truncate">{p.category_name || 'Trending Product'}</p>
+                    <h3 className="font-extra   text-slate-800 text-sm md:text-base truncate group-hover:text-slate-950 transition-colors">
+                      {p.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 font-medium truncate">
+                      {p.category_name || "Trending Product"}
+                    </p>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-slate-950 font-black text-lg">₹{final}</span>
                       <span className="text-slate-400 text-xs line-through">₹{p.mrp}</span>
@@ -115,7 +120,6 @@ export function SpecialOffersPopup() {
             Continue to Site
           </button>
         </div>
-
       </div>
     </div>
   );

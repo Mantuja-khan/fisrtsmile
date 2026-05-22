@@ -18,7 +18,9 @@ export const Route = createFileRoute("/policies/legal")({
       </p>
 
       <div className="space-y-3 bg-muted/30 border border-border/30 p-4 rounded-xl">
-        <h2 className="text-sm    text-foreground uppercase tracking-wider m-0">Business Details</h2>
+        <h2 className="text-sm    text-foreground uppercase tracking-wider m-0">
+          Business Details
+        </h2>
         <div className="space-y-1.5 text-sm text-muted-foreground">
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Business Name:</span>
@@ -30,25 +32,44 @@ export const Route = createFileRoute("/policies/legal")({
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Email:</span>
-            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline font-semibold">support@toyhaat.com</a>
+            <a
+              href="mailto:support@toyhaat.com"
+              className="text-primary hover:underline font-semibold"
+            >
+              support@toyhaat.com
+            </a>
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">WhatsApp:</span>
-            <a href="https://wa.me/917827743263" className="text-primary hover:underline font-semibold">+91 7827743263</a>
+            <a
+              href="https://wa.me/917827743263"
+              className="text-primary hover:underline font-semibold"
+            >
+              +91 7827743263
+            </a>
           </p>
         </div>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Use of Website</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Use of Website
+        </h2>
         <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
-          <li>All users must provide accurate and complete information while using this website.</li>
-          <li>Any misuse, fraudulent activity, or violation of terms may lead to account restriction or cancellation of orders.</li>
+          <li>
+            All users must provide accurate and complete information while using this website.
+          </li>
+          <li>
+            Any misuse, fraudulent activity, or violation of terms may lead to account restriction
+            or cancellation of orders.
+          </li>
         </ul>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Product Information</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Product Information
+        </h2>
         <p className="text-sm text-muted-foreground m-0 font-medium">
           We try to ensure all product details, images, and prices are accurate. However:
         </p>
@@ -59,15 +80,20 @@ export const Route = createFileRoute("/policies/legal")({
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Intellectual Property</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Intellectual Property
+        </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          All content on this website, including text, images, logos, and design, is the property of <strong>Toy Haat</strong>.
-          It must not be copied, reproduced, or used without written permission.
+          All content on this website, including text, images, logos, and design, is the property of{" "}
+          <strong>Toy Haat</strong>. It must not be copied, reproduced, or used without written
+          permission.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Third-Party Services</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Third-Party Services
+        </h2>
         <p className="text-sm text-muted-foreground m-0 font-medium">
           We may use third-party services for:
         </p>
@@ -75,13 +101,18 @@ export const Route = createFileRoute("/policies/legal")({
           <li>Payment processing</li>
           <li>Shipping and delivery</li>
         </ul>
-        <p className="text-xs text-muted-foreground/80 italic">These services operate under their own terms and policies.</p>
+        <p className="text-xs text-muted-foreground/80 italic">
+          These services operate under their own terms and policies.
+        </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Limitation of Liability</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Limitation of Liability
+        </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          Toy Haat is not responsible for any indirect or incidental damages arising from the use of this website or products.
+          Toy Haat is not responsible for any indirect or incidental damages arising from the use of
+          this website or products.
         </p>
       </div>
 
@@ -93,7 +124,9 @@ export const Route = createFileRoute("/policies/legal")({
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Updates to This Notice</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Updates to This Notice
+        </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
           We may update this Legal Notice from time to time. Changes will be posted on this page.
         </p>
@@ -105,8 +138,16 @@ export const Route = createFileRoute("/policies/legal")({
           For any legal or general queries, please reach out to us directly at:
         </p>
         <div className="space-y-1 text-xs mt-1">
-          <p><span className="   opacity-80">Email:</span> <a href="mailto:support@toyhaat.com" className="underline hover:text-black">support@toyhaat.com</a></p>
-          <p><span className="   opacity-80">Address:</span> Genesis Mall, Bhiwadi – 301019, Rajasthan, India</p>
+          <p>
+            <span className="   opacity-80">Email:</span>{" "}
+            <a href="mailto:support@toyhaat.com" className="underline hover:text-black">
+              support@toyhaat.com
+            </a>
+          </p>
+          <p>
+            <span className="   opacity-80">Address:</span> Genesis Mall, Bhiwadi – 301019,
+            Rajasthan, India
+          </p>
         </div>
       </div>
     </div>

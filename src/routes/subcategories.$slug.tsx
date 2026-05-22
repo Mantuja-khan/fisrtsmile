@@ -36,7 +36,9 @@ function SubCategoriesPage() {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-xl   ">Category not found</h2>
-        <Link to="/" className="text-primary hover:underline mt-2 inline-block">Back to Home</Link>
+        <Link to="/" className="text-primary hover:underline mt-2 inline-block">
+          Back to Home
+        </Link>
       </div>
     );
   }
@@ -46,11 +48,14 @@ function SubCategoriesPage() {
   return (
     <div className="min-h-[60vh] bg-slate-50 py-12">
       <div className="container mx-auto px-4 max-w-7xl">
-
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="font-display text-4xl md:text-5xl text-foreground mb-2 uppercase tracking-wide">{parent.name}</h1>
-          <p className="text-muted-foreground text-sm md:text-base">Select a subcategory to view associated products</p>
+          <h1 className="font-display text-4xl md:text-5xl text-foreground mb-2 uppercase tracking-wide">
+            {parent.name}
+          </h1>
+          <p className="text-muted-foreground text-sm md:text-base">
+            Select a subcategory to view associated products
+          </p>
         </div>
 
         {children.length === 0 ? (
@@ -86,13 +91,14 @@ function SubCategoriesPage() {
                       />
                     </div>
                   )}
-                  <h3 className="   text-sm md:text-base transition-colors uppercase tracking-wider leading-snug">{cat.name}</h3>
+                  <h3 className="   text-sm md:text-base transition-colors uppercase tracking-wider leading-snug">
+                    {cat.name}
+                  </h3>
                 </Link>
               );
             })}
           </div>
         )}
-
       </div>
     </div>
   );

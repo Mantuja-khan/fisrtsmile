@@ -8,7 +8,10 @@ export const Route = createFileRoute("/categories")({
   head: () => ({
     meta: [
       { title: "Browse Toy Categories — Toy Haat" },
-      { name: "description", content: "Explore our premium selection of toy categories and find the perfect match." },
+      {
+        name: "description",
+        content: "Explore our premium selection of toy categories and find the perfect match.",
+      },
     ],
   }),
   component: CategoriesPage,
@@ -58,7 +61,8 @@ function CategoriesPage() {
             Toy Categories
           </h1>
           <p className="text-xs md:text-sm text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
-            Browse our wide selection of toys, games, and learning kits sorted by categories and collections.
+            Browse our wide selection of toys, games, and learning kits sorted by categories and
+            collections.
           </p>
 
           {/* Search Box */}
@@ -95,8 +99,12 @@ function CategoriesPage() {
         ) : filteredData.length === 0 ? (
           <div className="max-w-lg mx-auto bg-white border border-slate-150 rounded-2xl p-10 text-center shadow-xs">
             <span className="text-4xl mb-3 block">🔍</span>
-            <h3 className="text-sm font-bold text-slate-800 mb-1">No categories match your search</h3>
-            <p className="text-xs text-slate-400 mb-5">Try searching for other keywords like "Soft", "Remote", or "Blocks".</p>
+            <h3 className="text-sm font-bold text-slate-800 mb-1">
+              No categories match your search
+            </h3>
+            <p className="text-xs text-slate-400 mb-5">
+              Try searching for other keywords like "Soft", "Remote", or "Blocks".
+            </p>
             <button
               onClick={() => setSearchTerm("")}
               className="inline-flex bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider px-5 py-2.5 rounded-lg shadow-sm transition"
@@ -127,9 +135,7 @@ function CategoriesPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <h2 className="text-sm font-bold text-slate-900 truncate">
-                          {parent.name}
-                        </h2>
+                        <h2 className="text-sm font-bold text-slate-900 truncate">{parent.name}</h2>
                         <span className="text-[10px] text-slate-400 font-medium">
                           {children.length} collections
                         </span>
@@ -159,7 +165,9 @@ function CategoriesPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[10px] text-slate-450 italic py-2">Direct product catalog</p>
+                      <p className="text-[10px] text-slate-450 italic py-2">
+                        Direct product catalog
+                      </p>
                     )}
                   </div>
 
@@ -191,7 +199,9 @@ function CategoriesPage() {
           ].map((item, idx) => (
             <div key={idx} className="p-2">
               <span className="text-lg block mb-1">{item.icon}</span>
-              <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-wide">{item.title}</h4>
+              <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-wide">
+                {item.title}
+              </h4>
               <p className="text-[10px] text-slate-400 mt-0.5">{item.desc}</p>
             </div>
           ))}

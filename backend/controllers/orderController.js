@@ -1,330 +1,346 @@
-import Order from '../models/Order.js';
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
-import dotenv from 'dotenv';
-import { trackShipmentByAWB, createShiprocketOrder } from '../services/shiprocketService.js';
-import { generatePayUHash, verifyPayUResponseHash } from '../services/payuService.js';
+import Order from "../models/Order.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import dotenv from "dotenv";
+import { trackShipmentByAWB, createShiprocketOrder } from "../services/shiprocketService.js";
+import { generatePayUHash, verifyPayUResponseHash } from "../services/payuService.js";
 dotenv.config();
 
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Public (or Private)
 export const addOrderItems = async (req, res) => {
-    const {
-        orderItems,
-        shippingAddress,
-        paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        customer_name,
-        customer_email,
-        customer_phone,
-    } = req.body;
+  const {
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    customer_name,
+    customer_email,
+    customer_phone,
+  } = req.body;
 
-    if (orderItems && orderItems.length === 0) {
-        res.status(400).json({ message: 'No order items' });
-        return;
-    } else {
-        const order_number = 'ORD' + Date.now();
-        const order = new Order({
-            order_number,
-            items: orderItems.map(i => ({
-                product: i.product_id,
-                name: i.name,
-                quantity: i.qty,
-                price: i.price,
-                image: i.image,
-            })),
-            shipping_address: shippingAddress,
-            payment_method: paymentMethod,
-            subtotal: itemsPrice,
-            shipping: shippingPrice,
-            cod_charge: paymentMethod === 'cod' ? 60 : 0,
-            total: totalPrice,
-            customer_name,
-            customer_email,
-            customer_phone,
-            user: req.user ? req.user._id : null,
-        });
+  if (orderItems && orderItems.length === 0) {
+    res.status(400).json({ message: "No order items" });
+    return;
+  } else {
+    const order_number = "ORD" + Date.now();
+    const order = new Order({
+      order_number,
+      items: orderItems.map((i) => ({
+        product: i.product_id,
+        name: i.name,
+        quantity: i.qty,
+        price: i.price,
+        image: i.image,
+      })),
+      shipping_address: shippingAddress,
+      payment_method: paymentMethod,
+      subtotal: itemsPrice,
+      shipping: shippingPrice,
+      cod_charge: paymentMethod === "cod" ? 60 : 0,
+      total: totalPrice,
+      customer_name,
+      customer_email,
+      customer_phone,
+      user: req.user ? req.user._id : null,
+    });
 
-        const createdOrder = await order.save();
-        res.status(201).json(createdOrder);
-    }
+    const createdOrder = await order.save();
+    res.status(201).json(createdOrder);
+  }
 };
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
 // @access  Private
 export const getOrderById = async (req, res) => {
-    const order = await Order.findById(req.params.id).populate('user', 'full_name email');
+  const order = await Order.findById(req.params.id).populate("user", "full_name email");
 
-    if (order) {
-        res.json(order);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
-    }
+  if (order) {
+    res.json(order);
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 
 // @desc    Update order status
 // @route   PUT /api/orders/:id/status
 // @access  Private/Admin
 export const updateOrderStatus = async (req, res) => {
-    const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id);
 
-    if (order) {
-        order.status = req.body.status || order.status;
-        if (req.body.isPaid !== undefined) {
-            order.isPaid = req.body.isPaid;
-            if (req.body.isPaid && !order.paidAt) {
-                order.paidAt = Date.now();
-            }
-        }
-        
-        // Include dynamic shipment/tracking attribution if sent
-        if (req.body.awb_code !== undefined) order.awb_code = req.body.awb_code;
-        if (req.body.shipment_id !== undefined) order.shipment_id = req.body.shipment_id;
-        if (req.body.tracking_url !== undefined) order.tracking_url = req.body.tracking_url;
-
-        const updatedOrder = await order.save();
-        res.json(updatedOrder);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+  if (order) {
+    order.status = req.body.status || order.status;
+    if (req.body.isPaid !== undefined) {
+      order.isPaid = req.body.isPaid;
+      if (req.body.isPaid && !order.paidAt) {
+        order.paidAt = Date.now();
+      }
     }
+
+    // Include dynamic shipment/tracking attribution if sent
+    if (req.body.awb_code !== undefined) order.awb_code = req.body.awb_code;
+    if (req.body.shipment_id !== undefined) order.shipment_id = req.body.shipment_id;
+    if (req.body.tracking_url !== undefined) order.tracking_url = req.body.tracking_url;
+
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
 export const getOrders = async (req, res) => {
-    const orders = await Order.find({}).sort({ createdAt: -1 });
-    res.json(orders);
+  const orders = await Order.find({}).sort({ createdAt: -1 });
+  res.json(orders);
 };
 
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
 export const getMyOrders = async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
-    res.json(orders);
+  const orders = await Order.find({ user: req.user._id });
+  res.json(orders);
 };
 
 // @desc    Create Razorpay Order
 // @route   POST /api/orders/:id/razorpay
 // @access  Private
 export const createRazorpayOrder = async (req, res) => {
-    const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id);
 
-    if (order) {
-        const options = {
-            amount: Math.round(order.total * 100), // amount in the smallest currency unit
-            currency: 'INR',
-            receipt: `receipt_${order.order_number}`,
-        };
+  if (order) {
+    const options = {
+      amount: Math.round(order.total * 100), // amount in the smallest currency unit
+      currency: "INR",
+      receipt: `receipt_${order.order_number}`,
+    };
 
-        try {
-            const rzOrder = await razorpay.orders.create(options);
-            res.json(rzOrder);
-        } catch (error) {
-            res.status(500).json({ message: 'Razorpay order creation failed', error });
-        }
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+    try {
+      const rzOrder = await razorpay.orders.create(options);
+      res.json(rzOrder);
+    } catch (error) {
+      res.status(500).json({ message: "Razorpay order creation failed", error });
     }
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 
 // @desc    Verify Razorpay Payment
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 export const verifyPayment = async (req, res) => {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-    const order = await Order.findById(req.params.id);
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+  const order = await Order.findById(req.params.id);
 
-    if (order) {
-        const generated_signature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-            .update(razorpay_order_id + '|' + razorpay_payment_id)
-            .digest('hex');
+  if (order) {
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
 
-        if (generated_signature === razorpay_signature) {
-            order.isPaid = true;
-            order.paidAt = Date.now();
-            order.payment_id = razorpay_payment_id;
-            order.status = 'Processing';
-            const updatedOrder = await order.save();
-            
-            // Fire and forget: auto push to Shiprocket
-            createShiprocketOrder(updatedOrder);
+    if (generated_signature === razorpay_signature) {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+      order.payment_id = razorpay_payment_id;
+      order.status = "Processing";
+      const updatedOrder = await order.save();
 
-            res.json(updatedOrder);
-        } else {
-            res.status(400).json({ message: 'Payment verification failed' });
-        }
+      // Fire and forget: auto push to Shiprocket
+      createShiprocketOrder(updatedOrder);
+
+      res.json(updatedOrder);
     } else {
-        res.status(404).json({ message: 'Order not found' });
+      res.status(400).json({ message: "Payment verification failed" });
     }
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 // @desc    Get order by order number
 // @route   GET /api/orders/track/:orderNumber
 // @access  Public
 export const getOrderByNumber = async (req, res) => {
-    const order = await Order.findOne({ order_number: req.params.orderNumber });
-    if (order) {
-        res.json(order);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
-    }
+  const order = await Order.findOne({ order_number: req.params.orderNumber });
+  if (order) {
+    res.json(order);
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 
 // @desc    Cancel order by user
 // @route   PUT /api/orders/:id/cancel
 // @access  Private
 export const cancelOrder = async (req, res) => {
-    const order = await Order.findById(req.params.id);
-    if (order) {
-        if (order.user && order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401).json({ message: 'Not authorized' });
-            return;
-        }
-        order.status = 'Cancelled';
-        const updatedOrder = await order.save();
-        res.json(updatedOrder);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    if (
+      order.user &&
+      order.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      res.status(401).json({ message: "Not authorized" });
+      return;
     }
+    order.status = "Cancelled";
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
 
 // @desc    Request Return order by user
 // @route   PUT /api/orders/:id/return
 // @access  Private
 export const returnOrder = async (req, res) => {
-    const order = await Order.findById(req.params.id);
-    if (order) {
-        if (order.user && order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401).json({ message: 'Not authorized' });
-            return;
-        }
-        // Only allow return request if delivered
-        if (order.status.toLowerCase() !== 'delivered') {
-            res.status(400).json({ message: 'Only delivered orders can be returned' });
-            return;
-        }
-        order.status = 'Return Requested';
-        const updatedOrder = await order.save();
-        res.json(updatedOrder);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    if (
+      order.user &&
+      order.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      res.status(401).json({ message: "Not authorized" });
+      return;
     }
+    // Only allow return request if delivered
+    if (order.status.toLowerCase() !== "delivered") {
+      res.status(400).json({ message: "Only delivered orders can be returned" });
+      return;
+    }
+    order.status = "Return Requested";
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
 };
-
 
 // @desc    Track order live shipment via Shiprocket AWB
 // @route   GET /api/orders/:id/track-shipment
 // @access  Private
 export const trackShipment = async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id);
-        if (!order) return res.status(404).json({ message: 'Order not found' });
-        
-        const awb = order.awb_code;
-        if (!awb) {
-            return res.status(400).json({ message: 'Tracking not active for this order yet' });
-        }
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
-        const trackingData = await trackShipmentByAWB(awb);
-        res.json(trackingData);
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to retrieve tracking data from Shiprocket', error: error.message });
+    const awb = order.awb_code;
+    if (!awb) {
+      return res.status(400).json({ message: "Tracking not active for this order yet" });
     }
+
+    const trackingData = await trackShipmentByAWB(awb);
+    res.json(trackingData);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to retrieve tracking data from Shiprocket", error: error.message });
+  }
 };
 
 // @desc    Initialize PayU payment
 // @route   POST /api/orders/:id/payu
 export const initPayUPayment = async (req, res) => {
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ message: "Order not found" });
 
-    const PAYU_MERCHANT_KEY = process.env.PAYU_MERCHANT_KEY || "test_key";
-    const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
-    
-    const txnParams = {
-        key: PAYU_MERCHANT_KEY,
-        salt: PAYU_SALT,
-        txnid: order._id.toString(),
-        amount: order.total.toFixed(2),
-        productinfo: "Toys Collection Purchase",
-        firstname: order.shipping_address.fullName.split(' ')[0],
-        email: order.customer_email || req.user?.email || "no-email@dummy.com",
-        udf1: order.order_number
-    };
+  const PAYU_MERCHANT_KEY = process.env.PAYU_MERCHANT_KEY || "test_key";
+  const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
 
-    const hash = generatePayUHash(txnParams);
+  const txnParams = {
+    key: PAYU_MERCHANT_KEY,
+    salt: PAYU_SALT,
+    txnid: order._id.toString(),
+    amount: order.total.toFixed(2),
+    productinfo: "Toys Collection Purchase",
+    firstname: order.shipping_address.fullName.split(" ")[0],
+    email: order.customer_email || req.user?.email || "no-email@dummy.com",
+    udf1: order.order_number,
+  };
 
-    const apiBaseUrl = `${req.protocol}://${req.get('host')}/api`;
+  const hash = generatePayUHash(txnParams);
 
-    res.json({
-        hash,
-        key: txnParams.key,
-        txnid: txnParams.txnid,
-        amount: txnParams.amount,
-        productinfo: txnParams.productinfo,
-        firstname: txnParams.firstname,
-        email: txnParams.email,
-        phone: order.shipping_address.phone || "",
-        surl: `${apiBaseUrl}/orders/payu/response`,
-        furl: `${apiBaseUrl}/orders/payu/response`,
-        udf1: txnParams.udf1,
-        action: process.env.PAYU_MODE === 'PROD' 
-            ? 'https://secure.payu.in/_payment' 
-            : 'https://test.payu.in/_payment'
-    });
+  const apiBaseUrl = `${req.protocol}://${req.get("host")}/api`;
+
+  res.json({
+    hash,
+    key: txnParams.key,
+    txnid: txnParams.txnid,
+    amount: txnParams.amount,
+    productinfo: txnParams.productinfo,
+    firstname: txnParams.firstname,
+    email: txnParams.email,
+    phone: order.shipping_address.phone || "",
+    surl: `${apiBaseUrl}/orders/payu/response`,
+    furl: `${apiBaseUrl}/orders/payu/response`,
+    udf1: txnParams.udf1,
+    action:
+      process.env.PAYU_MODE === "PROD"
+        ? "https://secure.payu.in/_payment"
+        : "https://test.payu.in/_payment",
+  });
 };
 
 // @desc    Handle PayU POST back response (SURL/FURL)
 // @route   POST /api/orders/payu/response
 export const handlePayUResponse = async (req, res) => {
-    const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
-    const isValid = verifyPayUResponseHash(req.body, PAYU_SALT);
-    const host = req.get('host') || '';
-    const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.');
-    const frontendBase = isLocal ? "http://localhost:5173" : (process.env.FRONTEND_URL || "https://toyhaat.com");
+  const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
+  const isValid = verifyPayUResponseHash(req.body, PAYU_SALT);
+  const host = req.get("host") || "";
+  const isLocal =
+    host.includes("localhost") ||
+    host.includes("127.0.0.1") ||
+    host.startsWith("192.168.") ||
+    host.startsWith("10.") ||
+    host.startsWith("172.");
+  const frontendBase = isLocal
+    ? "http://localhost:5173"
+    : process.env.FRONTEND_URL || "https://toyhaat.com";
 
-    if (!isValid) {
-        console.error("🚫 PayU Hash Compromise Alert!");
-        return res.redirect(`${frontendBase}/payment-failed?reason=hash_mismatch`);
+  if (!isValid) {
+    console.error("🚫 PayU Hash Compromise Alert!");
+    return res.redirect(`${frontendBase}/payment-failed?reason=hash_mismatch`);
+  }
+
+  const { txnid, status, mihpayid } = req.body;
+
+  try {
+    const order = await Order.findById(txnid);
+    if (!order) {
+      return res.redirect(`${frontendBase}/payment-failed?reason=order_missing`);
     }
 
-    const { txnid, status, mihpayid } = req.body;
+    if (status === "success") {
+      if (!order.isPaid) {
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.payment_id = mihpayid;
+        order.status = "Processing";
+        const saved = await order.save();
 
-    try {
-        const order = await Order.findById(txnid);
-        if (!order) {
-            return res.redirect(`${frontendBase}/payment-failed?reason=order_missing`);
-        }
-
-        if (status === 'success') {
-            if (!order.isPaid) {
-                order.isPaid = true;
-                order.paidAt = Date.now();
-                order.payment_id = mihpayid;
-                order.status = 'Processing';
-                const saved = await order.save();
-                
-                createShiprocketOrder(saved);
-            }
-            return res.redirect(`${frontendBase}/payment-success?id=${order.order_number}`);
-        } else {
-            return res.redirect(`${frontendBase}/payment-failed?id=${order.order_number}`);
-        }
-    } catch (err) {
-        console.error("PayU Response Error:", err);
-        return res.redirect(`${frontendBase}/payment-failed`);
+        createShiprocketOrder(saved);
+      }
+      return res.redirect(`${frontendBase}/payment-success?id=${order.order_number}`);
+    } else {
+      return res.redirect(`${frontendBase}/payment-failed?id=${order.order_number}`);
     }
+  } catch (err) {
+    console.error("PayU Response Error:", err);
+    return res.redirect(`${frontendBase}/payment-failed`);
+  }
 };
-

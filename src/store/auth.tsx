@@ -19,7 +19,18 @@ type AuthState = {
   isAdmin: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, fullName: string, phone: string, otp: string) => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+    phone: string,
+    otp: string,
+  ) => Promise<{ error: string | null }>;
+  signInWithShiprocket: (
+    phone: string,
+    authorisedCustomerToken: string,
+    addressData: any,
+  ) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<{ error: string | null }>;
 };
@@ -57,14 +68,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, phone: string, otp: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName: string,
+    phone: string,
+    otp: string,
+  ) => {
     try {
-      const { data } = await api.post("/auth/register", { 
-        email, 
-        password, 
-        full_name: fullName, 
+      const { data } = await api.post("/auth/register", {
+        email,
+        password,
+        full_name: fullName,
         phone,
-        otp
+        otp,
       });
       setUser(data);
       setIsAdmin(data.role === "admin");
@@ -88,6 +105,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithShiprocket = async (
+    phone: string,
+    authorisedCustomerToken: string,
+    addressData: any,
+  ) => {
+    try {
+      const { data } = await api.post("/auth/shiprocket-login", {
+        phone,
+        authorised_customer_token: authorisedCustomerToken,
+        address_data: addressData,
+      });
+      setUser(data);
+      setIsAdmin(data.role === "admin");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      return { error: null };
+    } catch (error: any) {
+      return { error: error.response?.data?.message || "Failed to login with Shiprocket" };
+    }
+  };
+
   const signOut = async () => {
     setUser(null);
     setIsAdmin(false);
@@ -95,7 +132,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ user, isAdmin, loading, signIn, signUp, signOut, updateProfile }}>
+    <Ctx.Provider
+      value={{
+        user,
+        isAdmin,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+        updateProfile,
+        signInWithShiprocket,
+      }}
+    >
       {children}
     </Ctx.Provider>
   );

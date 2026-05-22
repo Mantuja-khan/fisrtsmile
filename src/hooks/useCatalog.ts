@@ -6,7 +6,7 @@ export type Banner = {
   _id: string;
   image: string;
   category: { _id: string; name: string; slug: string };
-  position: 'hero' | 'promo';
+  position: "hero" | "promo";
 };
 
 type DbRow = {
@@ -31,7 +31,7 @@ type DbRow = {
   is_sale?: boolean;
   weight?: number;
   length?: number;
-  breadth?: number; 
+  breadth?: number;
   height?: number;
 };
 
@@ -47,15 +47,15 @@ const mapRow = (r: DbRow): Product => {
     price: Number(r.price),
     mrp: Number(r.mrp),
     image: img,
-    images: (r.images && r.images.length > 0) 
-      ? r.images.map((pImg: string) => resolveImage(pImg)) 
-      : [img],
+    images:
+      r.images && r.images.length > 0 ? r.images.map((pImg: string) => resolveImage(pImg)) : [img],
     rating: Number(r.rating),
     ratingCount: r.rating_count,
     inStock: r.in_stock,
     badge: r.badge,
     ageRange: r.age_range ?? "All",
-    offerPct: (r.offer_expires_at && new Date(r.offer_expires_at) < new Date()) ? 0 : (r.offer_pct ?? 0),
+    offerPct:
+      r.offer_expires_at && new Date(r.offer_expires_at) < new Date() ? 0 : (r.offer_pct ?? 0),
     brand: r.brand,
     offerStartsAt: r.offer_starts_at,
     offerExpiresAt: r.offer_expires_at,
@@ -73,14 +73,14 @@ export function useCategories() {
     queryKey: ["categories"],
     queryFn: async (): Promise<Category[]> => {
       const { data } = await api.get("/categories");
-      return (data as any[]).map(c => ({
+      return (data as any[]).map((c) => ({
         id: c._id,
         name: c.name,
         slug: c.slug,
         icon: c.icon,
         image: c.image,
         parent_id: c.parent?._id || c.parent,
-        sort_order: c.sort_order
+        sort_order: c.sort_order,
       }));
     },
   });

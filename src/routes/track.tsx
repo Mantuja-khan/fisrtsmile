@@ -85,7 +85,10 @@ function TrackPage() {
     <div className="container mx-auto px-4 py-6 max-w-3xl">
       <h1 className="text-2xl    mb-4">Track Your Order</h1>
       <form
-        onSubmit={(e) => { e.preventDefault(); loadOrder(orderId); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          loadOrder(orderId);
+        }}
         className="bg-surface rounded-xl shadow-card p-5 flex flex-col md:flex-row gap-3"
       >
         <input
@@ -95,7 +98,10 @@ function TrackPage() {
           className="flex-1 px-3 py-2.5 text-sm border border-input rounded"
           required
         />
-        <button disabled={loading} className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded disabled:opacity-60">
+        <button
+          disabled={loading}
+          className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded disabled:opacity-60"
+        >
           {loading ? "Loading..." : "Track"}
         </button>
       </form>
@@ -107,11 +113,19 @@ function TrackPage() {
               <div className="text-xs text-muted-foreground">Order ID</div>
               <div className="  ">{order.order_number}</div>
               <div className="text-xs text-muted-foreground mt-1">
-                Placed on {new Date(order.createdAt).toLocaleString("en-IN")} · ₹{Number(order.total).toLocaleString("en-IN")} · {order.payment_method.toUpperCase()}
+                Placed on {new Date(order.createdAt).toLocaleString("en-IN")} · ₹
+                {Number(order.total).toLocaleString("en-IN")} · {order.payment_method.toUpperCase()}
               </div>
             </div>
-            <span className={`text-xs font-semibold px-2 py-1 rounded text-white ${order.status === "cancelled" ? "bg-destructive" : order.status === "delivered" ? "bg-discount" : "bg-primary"
-              }`}>
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded text-white ${
+                order.status === "cancelled"
+                  ? "bg-destructive"
+                  : order.status === "delivered"
+                    ? "bg-discount"
+                    : "bg-primary"
+              }`}
+            >
               {order.status.toUpperCase()}
             </span>
           </div>
@@ -121,7 +135,9 @@ function TrackPage() {
               <XCircle className="size-6" />
               <div>
                 <div className="font-semibold">Order cancelled</div>
-                <div className="text-xs">Refund (if prepaid) is processed in 4–10 working days.</div>
+                <div className="text-xs">
+                  Refund (if prepaid) is processed in 4–10 working days.
+                </div>
               </div>
             </div>
           ) : (
@@ -132,7 +148,12 @@ function TrackPage() {
               {/* Animated / Filled Progress Line */}
               <div
                 className="absolute left-[12.5%] top-5 h-1 bg-discount rounded-full transition-all duration-1000 ease-out"
-                style={{ width: currentIdx === -1 ? "0%" : `${(Math.max(0, currentIdx) / (STAGES.length - 1)) * 75}%` }}
+                style={{
+                  width:
+                    currentIdx === -1
+                      ? "0%"
+                      : `${(Math.max(0, currentIdx) / (STAGES.length - 1)) * 75}%`,
+                }}
               />
 
               <div className="relative flex justify-between items-start">
@@ -140,9 +161,14 @@ function TrackPage() {
                   const done = i <= currentIdx;
                   const isActive = i === currentIdx;
                   return (
-                    <div key={s.key} className="flex flex-col items-center flex-1 text-center group">
+                    <div
+                      key={s.key}
+                      className="flex flex-col items-center flex-1 text-center group"
+                    >
                       {/* Icon Container */}
-                      <div className={`size-10 rounded-full flex items-center justify-center relative z-10 transition-all duration-500 ${done ? "bg-discount text-white shadow-md scale-110" : "bg-white border-2 border-muted text-muted-foreground"}`}>
+                      <div
+                        className={`size-10 rounded-full flex items-center justify-center relative z-10 transition-all duration-500 ${done ? "bg-discount text-white shadow-md scale-110" : "bg-white border-2 border-muted text-muted-foreground"}`}
+                      >
                         <s.icon className="size-5" />
                         {isActive && (
                           <span className="absolute inset-0 rounded-full border-2 border-discount animate-ping opacity-75"></span>
@@ -150,7 +176,9 @@ function TrackPage() {
                       </div>
                       {/* Label */}
                       <div className="mt-3 flex flex-col items-center">
-                        <span className={`text-[11px] sm:text-xs    uppercase tracking-wide transition-colors ${done ? "text-foreground" : "text-muted-foreground/70"}`}>
+                        <span
+                          className={`text-[11px] sm:text-xs    uppercase tracking-wide transition-colors ${done ? "text-foreground" : "text-muted-foreground/70"}`}
+                        >
                           {s.label}
                         </span>
                         {isActive && (
@@ -169,7 +197,11 @@ function TrackPage() {
           {/* Live Shiprocket Info */}
           {order.status !== "cancelled" && order.awb_code && (
             <div className="mt-6 pt-6 border-t border-dashed border-border">
-              <LiveShiprocketTracking orderId={order._id} awb={order.awb_code} fallbackUrl={order.tracking_url} />
+              <LiveShiprocketTracking
+                orderId={order._id}
+                awb={order.awb_code}
+                fallbackUrl={order.tracking_url}
+              />
             </div>
           )}
 
@@ -183,14 +215,21 @@ function TrackPage() {
                 <XCircle className="size-4" /> {cancelling ? "Cancelling..." : "Cancel Order"}
               </button>
               <p className="text-xs text-muted-foreground mt-2">
-                Cancellation is allowed only before dispatch. Read our <a href="/policies/returns" className="text-primary font-semibold">Cancellation Policy</a>.
+                Cancellation is allowed only before dispatch. Read our{" "}
+                <a href="/policies/returns" className="text-primary font-semibold">
+                  Cancellation Policy
+                </a>
+                .
               </p>
             </div>
           )}
 
           <p className="mt-4 text-xs text-muted-foreground border-t border-border pt-3">
             Need help? Email{" "}
-            <a className="text-primary font-semibold" href="mailto:support@toyhaat.com">support@toyhaat.com</a>.
+            <a className="text-primary font-semibold" href="mailto:support@toyhaat.com">
+              support@toyhaat.com
+            </a>
+            .
           </p>
         </div>
       )}
@@ -198,7 +237,15 @@ function TrackPage() {
   );
 }
 
-function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string, awb: string, fallbackUrl?: string }) {
+function LiveShiprocketTracking({
+  orderId,
+  awb,
+  fallbackUrl,
+}: {
+  orderId: string;
+  awb: string;
+  fallbackUrl?: string;
+}) {
   const [tracking, setTracking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -219,7 +266,9 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
       }
     }
     getTracking();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [orderId]);
 
   // Parse core data safely from Shiprocket dynamic response format
@@ -235,13 +284,20 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
       <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-100">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-extrabold tracking-widest text-white bg-indigo-600 px-2 py-0.5 rounded shadow-sm uppercase">Shiprocket Live</span>
+            <span className="text-[10px] font-extrabold tracking-widest text-white bg-indigo-600 px-2 py-0.5 rounded shadow-sm uppercase">
+              Shiprocket Live
+            </span>
             <span className="text-xs text-slate-500 font-medium">Via {courier}</span>
           </div>
           <div className="text-lg font-extrabold text-slate-900 tracking-tight">AWB {awb}</div>
         </div>
         {fallbackUrl && (
-          <a href={fallbackUrl} target="_blank" rel="noreferrer" className="text-xs    bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-50 shadow-sm">
+          <a
+            href={fallbackUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs    bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-50 shadow-sm"
+          >
             View Full Details ↗
           </a>
         )}
@@ -254,7 +310,8 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
         </div>
       ) : error ? (
         <div className="text-center py-4 bg-amber-50 text-amber-700 text-xs rounded border border-amber-100">
-          <span className="  ">Note:</span> Tracking credentials verification in progress. {fallbackUrl ? "You can track manually below." : ""}
+          <span className="  ">Note:</span> Tracking credentials verification in progress.{" "}
+          {fallbackUrl ? "You can track manually below." : ""}
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
@@ -263,7 +320,9 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
               <Package className="size-4 text-white" />
             </div>
             <div>
-              <div className="text-[10px] text-emerald-700 uppercase    tracking-wider">Current Status</div>
+              <div className="text-[10px] text-emerald-700 uppercase    tracking-wider">
+                Current Status
+              </div>
               <div className="text-sm    text-emerald-900">{currentStatus}</div>
             </div>
           </div>
@@ -272,12 +331,27 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
             <div className="p-5 space-y-6 relative before:content-[''] before:absolute before:left-[27px] before:top-[35px] before:bottom-[35px] before:w-0.5 before:bg-slate-100">
               {activities.map((act: any, i: number) => (
                 <div key={i} className="flex gap-4 relative z-10">
-                  <div className={`size-4 mt-1 rounded-full shrink-0 border-2 bg-white transition-colors ${i === 0 ? "border-emerald-500" : "border-slate-300"}`} />
+                  <div
+                    className={`size-4 mt-1 rounded-full shrink-0 border-2 bg-white transition-colors ${i === 0 ? "border-emerald-500" : "border-slate-300"}`}
+                  />
                   <div className="flex-1 min-w-0">
-                    <div className={`   text-sm ${i === 0 ? "text-slate-900" : "text-slate-600"}`}>{act.activity}</div>
+                    <div className={`   text-sm ${i === 0 ? "text-slate-900" : "text-slate-600"}`}>
+                      {act.activity}
+                    </div>
                     <div className="flex items-center justify-between text-xs mt-0.5 font-medium">
-                      <span className="text-slate-500 flex items-center gap-1"><MapPin className="size-3" /> {act.location || "Distribution Center"}</span>
-                      <span className="text-slate-400 italic font-mono">{act.date ? new Date(act.date).toLocaleString("en-IN", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ""}</span>
+                      <span className="text-slate-500 flex items-center gap-1">
+                        <MapPin className="size-3" /> {act.location || "Distribution Center"}
+                      </span>
+                      <span className="text-slate-400 italic font-mono">
+                        {act.date
+                          ? new Date(act.date).toLocaleString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -293,4 +367,3 @@ function LiveShiprocketTracking({ orderId, awb, fallbackUrl }: { orderId: string
     </div>
   );
 }
-

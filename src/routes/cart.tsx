@@ -38,7 +38,10 @@ function CartPage() {
         <div className="text-6xl mb-4">🛒</div>
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
         <p className="text-muted-foreground mt-2">Add some toys to get started!</p>
-        <Link to="/products" className="inline-block mt-5 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold">
+        <Link
+          to="/products"
+          className="inline-block mt-5 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold"
+        >
           Shop Now
         </Link>
       </div>
@@ -52,25 +55,48 @@ function CartPage() {
         <div className="bg-surface rounded-xl shadow-card divide-y divide-border">
           {cartItems.map((item) => (
             <div key={item.id} className="p-4 flex gap-3">
-              <Link to="/product/$id" params={{ id: item.id }} className="size-24 shrink-0 rounded-lg overflow-hidden bg-muted">
-                <img src={resolveImage(item.product.image)} alt={item.product.name} className="w-full h-full object-cover" />
+              <Link
+                to="/product/$id"
+                params={{ id: item.id }}
+                className="size-24 shrink-0 rounded-lg overflow-hidden bg-muted"
+              >
+                <img
+                  src={resolveImage(item.product.image)}
+                  alt={item.product.name}
+                  className="w-full h-full object-cover"
+                />
               </Link>
               <div className="flex-1 min-w-0">
-                <Link to="/product/$id" params={{ id: item.id }} className="font-medium text-sm md:text-base line-clamp-2 hover:text-primary">
+                <Link
+                  to="/product/$id"
+                  params={{ id: item.id }}
+                  className="font-medium text-sm md:text-base line-clamp-2 hover:text-primary"
+                >
                   {item.product.name}
                 </Link>
-                <div className="text-xs text-muted-foreground mt-0.5">{item.product.category_name ?? ""}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {item.product.category_name ?? ""}
+                </div>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="font-bold">₹{item.product.price.toLocaleString("en-IN")}</span>
-                  <span className="text-xs line-through text-muted-foreground">₹{item.product.mrp.toLocaleString("en-IN")}</span>
+                  <span className="text-xs line-through text-muted-foreground">
+                    ₹{item.product.mrp.toLocaleString("en-IN")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 mt-2">
                   <div className="inline-flex items-center border border-input rounded-md text-sm">
-                    <button onClick={() => setQty(item.id, item.qty - 1)} className="px-3 py-1">−</button>
+                    <button onClick={() => setQty(item.id, item.qty - 1)} className="px-3 py-1">
+                      −
+                    </button>
                     <span className="px-3 w-10 text-center">{item.qty}</span>
-                    <button onClick={() => setQty(item.id, item.qty + 1)} className="px-3 py-1">+</button>
+                    <button onClick={() => setQty(item.id, item.qty + 1)} className="px-3 py-1">
+                      +
+                    </button>
                   </div>
-                  <button onClick={() => removeFromCart(item.id)} className="text-destructive text-sm font-semibold inline-flex items-center gap-1">
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="text-destructive text-sm font-semibold inline-flex items-center gap-1"
+                  >
                     <Trash2 className="size-3.5" /> Remove
                   </button>
                 </div>
@@ -90,25 +116,43 @@ function CartPage() {
               placeholder="Coupon code (try FIRST5 or TOY10)"
               className="flex-1 px-2 py-1.5 text-sm border border-input rounded"
             />
-            <button onClick={applyCoupon} className="text-sm font-semibold text-primary">Apply</button>
+            <button onClick={applyCoupon} className="text-sm font-semibold text-primary">
+              Apply
+            </button>
           </div>
 
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span>Subtotal</span><span>₹{subtotal.toLocaleString("en-IN")}</span></div>
-            {discount > 0 && <div className="flex justify-between text-discount"><span>Coupon discount</span><span>− ₹{discount.toLocaleString("en-IN")}</span></div>}
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toLocaleString("en-IN")}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-discount">
+                <span>Coupon discount</span>
+                <span>− ₹{discount.toLocaleString("en-IN")}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span className={shipping === 0 ? "text-discount font-semibold" : ""}>{shipping === 0 ? "FREE" : `₹${shipping}`}</span>
+              <span className={shipping === 0 ? "text-discount font-semibold" : ""}>
+                {shipping === 0 ? "FREE" : `₹${shipping}`}
+              </span>
             </div>
             <div className="border-t border-border pt-2 flex justify-between font-bold text-base">
-              <span>Total</span><span>₹{total.toLocaleString("en-IN")}</span>
+              <span>Total</span>
+              <span>₹{total.toLocaleString("en-IN")}</span>
             </div>
           </div>
 
-          <Link to="/checkout" className="block text-center bg-warning text-warning-foreground font-semibold py-2.5 rounded-md hover:brightness-105 transition">
+          <Link
+            to="/checkout"
+            className="block text-center bg-warning text-warning-foreground font-semibold py-2.5 rounded-md hover:brightness-105 transition"
+          >
             Place Order
           </Link>
-          <p className="text-xs text-discount font-semibold text-center">Free shipping on orders above ₹999</p>
+          <p className="text-xs text-discount font-semibold text-center">
+            Free shipping on orders above ₹999
+          </p>
         </aside>
       </div>
     </div>

@@ -11,5 +11,5 @@ export const BRANDS = [
   "EKTA",
   "MEE MEE",
   "PANDA",
-  "ZEPHYR"
+  "ZEPHYR",
 ].sort();

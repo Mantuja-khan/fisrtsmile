@@ -6,7 +6,11 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact & Support — Toy Haat" },
-      { name: "description", content: "Reach Toy Haat support via email, WhatsApp, or visit our store at Genesis Mall, Bhiwadi. We're here to help!" },
+      {
+        name: "description",
+        content:
+          "Reach Toy Haat support via email, WhatsApp, or visit our store at Genesis Mall, Bhiwadi. We're here to help!",
+      },
     ],
   }),
   component: ContactPage,
@@ -32,7 +36,8 @@ function ContactPage() {
       <div className="max-w-2xl mb-10">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Contact</h1>
         <p className="text-muted-foreground mt-3 text-lg">
-          If you have any questions about your order or need assistance, feel free to reach out to us. We are here to help.
+          If you have any questions about your order or need assistance, feel free to reach out to
+          us. We are here to help.
         </p>
       </div>
 
@@ -46,7 +51,10 @@ function ContactPage() {
             </div>
             <div className="space-y-1">
               <h3 className="font-bold text-lg text-foreground">Email Support</h3>
-              <a href="mailto:support@toyhaat.com" className="text-primary hover:underline font-semibold block text-base md:text-lg">
+              <a
+                href="mailto:support@toyhaat.com"
+                className="text-primary hover:underline font-semibold block text-base md:text-lg"
+              >
                 support@toyhaat.com
               </a>
               <p className="text-sm text-muted-foreground">
@@ -62,9 +70,9 @@ function ContactPage() {
             </div>
             <div className="space-y-1">
               <h3 className="font-bold text-lg text-foreground">WhatsApp Support</h3>
-              <a 
-                href="https://wa.me/917827743263" 
-                target="_blank" 
+              <a
+                href="https://wa.me/917827743263"
+                target="_blank"
                 rel="noreferrer"
                 className="text-[#128C7E] dark:text-[#25D366] hover:underline font-semibold block text-base md:text-lg"
               >
@@ -107,7 +115,9 @@ function ContactPage() {
               <div className="space-y-0.5 text-sm md:text-base text-foreground/80">
                 <p className="font-semibold text-foreground">Monday to Saturday</p>
                 <p className="text-primary font-bold">10 AM to 7 PM</p>
-                <p className="text-muted-foreground text-xs md:text-sm mt-1 border-t border-border/40 pt-1">Sunday and public holidays closed</p>
+                <p className="text-muted-foreground text-xs md:text-sm mt-1 border-t border-border/40 pt-1">
+                  Sunday and public holidays closed
+                </p>
               </div>
             </div>
           </div>
@@ -118,9 +128,12 @@ function ContactPage() {
               <Info className="size-5" />
             </div>
             <div>
-              <h4 className="font-bold text-amber-800 dark:text-amber-300 text-base">Important Note</h4>
+              <h4 className="font-bold text-amber-800 dark:text-amber-300 text-base">
+                Important Note
+              </h4>
               <p className="text-sm text-amber-700 dark:text-amber-400/90 mt-1 leading-relaxed">
-                For faster support, please share your Order ID and a brief description of your query when contacting us.
+                For faster support, please share your Order ID and a brief description of your query
+                when contacting us.
               </p>
             </div>
           </div>
@@ -132,11 +145,13 @@ function ContactPage() {
           <p className="text-muted-foreground mb-6 text-sm">
             Have a specific query? Fill out the form below and we'll get back to you.
           </p>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="name" className="text-xs md:text-sm font-medium text-foreground/80">Your Name *</label>
+                <label htmlFor="name" className="text-xs md:text-sm font-medium text-foreground/80">
+                  Your Name *
+                </label>
                 <input
                   id="name"
                   required
@@ -146,7 +161,12 @@ function ContactPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-xs md:text-sm font-medium text-foreground/80">Email Address *</label>
+                <label
+                  htmlFor="email"
+                  className="text-xs md:text-sm font-medium text-foreground/80"
+                >
+                  Email Address *
+                </label>
                 <input
                   id="email"
                   required
@@ -159,7 +179,12 @@ function ContactPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="whatsapp" className="text-xs md:text-sm font-medium text-foreground/80">WhatsApp No. (Optional)</label>
+                <label
+                  htmlFor="whatsapp"
+                  className="text-xs md:text-sm font-medium text-foreground/80"
+                >
+                  WhatsApp No. (Optional)
+                </label>
                 <input
                   id="whatsapp"
                   type="tel"
@@ -168,7 +193,12 @@ function ContactPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="orderId" className="text-xs md:text-sm font-medium text-foreground/80">Order ID (Optional)</label>
+                <label
+                  htmlFor="orderId"
+                  className="text-xs md:text-sm font-medium text-foreground/80"
+                >
+                  Order ID (Optional)
+                </label>
                 <input
                   id="orderId"
                   type="text"
@@ -179,7 +209,12 @@ function ContactPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="message" className="text-xs md:text-sm font-medium text-foreground/80">How can we help? *</label>
+              <label
+                htmlFor="message"
+                className="text-xs md:text-sm font-medium text-foreground/80"
+              >
+                How can we help? *
+              </label>
               <textarea
                 id="message"
                 required
@@ -196,7 +231,8 @@ function ContactPage() {
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2 justify-center">
-                  <span className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin"></span> Sending...
+                  <span className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin"></span>{" "}
+                  Sending...
                 </span>
               ) : (
                 <>
@@ -215,7 +251,8 @@ function ContactPage() {
             <MapPin className="size-6 text-primary" /> Find Us Here
           </h2>
           <p className="text-muted-foreground text-sm md:text-base mt-2">
-            Locate our business at Genesis Mall, Bhiwadi. Feel free to visit us during operating hours.
+            Locate our business at Genesis Mall, Bhiwadi. Feel free to visit us during operating
+            hours.
           </p>
         </div>
         <div className="rounded-2xl overflow-hidden shadow-card border border-border/50 bg-surface aspect-[16/9] md:aspect-[21/9] w-full min-h-[350px]">

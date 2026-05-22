@@ -5,14 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import path from "path";
 
-
 export default defineConfig({
-  plugins: [
-    TanStackRouterVite(),
-    react(),
-    tailwindcss(),
-    tsconfigPaths(),
-  ],
+  plugins: [TanStackRouterVite(), react(), tailwindcss(), tsconfigPaths()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -21,7 +21,9 @@ export const Route = createFileRoute("/policies/privacy")({
       </p>
 
       <div className="space-y-2">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Information We Collect</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Information We Collect
+        </h2>
         <p className="text-sm text-muted-foreground m-0 font-medium">
           When you place an order or contact us, we may collect:
         </p>
@@ -37,10 +39,10 @@ export const Route = createFileRoute("/policies/privacy")({
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">How We Use Your Information</h2>
-        <p className="text-sm text-muted-foreground m-0 font-medium">
-          We use your details to:
-        </p>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          How We Use Your Information
+        </h2>
+        <p className="text-sm text-muted-foreground m-0 font-medium">We use your details to:</p>
         <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
           <li>Process and deliver your orders</li>
           <li>Send order updates and tracking details</li>
@@ -48,26 +50,31 @@ export const Route = createFileRoute("/policies/privacy")({
           <li>Improve our services</li>
         </ul>
         <p className="text-sm font-semibold text-rose-600/90 mt-2.5 bg-rose-50 border border-rose-100 p-3 rounded-xl">
-          We do not sell or share your personal information with third parties for marketing purposes.
+          We do not sell or share your personal information with third parties for marketing
+          purposes.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Cookies</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          Our website may use cookies to improve your browsing experience. You can choose to disable cookies through your browser settings.
+          Our website may use cookies to improve your browsing experience. You can choose to disable
+          cookies through your browser settings.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
         <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Data Security</h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          We take reasonable steps to keep your information safe. However, no online system is completely secure, so we cannot guarantee absolute security.
+          We take reasonable steps to keep your information safe. However, no online system is
+          completely secure, so we cannot guarantee absolute security.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Third-Party Services</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Third-Party Services
+        </h2>
         <p className="text-sm text-muted-foreground m-0 font-medium">
           We may use trusted third-party services for:
         </p>
@@ -76,19 +83,25 @@ export const Route = createFileRoute("/policies/privacy")({
           <li>Shipping and delivery</li>
         </ul>
         <p className="text-xs text-muted-foreground/85 mt-1 leading-relaxed">
-          These services only access the information required to perform their tasks and are expected to keep it confidential.
+          These services only access the information required to perform their tasks and are
+          expected to keep it confidential.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Children’s Privacy</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Children’s Privacy
+        </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          Our website is intended for users above 18 years of age. We do not knowingly collect personal data from children.
+          Our website is intended for users above 18 years of age. We do not knowingly collect
+          personal data from children.
         </p>
       </div>
 
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Policy Updates</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Policy Updates
+        </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
           We may update this policy from time to time. Changes will be posted on this page.
         </p>
@@ -97,15 +110,20 @@ export const Route = createFileRoute("/policies/privacy")({
       <div className="bg-muted/50 p-5 rounded-2xl border border-border/50 mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-base  text-foreground m-0 mb-1.5">Contact Us</h2>
-          <p className="text-xs text-muted-foreground m-0 leading-relaxed">If you have any questions about this Privacy Policy, please reach out to us:</p>
+          <p className="text-xs text-muted-foreground m-0 leading-relaxed">
+            If you have any questions about this Privacy Policy, please reach out to us:
+          </p>
         </div>
         <div className="space-y-1 text-xs text-foreground/90    shrink-0 sm:text-right">
           <p className="flex sm:justify-end items-center gap-1.5">
             <span className="text-muted-foreground    ">Email:</span>
-            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline">support@toyhaat.com</a>
+            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline">
+              support@toyhaat.com
+            </a>
           </p>
           <p>
-            <span className="text-muted-foreground    ">Address:</span> Genesis Mall, Bhiwadi – 301019, RJ
+            <span className="text-muted-foreground    ">Address:</span> Genesis Mall, Bhiwadi –
+            301019, RJ
           </p>
         </div>
       </div>

@@ -1,12 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Sparkles, Target, ShieldCheck, Heart, User, Mail, MessageCircle, CheckCircle2 } from "lucide-react";
+import {
+  Sparkles,
+  Target,
+  ShieldCheck,
+  Heart,
+  User,
+  Mail,
+  MessageCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About Us — Toy Haat" },
-      { name: "description", content: "Where Play Meets Purpose. Founded by Avinash Shah, Toy Haat selects toys that spark creativity and support learning." },
+      {
+        name: "description",
+        content:
+          "Where Play Meets Purpose. Founded by Avinash Shah, Toy Haat selects toys that spark creativity and support learning.",
+      },
     ],
   }),
   component: AboutPage,
@@ -36,8 +49,9 @@ function AboutPage() {
         {aboutImages.map((img, i) => (
           <div
             key={i}
-            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out ${i === idx ? "opacity-100 scale-100" : "opacity-0"
-              }`}
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out ${
+              i === idx ? "opacity-100 scale-100" : "opacity-0"
+            }`}
             style={{ backgroundImage: `url(${img})` }}
           />
         ))}
@@ -64,30 +78,34 @@ function AboutPage() {
             <div className="inline-flex items-center gap-2 text-primary bg-primary/5 px-2.5 py-1 rounded-md font-medium text-xs tracking-wider uppercase">
               <Target className="size-3.5" /> Our Philosophy
             </div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">About Toy Haat</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
+              About Toy Haat
+            </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded in 2019, Toy Haat was created with one simple idea – <strong className="text-slate-800 font-medium">play should not just entertain… it should help a child grow.</strong>
+              Founded in 2019, Toy Haat was created with one simple idea –{" "}
+              <strong className="text-slate-800 font-medium">
+                play should not just entertain… it should help a child grow.
+              </strong>
             </p>
             <p className="text-slate-600 text-sm leading-relaxed">
               That’s why every product you see here is carefully selected to:
             </p>
             <ul className="space-y-2">
-              {[
-                "Spark creativity",
-                "Build curiosity",
-                "Support learning in a natural way"
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-slate-700 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                  {item}
-                </li>
-              ))}
+              {["Spark creativity", "Build curiosity", "Support learning in a natural way"].map(
+                (item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-slate-700 text-sm">
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                    {item}
+                  </li>
+                ),
+              )}
             </ul>
             <blockquote className="border-l-2 border-slate-300 pl-4 py-1.5 text-slate-800 italic text-base mt-5 bg-slate-50 rounded-r-md pr-3">
               “Will this make a child better while keeping them happy?”
             </blockquote>
             <p className="text-slate-500 text-xs">
-              From toys and games to educational tools, everything is chosen keeping this one thing in mind.
+              From toys and games to educational tools, everything is chosen keeping this one thing
+              in mind.
             </p>
           </div>
 
@@ -120,7 +138,7 @@ function AboutPage() {
                   {[
                     "Keep them engaged without screens",
                     "Help improve thinking and focus",
-                    "Encourage imagination and exploration"
+                    "Encourage imagination and exploration",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-2 text-slate-700 text-sm">
                       <span className="size-1 rounded-full bg-slate-400 shrink-0"></span>
@@ -131,7 +149,10 @@ function AboutPage() {
               </div>
               <div className="pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
                 {["Safe for kids", "Strong & durable", "Worth trust"].map((tag, i) => (
-                  <div key={i} className="text-center p-1.5 bg-slate-50 border border-slate-100 rounded flex items-center justify-center">
+                  <div
+                    key={i}
+                    className="text-center p-1.5 bg-slate-50 border border-slate-100 rounded flex items-center justify-center"
+                  >
                     <span className="text-[11px] font-medium text-slate-600">✔ {tag}</span>
                   </div>
                 ))}
@@ -145,7 +166,8 @@ function AboutPage() {
                   <ShieldCheck className="size-4.5 text-blue-500" /> Built on Trust & Care
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  We work with reliable manufacturers and partners who follow proper safety and quality standards.
+                  We work with reliable manufacturers and partners who follow proper safety and
+                  quality standards.
                 </p>
                 <p className="text-slate-800 font-medium text-base leading-relaxed mt-3 border-l-2 border-blue-400 pl-3 bg-blue-50/30 py-1 pr-2 rounded-r">
                   No shortcuts. No random products.
@@ -156,7 +178,8 @@ function AboutPage() {
               </div>
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-auto">
                 <p className="text-xs font-medium text-slate-700 italic leading-relaxed">
-                  "Because for us, this is not just business – it’s about the small moments that matter in a child’s life."
+                  "Because for us, this is not just business – it’s about the small moments that
+                  matter in a child’s life."
                 </p>
               </div>
             </div>
@@ -172,31 +195,44 @@ function AboutPage() {
               <div className="inline-flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[11px] uppercase tracking-wide border border-white/10">
                 <User className="size-3.5 text-amber-300" /> Meet the Founder
               </div>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">A Simple Idea That Started It All</h2>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                A Simple Idea That Started It All
+              </h2>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Toy Haat was founded by <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear goal – to bring better play options for children.
+                Toy Haat was founded by{" "}
+                <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear
+                goal – to bring better play options for children.
               </p>
               <p className="text-slate-300 text-sm leading-relaxed">
-                He saw that many toys only keep kids busy, but don’t really help them learn or grow. So he built Toy Haat to offer products that:
+                He saw that many toys only keep kids busy, but don’t really help them learn or grow.
+                So he built Toy Haat to offer products that:
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {["Have real value", "Thoughtfully designed", "Make both happy"].map((text, i) => (
-                  <li key={i} className="p-2 bg-white/5 border border-white/10 rounded-md text-xs font-medium text-center">
+                  <li
+                    key={i}
+                    className="p-2 bg-white/5 border border-white/10 rounded-md text-xs font-medium text-center"
+                  >
                     {text}
                   </li>
                 ))}
               </ul>
               <p className="text-slate-400 text-xs italic pt-3 border-t border-white/10 w-fit">
-                "Even today, that same focus continues – keeping things simple, useful, and meaningful."
+                "Even today, that same focus continues – keeping things simple, useful, and
+                meaningful."
               </p>
             </div>
             <div className="md:col-span-5 flex justify-center">
               <div className="size-48 md:size-56 rounded-xl border border-white/10 overflow-hidden bg-white/5 flex items-center justify-center relative">
                 <div className="flex flex-col items-center justify-center text-center gap-2.5 p-6 select-none">
-                  <div className="size-14 rounded-full bg-amber-300 text-slate-950 flex items-center justify-center font-bold text-xl">AS</div>
+                  <div className="size-14 rounded-full bg-amber-300 text-slate-950 flex items-center justify-center font-bold text-xl">
+                    AS
+                  </div>
                   <div>
                     <p className="text-slate-300 font-medium text-base text-white">Avinash Shah</p>
-                    <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">Founder, Toy Haat</p>
+                    <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">
+                      Founder, Toy Haat
+                    </p>
                   </div>
                 </div>
               </div>
@@ -211,7 +247,9 @@ function AboutPage() {
         <div className="bg-white rounded-xl border border-slate-200/70 p-6 shadow-sm flex flex-col justify-between space-y-5">
           <div>
             <h3 className="text-lg font-semibold text-slate-900 mb-1.5">We’re Here to Help</h3>
-            <p className="text-slate-600 text-sm leading-relaxed">Have a question about your order or product? We’re always ready to assist you.</p>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Have a question about your order or product? We’re always ready to assist you.
+            </p>
           </div>
 
           <div className="space-y-3">
@@ -220,8 +258,15 @@ function AboutPage() {
                 <Mail className="size-4.5" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Email Support</p>
-                <a href="mailto:support@toyhaat.com" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">support@toyhaat.com</a>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                  Email Support
+                </p>
+                <a
+                  href="mailto:support@toyhaat.com"
+                  className="text-slate-800 font-medium hover:underline text-sm block mt-0.5"
+                >
+                  support@toyhaat.com
+                </a>
               </div>
             </div>
 
@@ -230,8 +275,15 @@ function AboutPage() {
                 <MessageCircle className="size-4.5" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">WhatsApp Help</p>
-                <a href="https://wa.me/917827743263" className="text-slate-800 font-medium hover:underline text-sm block mt-0.5">+91 7827743263</a>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                  WhatsApp Help
+                </p>
+                <a
+                  href="https://wa.me/917827743263"
+                  className="text-slate-800 font-medium hover:underline text-sm block mt-0.5"
+                >
+                  +91 7827743263
+                </a>
               </div>
             </div>
           </div>
@@ -245,7 +297,8 @@ function AboutPage() {
           <div className="space-y-1.5">
             <h3 className="text-lg font-semibold text-slate-900">A Small Promise</h3>
             <p className="text-slate-600 text-sm leading-relaxed max-w-xs">
-              We don’t just want to sell toys. We want to be part of your child’s happy moments, learning, and growth.
+              We don’t just want to sell toys. We want to be part of your child’s happy moments,
+              learning, and growth.
             </p>
           </div>
           <div className="pt-3 border-t border-slate-200/50 w-full flex flex-col items-center space-y-3">

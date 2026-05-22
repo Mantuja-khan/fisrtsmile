@@ -1,8 +1,26 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import {
-  User, Package, MapPin, LogIn, LogOut, Shield, XCircle, Eye, EyeOff, Phone, Home,
-  Building2, Map as MapIcon, Lock, Mail, ChevronRight, Bell, Save, LayoutDashboard, ShieldCheck
+  User,
+  Package,
+  MapPin,
+  LogIn,
+  LogOut,
+  Shield,
+  XCircle,
+  Eye,
+  EyeOff,
+  Phone,
+  Home,
+  Building2,
+  Map as MapIcon,
+  Lock,
+  Mail,
+  ChevronRight,
+  Bell,
+  Save,
+  LayoutDashboard,
+  ShieldCheck,
 } from "lucide-react";
 import { redirectToPayU } from "@/utils/payu";
 import { useAuth } from "@/store/auth";
@@ -12,6 +30,7 @@ import { z } from "zod";
 import loginBg from "@/assets/loginsignup.png";
 import signupHereImg from "@/assets/signuphere.png";
 import loginHereImg from "@/assets/loginhere.png";
+import ShiprocketLoginButton from "@/components/ShiprocketLoginButton";
 
 const searchSchema = z.object({
   view: z.enum(["profile", "orders", "addresses", "password", "notifications"]).optional(),
@@ -23,7 +42,8 @@ export const Route = createFileRoute("/account")({
   component: AccountPage,
 });
 
-const strongPassword = z.string()
+const strongPassword = z
+  .string()
   .min(6, "Password must be at least 6 characters")
   .regex(/[A-Z]/, "Password must contain at least one capital letter")
   .regex(/[a-z]/, "Password must contain at least one small letter")
@@ -55,7 +75,9 @@ function AccountPage() {
   const navigate = useNavigate();
   const { view: searchView } = Route.useSearch();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
-  const [view, setView] = useState<"profile" | "orders" | "addresses" | "password" | "notifications">(searchView || "profile");
+  const [view, setView] = useState<
+    "profile" | "orders" | "addresses" | "password" | "notifications"
+  >(searchView || "profile");
 
   useEffect(() => {
     if (searchView && searchView !== view) {
@@ -77,7 +99,11 @@ function AccountPage() {
   const [otpBusy, setOtpBusy] = useState(false);
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground font-medium">Loading your profile interface...</div>;
+    return (
+      <div className="container mx-auto px-4 py-20 text-center text-muted-foreground font-medium">
+        Loading your profile interface...
+      </div>
+    );
   }
 
   if (user) {
@@ -85,40 +111,43 @@ function AccountPage() {
     return (
       <div className="min-h-[calc(100vh-140px)] bg-[#F4F6F9] py-6 md:py-10">
         <div className="container mx-auto px-4 max-w-6xl">
-
           <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
-
             {/* Premium Left Sidebar Area */}
             <aside className="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col gap-6">
-
               {/* Profile Info Header Card */}
               <div className="bg-white rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#BFDDF0] text-slate-900 border border-slate-200/60 flex items-center justify-center font-extrabold text-lg uppercase shadow-sm shrink-0">
                   {name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-extrabold text-[15px] text-slate-800 leading-tight truncate">{name}</h2>
+                  <h2 className="font-extrabold text-[15px] text-slate-800 leading-tight truncate">
+                    {name}
+                  </h2>
                   <p className="text-xs text-slate-400 font-medium truncate mt-0.5">{user.email}</p>
                 </div>
               </div>
 
               {/* Side Nav Navigation Block */}
               <div className="bg-white rounded-2xl py-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col">
-
                 {/* Isolated Top Nav: My Orders */}
                 <div className="px-3">
                   <button
                     onClick={() => setView("orders")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "orders"
-                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                      }`}
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
+                      view === "orders"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Package className={`w-[18px] h-[18px] ${view === "orders" ? "text-slate-900" : "text-slate-400"}`} />
+                      <Package
+                        className={`w-[18px] h-[18px] ${view === "orders" ? "text-slate-900" : "text-slate-400"}`}
+                      />
                       <span>My Orders</span>
                     </div>
-                    <ChevronRight className={`w-4 h-4 ${view === "orders" ? "text-slate-900" : "text-slate-300"}`} />
+                    <ChevronRight
+                      className={`w-4 h-4 ${view === "orders" ? "text-slate-900" : "text-slate-300"}`}
+                    />
                   </button>
                 </div>
 
@@ -126,19 +155,24 @@ function AccountPage() {
 
                 {/* Group 1: Account Settings */}
                 <div className="px-6 pb-1.5">
-                  <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">Account Settings</span>
+                  <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">
+                    Account Settings
+                  </span>
                 </div>
 
                 <div className="px-3 space-y-1">
                   <button
                     onClick={() => setView("profile")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "profile"
-                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                      }`}
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
+                      view === "profile"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <User className={`w-[18px] h-[18px] ${view === "profile" ? "text-slate-900" : "text-slate-400"}`} />
+                      <User
+                        className={`w-[18px] h-[18px] ${view === "profile" ? "text-slate-900" : "text-slate-400"}`}
+                      />
                       <span>Profile Information</span>
                     </div>
                     {view !== "profile" && <ChevronRight className="w-4 h-4 text-slate-300" />}
@@ -146,26 +180,29 @@ function AccountPage() {
 
                   <button
                     onClick={() => setView("addresses")}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${view === "addresses"
-                      ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
-                      }`}
+                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-semibold text-sm transition ${
+                      view === "addresses"
+                        ? "bg-[#BFDDF0]/40 text-slate-900 border border-[#BFDDF0]/60 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-[#BFDDF0]/10"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <MapPin className={`w-[18px] h-[18px] ${view === "addresses" ? "text-slate-900" : "text-slate-400"}`} />
+                      <MapPin
+                        className={`w-[18px] h-[18px] ${view === "addresses" ? "text-slate-900" : "text-slate-400"}`}
+                      />
                       <span>Manage Addresses</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-300" />
                   </button>
                 </div>
 
-
-
                 {isAdmin && (
                   <>
                     <div className="border-b border-slate-100/70 my-3"></div>
                     <div className="px-6 pb-1.5">
-                      <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">Admin Panel</span>
+                      <span className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase">
+                        Admin Panel
+                      </span>
                     </div>
                     <div className="px-3">
                       <button
@@ -195,7 +232,9 @@ function AccountPage() {
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-800">Your security is our priority</h3>
+                  <h3 className="text-sm font-bold text-slate-800">
+                    Your security is our priority
+                  </h3>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
                     We use industry-standard measures to keep your information safe and secure.
                   </p>
@@ -207,7 +246,6 @@ function AccountPage() {
                   Learn more &gt;
                 </button>
               </div>
-
             </aside>
 
             {/* Main Right View Container */}
@@ -218,7 +256,6 @@ function AccountPage() {
               {view === "password" && <PasswordEngine />}
               {view === "notifications" && <NotificationsEngine />}
             </main>
-
           </div>
         </div>
       </div>
@@ -226,7 +263,10 @@ function AccountPage() {
   }
 
   const sendOtpRequest = async () => {
-    if (!email) { toast.error("Please enter your email first"); return; }
+    if (!email) {
+      toast.error("Please enter your email first");
+      return;
+    }
     if (mode === "signup" && (!fullName || !phone || !password)) {
       toast.error("Please fill all details first");
       return;
@@ -268,9 +308,21 @@ function AccountPage() {
     try {
       if (mode === "signup") {
         const v = signupSchema.safeParse({ fullName, email, password, phone, otp });
-        if (!v.success) { toast.error(v.error.issues[0].message); return; }
-        const { error } = await signUp(v.data.email, v.data.password, v.data.fullName, v.data.phone, v.data.otp);
-        if (error) { toast.error(error); return; }
+        if (!v.success) {
+          toast.error(v.error.issues[0].message);
+          return;
+        }
+        const { error } = await signUp(
+          v.data.email,
+          v.data.password,
+          v.data.fullName,
+          v.data.phone,
+          v.data.otp,
+        );
+        if (error) {
+          toast.error(error);
+          return;
+        }
         toast.success("Account created! 🎉 Welcome to Toy Haat.");
         localStorage.setItem("signup_phone", v.data.phone);
         localStorage.setItem("show_signup_discount_popup", "true");
@@ -283,7 +335,10 @@ function AccountPage() {
           return;
         }
         const v = resetPasswordSchema.safeParse({ email, otp, newPassword: password });
-        if (!v.success) { toast.error(v.error.issues[0].message); return; }
+        if (!v.success) {
+          toast.error(v.error.issues[0].message);
+          return;
+        }
         await api.post("/auth/reset-password", v.data);
         toast.success("Password reset successful! You can now log in.");
         setMode("login");
@@ -294,9 +349,15 @@ function AccountPage() {
         setConfirmPassword("");
       } else {
         const v = loginSchema.safeParse({ email, password });
-        if (!v.success) { toast.error(v.error.issues[0].message); return; }
+        if (!v.success) {
+          toast.error(v.error.issues[0].message);
+          return;
+        }
         const { error } = await signIn(v.data.email, v.data.password);
-        if (error) { toast.error(error); return; }
+        if (error) {
+          toast.error(error);
+          return;
+        }
         toast.success("Logged in successfully!");
       }
     } catch (error: any) {
@@ -313,21 +374,46 @@ function AccountPage() {
     >
       <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
 
-      <div className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${(mode === "login" || mode === "forgot") ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/90 md:bg-white backdrop-blur-md transition-all duration-500`} key={mode}>
+      <div
+        className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${mode === "login" || mode === "forgot" ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/90 md:bg-white backdrop-blur-md transition-all duration-500`}
+        key={mode}
+      >
         {/* Side - Image for Desktop */}
         <div
           className="hidden md:block md:w-1/2 relative bg-cover bg-top min-h-[500px]"
-          style={{ backgroundImage: `url(${mode === 'signup' ? signupHereImg : loginHereImg})` }}
+          style={{ backgroundImage: `url(${mode === "signup" ? signupHereImg : loginHereImg})` }}
         />
 
         {/* Side - Form */}
         <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/60 md:bg-white">
           <div className="text-center mb-8">
             <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
-              {mode === "login" ? "USER LOGIN" : mode === "signup" ? "CREATE ACCOUNT" : "RESET PASSWORD"}
+              {mode === "login"
+                ? "USER LOGIN"
+                : mode === "signup"
+                  ? "CREATE ACCOUNT"
+                  : "RESET PASSWORD"}
             </h3>
             <p className="text-xs text-muted-foreground mt-1">Welcome to Toy Haat</p>
           </div>
+
+          {(mode === "login" || mode === "signup") && (
+            <div className="max-w-sm mx-auto w-full mb-5">
+              {/* Express OTP Login button */}
+              <ShiprocketLoginButton
+                buttonText={mode === "login" ? "Instant OTP Login" : "Instant OTP Signup"}
+                className="w-full py-3.5 !rounded-full text-xs font-black shadow-md hover:shadow-lg"
+              />
+
+              <div className="relative flex py-3 items-center">
+                <div className="flex-grow border-t border-slate-100"></div>
+                <span className="flex-shrink mx-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  or email access
+                </span>
+                <div className="flex-grow border-t border-slate-100"></div>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
             {mode === "signup" && (
@@ -409,7 +495,11 @@ function AccountPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 w-5 h-5 flex items-center justify-center text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             )}
@@ -417,8 +507,16 @@ function AccountPage() {
             {otpSent && (!otpVerified || mode === "signup") && (
               <div className="space-y-2 mt-4">
                 <div className="flex justify-between px-2">
-                  <label className="text-[11px] font-bold text-[#802a8f] uppercase">Enter 6-Digit OTP</label>
-                  <button type="button" onClick={sendOtpRequest} className="text-[10px] text-[#802a8f] hover:underline">Resend?</button>
+                  <label className="text-[11px] font-bold text-[#802a8f] uppercase">
+                    Enter 6-Digit OTP
+                  </label>
+                  <button
+                    type="button"
+                    onClick={sendOtpRequest}
+                    className="text-[10px] text-[#802a8f] hover:underline"
+                  >
+                    Resend?
+                  </button>
                 </div>
                 <input
                   required
@@ -436,23 +534,48 @@ function AccountPage() {
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input type="checkbox" className="accent-[#802a8f]" /> Remember
                 </label>
-                <button type="button" onClick={() => { setMode("forgot"); setOtpSent(false); setOtpVerified(false); }} className="hover:text-[#802a8f] transition">Forgot password?</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("forgot");
+                    setOtpSent(false);
+                    setOtpVerified(false);
+                  }}
+                  className="hover:text-[#802a8f] transition"
+                >
+                  Forgot password?
+                </button>
               </div>
             )}
 
-            <button disabled={busy || otpBusy} className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6">
-              {busy || otpBusy ? "Please wait..." : (
-                mode === "login" ? "Login" :
-                  mode === "forgot" ? (
-                    otpVerified ? "Set Password" :
-                      otpSent ? "Verify OTP" : "Send OTP"
-                  ) :
-                    otpSent ? "Confirm & Register" : "Send OTP"
-              )}
+            <button
+              disabled={busy || otpBusy}
+              className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6"
+            >
+              {busy || otpBusy
+                ? "Please wait..."
+                : mode === "login"
+                  ? "Login"
+                  : mode === "forgot"
+                    ? otpVerified
+                      ? "Set Password"
+                      : otpSent
+                        ? "Verify OTP"
+                        : "Send OTP"
+                    : otpSent
+                      ? "Confirm & Register"
+                      : "Send OTP"}
             </button>
 
             <div className="text-center mt-6">
-              <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setOtpSent(false); }} className="text-xs text-muted-foreground hover:text-[#802a8f] transition">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode(mode === "login" ? "signup" : "login");
+                  setOtpSent(false);
+                }}
+                className="text-xs text-muted-foreground hover:text-[#802a8f] transition"
+              >
                 {mode === "login" ? "Create Account" : "Back to Login"}
               </button>
             </div>
@@ -490,10 +613,19 @@ function ProfileDetailsEngine() {
 
   return (
     <div className="p-6 md:p-10 relative overflow-hidden">
-
       {/* Background Subtle Illustration Pattern */}
       <div className="absolute top-8 right-8 hidden md:block opacity-[0.15] pointer-events-none">
-        <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#BFDDF0]">
+        <svg
+          width="140"
+          height="140"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-[#BFDDF0]"
+        >
           <rect x="4" y="4" width="16" height="16" rx="2" />
           <path d="M9 9h6" />
           <path d="M9 13h6" />
@@ -507,25 +639,30 @@ function ProfileDetailsEngine() {
           <User className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Profile Information</h2>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">Update your personal details and contact information.</p>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">
+            Profile Information
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">
+            Update your personal details and contact information.
+          </p>
         </div>
       </div>
 
       <form onSubmit={save} className="max-w-2xl space-y-7">
-
         {/* Field: Full Name */}
         <div className="space-y-2">
           <div className="flex flex-col gap-0.5">
             <label className="text-xs font-bold text-slate-800">Full Name</label>
-            <span className="text-[11px] text-slate-400 font-medium">This is the name displayed on your account.</span>
+            <span className="text-[11px] text-slate-400 font-medium">
+              This is the name displayed on your account.
+            </span>
           </div>
           <div className="relative flex items-center">
             <User className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               required
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Full Name"
               className="w-full pl-11 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-700 font-medium placeholder:text-slate-300"
             />
@@ -536,7 +673,9 @@ function ProfileDetailsEngine() {
         <div className="space-y-2">
           <div className="flex flex-col gap-0.5">
             <label className="text-xs font-bold text-slate-800">Email Address</label>
-            <span className="text-[11px] text-slate-400 font-medium">We'll never share your email with anyone else.</span>
+            <span className="text-[11px] text-slate-400 font-medium">
+              We'll never share your email with anyone else.
+            </span>
           </div>
           <div className="relative flex items-center">
             <Mail className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -548,7 +687,13 @@ function ProfileDetailsEngine() {
             />
             <div className="absolute right-3 flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold text-[10px] px-2 py-0.5 rounded-md shadow-xs pointer-events-none uppercase tracking-wide">
               <span>Verified</span>
-              <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+              <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </div>
           </div>
         </div>
@@ -557,7 +702,9 @@ function ProfileDetailsEngine() {
         <div className="space-y-2">
           <div className="flex flex-col gap-0.5">
             <label className="text-xs font-bold text-slate-800">Phone Number</label>
-            <span className="text-[11px] text-slate-400 font-medium">Add your phone number for quick support and important alerts.</span>
+            <span className="text-[11px] text-slate-400 font-medium">
+              Add your phone number for quick support and important alerts.
+            </span>
           </div>
           <div className="relative flex items-center">
             <Phone className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -565,17 +712,24 @@ function ProfileDetailsEngine() {
               required
               disabled={Boolean(user?.phone)}
               value={phone}
-              onChange={e => setPhone(e.target.value)}
+              onChange={(e) => setPhone(e.target.value)}
               placeholder="Enter your phone number"
-              className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${user?.phone
-                ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
-                : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
-                }`}
+              className={`w-full pl-11 pr-28 py-3 text-sm border rounded-xl outline-none transition font-medium ${
+                user?.phone
+                  ? "bg-slate-50/80 border-slate-200/80 text-slate-500 cursor-not-allowed"
+                  : "bg-white border-slate-200 text-slate-700 focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 placeholder:text-slate-300"
+              }`}
             />
             {Boolean(user?.phone) && (
               <div className="absolute right-3 flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold text-[10px] px-2 py-0.5 rounded-md shadow-xs pointer-events-none uppercase tracking-wide">
                 <span>Verified</span>
-                <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               </div>
             )}
           </div>
@@ -585,7 +739,9 @@ function ProfileDetailsEngine() {
         <div className="bg-[#BFDDF0]/20 rounded-xl p-4 flex gap-3.5 mt-8 border border-[#BFDDF0]/40 shadow-xs">
           <ShieldCheck className="w-5 h-5 text-slate-800 shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">Keep your information up to date</h4>
+            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">
+              Keep your information up to date
+            </h4>
             <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed font-medium">
               Ensure your contact information is accurate so we can reach you when needed.
             </p>
@@ -608,11 +764,22 @@ function ProfileDetailsEngine() {
             onClick={reset}
             className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm px-6 py-3 rounded-xl shadow-xs active:scale-95 transition"
           >
-            <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15.89M21 12h-6" /></svg>
+            <svg
+              className="w-4 h-4 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15.89M21 12h-6"
+              />
+            </svg>
             <span>Reset</span>
           </button>
         </div>
-
       </form>
     </div>
   );
@@ -624,7 +791,14 @@ function ProfileDetailsEngine() {
 type MyOrder = {
   _id: string;
   order_number: string;
-  status: "placed" | "processing" | "shipped" | "delivered" | "cancelled" | "return requested" | "returned";
+  status:
+    | "placed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled"
+    | "return requested"
+    | "returned";
   total: number;
   createdAt: string;
   payment_method: string;
@@ -666,7 +840,9 @@ function MyOrdersEngine() {
     }
   }, [user]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const cancel = async (id: string) => {
     if (!confirm("Cancel this order? This cannot be undone.")) return;
@@ -683,7 +859,10 @@ function MyOrdersEngine() {
   };
 
   const requestReturn = async (id: string) => {
-    if (!confirm("Request a return for this order? Our support will contact you to arrange pickup.")) return;
+    if (
+      !confirm("Request a return for this order? Our support will contact you to arrange pickup.")
+    )
+      return;
     setCancellingId(id);
     try {
       await api.put(`/orders/${id}/return`);
@@ -696,7 +875,10 @@ function MyOrdersEngine() {
     }
   };
 
-  if (loading) return <div className="p-16 text-center text-slate-400 font-medium">Loading your orders...</div>;
+  if (loading)
+    return (
+      <div className="p-16 text-center text-slate-400 font-medium">Loading your orders...</div>
+    );
 
   if (orders.length === 0) {
     return (
@@ -705,8 +887,13 @@ function MyOrdersEngine() {
           <Package className="w-8 h-8 text-slate-300" />
         </div>
         <h3 className="font-bold text-lg text-slate-800">No orders placed yet</h3>
-        <p className="text-xs text-slate-400 mt-1 mb-6">Explore our curated collections to start your journey.</p>
-        <Link to="/products" className="inline-block bg-slate-900 border border-[#BFDDF0]/30 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:bg-slate-800 transition">
+        <p className="text-xs text-slate-400 mt-1 mb-6">
+          Explore our curated collections to start your journey.
+        </p>
+        <Link
+          to="/products"
+          className="inline-block bg-slate-900 border border-[#BFDDF0]/30 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-sm hover:bg-slate-800 transition"
+        >
           Browse Products
         </Link>
       </div>
@@ -721,12 +908,14 @@ function MyOrdersEngine() {
       delivered: "bg-emerald-50 text-emerald-700 border-emerald-100",
       cancelled: "bg-rose-50 text-rose-700 border-rose-100",
       "return requested": "bg-indigo-50 text-indigo-700 border-indigo-100",
-      "returned": "bg-slate-100 text-slate-700 border-slate-200",
+      returned: "bg-slate-100 text-slate-700 border-slate-200",
     };
     const key = s.toLowerCase() as keyof typeof map;
     return (
       <div className="flex flex-col items-end gap-1.5">
-        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border tracking-wide uppercase ${map[key] || "bg-slate-50 text-slate-600"}`}>
+        <span
+          className={`text-[10px] font-bold px-3 py-1 rounded-full border tracking-wide uppercase ${map[key] || "bg-slate-50 text-slate-600"}`}
+        >
           {s}
         </span>
         {refund_status && (
@@ -742,7 +931,9 @@ function MyOrdersEngine() {
     <div className="divide-y divide-slate-100">
       <div className="p-6 md:px-8 border-b border-slate-100">
         <h2 className="text-xl font-bold text-slate-900">My Orders</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Track, manage, or return your purchased items.</p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Track, manage, or return your purchased items.
+        </p>
       </div>
 
       {orders.map((o) => {
@@ -752,15 +943,28 @@ function MyOrdersEngine() {
         const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         const withinFourDays = diffDays <= 4;
-        const canRequestReturn = isDelivered && withinFourDays && (lstatus as string) !== "return requested" && (lstatus as string) !== "returned";
+        const canRequestReturn =
+          isDelivered &&
+          withinFourDays &&
+          (lstatus as string) !== "return requested" &&
+          (lstatus as string) !== "returned";
 
         return (
           <div key={o._id} className="p-6 md:px-8 hover:bg-slate-50/50 transition">
             <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-50 text-xs text-slate-500">
               <div>
-                <span className="font-bold text-slate-800 block md:inline">Order #{o.order_number}</span>
+                <span className="font-bold text-slate-800 block md:inline">
+                  Order #{o.order_number}
+                </span>
                 <span className="hidden md:inline mx-2">•</span>
-                <span>Placed on {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                <span>
+                  Placed on{" "}
+                  {new Date(o.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 {!o.isPaid && lstatus !== "cancelled" && lstatus !== "returned" && (
@@ -781,27 +985,44 @@ function MyOrdersEngine() {
                     Request Return
                   </button>
                 )}
-                {!isDelivered && !isCancelled && lstatus !== "return requested" && lstatus !== "returned" && (
-                  <button
-                    onClick={() => cancel(o._id)}
-                    disabled={cancellingId === o._id}
-                    className="border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
-                  >
-                    {cancellingId === o._id ? "Wait..." : "Cancel"}
-                  </button>
-                )}
+                {!isDelivered &&
+                  !isCancelled &&
+                  lstatus !== "return requested" &&
+                  lstatus !== "returned" && (
+                    <button
+                      onClick={() => cancel(o._id)}
+                      disabled={cancellingId === o._id}
+                      className="border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
+                    >
+                      {cancellingId === o._id ? "Wait..." : "Cancel"}
+                    </button>
+                  )}
               </div>
             </div>
 
             {o.items?.map((it, idx) => (
-              <div key={idx} className="flex items-center gap-4 py-3 cursor-pointer" onClick={() => navigate({ to: "/track", search: { orderId: o.order_number } as any })}>
-                <img src={it.image || "https://placehold.co/100x100?text=Toy"} alt={it.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100 shrink-0" />
+              <div
+                key={idx}
+                className="flex items-center gap-4 py-3 cursor-pointer"
+                onClick={() =>
+                  navigate({ to: "/track", search: { orderId: o.order_number } as any })
+                }
+              >
+                <img
+                  src={it.image || "https://placehold.co/100x100?text=Toy"}
+                  alt={it.name}
+                  className="w-16 h-16 rounded-xl object-cover border border-slate-100 shrink-0"
+                />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-sm text-slate-800 truncate">{it.name}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">Qty: {it.quantity} × ₹{Number(it.price).toLocaleString("en-IN")}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Qty: {it.quantity} × ₹{Number(it.price).toLocaleString("en-IN")}
+                  </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <span className="font-bold text-sm text-slate-900 block mb-1">₹{(it.quantity * it.price).toLocaleString("en-IN")}</span>
+                  <span className="font-bold text-sm text-slate-900 block mb-1">
+                    ₹{(it.quantity * it.price).toLocaleString("en-IN")}
+                  </span>
                   {statusBadge(o.status, o.refund_status)}
                 </div>
               </div>
@@ -842,7 +1063,9 @@ function AddressesEngine() {
         </div>
         <div>
           <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Manage Addresses</h2>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">Configure your primary delivery endpoint details.</p>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">
+            Configure your primary delivery endpoint details.
+          </p>
         </div>
       </div>
 
@@ -852,7 +1075,7 @@ function AddressesEngine() {
           <textarea
             required
             value={addr}
-            onChange={e => setAddr(e.target.value)}
+            onChange={(e) => setAddr(e.target.value)}
             rows={3}
             placeholder="Flat No, Wing, Apartment name, Landmark..."
             className="w-full p-4 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium resize-none"
@@ -865,7 +1088,7 @@ function AddressesEngine() {
             <input
               required
               value={city}
-              onChange={e => setCity(e.target.value)}
+              onChange={(e) => setCity(e.target.value)}
               placeholder="City"
               className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
@@ -875,7 +1098,7 @@ function AddressesEngine() {
             <input
               required
               value={state}
-              onChange={e => setState(e.target.value)}
+              onChange={(e) => setState(e.target.value)}
               placeholder="State"
               className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
@@ -886,7 +1109,7 @@ function AddressesEngine() {
               required
               type="number"
               value={pin}
-              onChange={e => setPin(e.target.value)}
+              onChange={(e) => setPin(e.target.value)}
               placeholder="Pincode"
               className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
@@ -944,7 +1167,9 @@ function PasswordEngine() {
         </div>
         <div>
           <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Change Password</h2>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">Secure your identity with a robust passphrase credential.</p>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">
+            Secure your identity with a robust passphrase credential.
+          </p>
         </div>
       </div>
 
@@ -956,7 +1181,7 @@ function PasswordEngine() {
               type={showOldPass ? "text" : "password"}
               required
               value={oldPass}
-              onChange={e => setOldPass(e.target.value)}
+              onChange={(e) => setOldPass(e.target.value)}
               placeholder="Current Password"
               className="w-full pl-4 pr-12 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
@@ -976,7 +1201,7 @@ function PasswordEngine() {
               type={showNewPass ? "text" : "password"}
               required
               value={newPass}
-              onChange={e => setNewPass(e.target.value)}
+              onChange={(e) => setNewPass(e.target.value)}
               placeholder="New robust password"
               className="w-full pl-4 pr-12 py-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-[#BFDDF0] focus:ring-2 focus:ring-[#BFDDF0]/30 transition text-slate-800 font-medium"
             />
@@ -1023,8 +1248,12 @@ function NotificationsEngine() {
           <Bell className="w-5 h-5 stroke-[2]" />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">Notification Settings</h2>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">Control how automated event handoffs alert your channels.</p>
+          <h2 className="text-lg font-extrabold text-slate-800 leading-tight">
+            Notification Settings
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">
+            Control how automated event handoffs alert your channels.
+          </p>
         </div>
       </div>
 
@@ -1034,12 +1263,14 @@ function NotificationsEngine() {
             <input
               type="checkbox"
               checked={emailNotif}
-              onChange={e => setEmailNotif(e.target.checked)}
+              onChange={(e) => setEmailNotif(e.target.checked)}
               className="w-4 h-4 accent-[#802a8f] rounded"
             />
             <div>
               <span className="font-bold text-sm text-slate-800 block">Email Broadcasts</span>
-              <span className="text-xs text-slate-400">Receive order progression details and periodic tailored offers.</span>
+              <span className="text-xs text-slate-400">
+                Receive order progression details and periodic tailored offers.
+              </span>
             </div>
           </label>
 
@@ -1047,12 +1278,16 @@ function NotificationsEngine() {
             <input
               type="checkbox"
               checked={smsNotif}
-              onChange={e => setSmsNotif(e.target.checked)}
+              onChange={(e) => setSmsNotif(e.target.checked)}
               className="w-4 h-4 accent-[#802a8f] rounded"
             />
             <div>
-              <span className="font-bold text-sm text-slate-800 block">SMS / WhatsApp Notifications</span>
-              <span className="text-xs text-slate-400">Instant tracking dispatches and delivery fulfillment timestamps.</span>
+              <span className="font-bold text-sm text-slate-800 block">
+                SMS / WhatsApp Notifications
+              </span>
+              <span className="text-xs text-slate-400">
+                Instant tracking dispatches and delivery fulfillment timestamps.
+              </span>
             </div>
           </label>
         </div>

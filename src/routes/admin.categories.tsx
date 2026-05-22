@@ -22,7 +22,11 @@ type Category = {
 };
 
 function slugify(s: string) {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 const matrixData = [
@@ -31,13 +35,26 @@ const matrixData = [
   { name: "DOLL & DOLL SETS", subs: ["DOLLS & PLAYSETS", "ROLEPLAY"] },
   { name: "RIDE ON & CYCLES", subs: ["TRICYCLE", "CYCLE", "SCOOTER", "RIDE ON"] },
   { name: "INFANT & PRESCHOOL", subs: ["BABY TOYS", "BABY GEAR & UTILITY", "BABY PERSONAL CARE"] },
-  { name: "LIFE STYLE", subs: ["MUSIC", "BUBBLE PLAY", "NOVELTY TOYS", "SCHOOL ACCESSORIES", "GADGETS", "KIDS ACCESSORIES"] },
+  {
+    name: "LIFE STYLE",
+    subs: [
+      "MUSIC",
+      "BUBBLE PLAY",
+      "NOVELTY TOYS",
+      "SCHOOL ACCESSORIES",
+      "GADGETS",
+      "KIDS ACCESSORIES",
+    ],
+  },
   { name: "PARTY DECORATION", subs: ["BALLOON", "CANDLE", "CURTAINS", "COMBO SETS"] },
   { name: "SOFT TOYS", subs: ["STUFFED ANIMAL", "PILLOW"] },
   { name: "SPORTS & OUTDOOR", subs: ["OUTDOOR SPORTS", "INDOOR SPORTS"] },
   { name: "WEAPONS & GUNS", subs: ["GUNS AND BULLET", "MUSICAL GUNS", "WEAPONS"] },
-  { name: "VEHICLES & TRACKS", subs: ["RC TOYS", "DIE CAST TOY & FRICTION", "TRAIN AND TRACK SET"] },
-  { name: "KIDS FURNITURE", subs: ["CHAIR", "STOOL", "TABLE AND CHAIR"] }
+  {
+    name: "VEHICLES & TRACKS",
+    subs: ["RC TOYS", "DIE CAST TOY & FRICTION", "TRAIN AND TRACK SET"],
+  },
+  { name: "KIDS FURNITURE", subs: ["CHAIR", "STOOL", "TABLE AND CHAIR"] },
 ];
 
 function AdminCategories() {
@@ -54,71 +71,75 @@ function AdminCategories() {
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["admin-categories"],
     queryFn: async () => {
-        const { data } = await api.get("/categories");
-        return data as Category[];
+      const { data } = await api.get("/categories");
+      return data as Category[];
     },
   });
 
   const handleToggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const handleSelectAll = () => {
     if (selectedIds.length === categories.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(categories.map(c => c._id));
+      setSelectedIds(categories.map((c) => c._id));
     }
   };
 
   const bulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    if (!confirm(`Are you sure you want to delete these ${selectedIds.length} selected categories? Products in them will become uncategorized.`)) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete these ${selectedIds.length} selected categories? Products in them will become uncategorized.`,
+      )
+    )
+      return;
 
     setIsBulkDeleting(true);
     try {
-        let deletedCount = 0;
-        for (const id of selectedIds) {
-            await api.delete(`/categories/${id}`);
-            deletedCount++;
-        }
-        toast.success(`${deletedCount} categories deleted successfully!`);
-        setSelectedIds([]);
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      let deletedCount = 0;
+      for (const id of selectedIds) {
+        await api.delete(`/categories/${id}`);
+        deletedCount++;
+      }
+      toast.success(`${deletedCount} categories deleted successfully!`);
+      setSelectedIds([]);
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to delete all selected categories");
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.error(error.response?.data?.message || "Failed to delete all selected categories");
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } finally {
-        setIsBulkDeleting(false);
+      setIsBulkDeleting(false);
     }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     setUploading(true);
     try {
-       const base64 = await compressImage(file, 600, 0.8); 
-       const isTransparent = file.type.includes('png') || file.type.includes('webp') || file.type.includes('gif');
-       const ext = isTransparent ? 'png' : 'jpg';
-       const { data } = await api.post("/upload", { 
-           image: base64, 
-           name: `cat-${file.name.replace(/\.[^/.]+$/, "")}.${ext}` 
-       });
-       const inputElement = document.getElementById("cat_image_input") as HTMLInputElement;
-       if (inputElement) {
-           inputElement.value = data.url;
-       }
-       toast.success("Image uploaded!");
+      const base64 = await compressImage(file, 600, 0.8);
+      const isTransparent =
+        file.type.includes("png") || file.type.includes("webp") || file.type.includes("gif");
+      const ext = isTransparent ? "png" : "jpg";
+      const { data } = await api.post("/upload", {
+        image: base64,
+        name: `cat-${file.name.replace(/\.[^/.]+$/, "")}.${ext}`,
+      });
+      const inputElement = document.getElementById("cat_image_input") as HTMLInputElement;
+      if (inputElement) {
+        inputElement.value = data.url;
+      }
+      toast.success("Image uploaded!");
     } catch (error) {
-       toast.error("Failed to upload image");
+      toast.error("Failed to upload image");
     } finally {
-       setUploading(false);
+      setUploading(false);
     }
   };
 
@@ -134,98 +155,104 @@ function AdminCategories() {
     if (!name) return toast.error("Name is required");
 
     try {
-        const payload = { name, icon, image, slug, sort_order, parent };
-        if (editing) {
-            await api.put(`/categories/${editing._id}`, payload);
-            toast.success("Category updated");
-        } else {
-            await api.post("/categories", payload);
-            toast.success("Category added");
-        }
-        setEditing(null);
-        setShowForm(false);
-        setPresetParentId("");
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      const payload = { name, icon, image, slug, sort_order, parent };
+      if (editing) {
+        await api.put(`/categories/${editing._id}`, payload);
+        toast.success("Category updated");
+      } else {
+        await api.post("/categories", payload);
+        toast.success("Category added");
+      }
+      setEditing(null);
+      setShowForm(false);
+      setPresetParentId("");
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to save category");
+      toast.error(error.response?.data?.message || "Failed to save category");
     }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this category? Products in it will become uncategorized.")) return;
     try {
-        await api.delete(`/categories/${id}`);
-        toast.success("Category deleted");
-        setSelectedIds(prev => prev.filter(x => x !== id));
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      await api.delete(`/categories/${id}`);
+      toast.success("Category deleted");
+      setSelectedIds((prev) => prev.filter((x) => x !== id));
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to delete category");
+      toast.error(error.response?.data?.message || "Failed to delete category");
     }
   };
 
   const seedMatrixClientSide = async () => {
-    if (!confirm("Populate the complete database catalog with standard Parent Categories and Subcategories matrix via live API integration? This will take ~20-30 seconds.")) return;
-    
+    if (
+      !confirm(
+        "Populate the complete database catalog with standard Parent Categories and Subcategories matrix via live API integration? This will take ~20-30 seconds.",
+      )
+    )
+      return;
+
     setIsSeeding(true);
     setSeedStatus("Clearing stale category records...");
-    
+
     try {
-        // 1. Delete all current categories to reset cleanly
-        for (const cat of categories) {
-            try {
-                await api.delete(`/categories/${cat._id}`);
-            } catch (err) {
-                // proceed smoothly
-            }
+      // 1. Delete all current categories to reset cleanly
+      for (const cat of categories) {
+        try {
+          await api.delete(`/categories/${cat._id}`);
+        } catch (err) {
+          // proceed smoothly
         }
+      }
 
-        // Calculate total target count for accurate user status display
-        const totalItems = matrixData.length + matrixData.reduce((acc, curr) => acc + new Set(curr.subs).size, 0);
-        let createdCount = 0;
-        let pOrder = 1;
+      // Calculate total target count for accurate user status display
+      const totalItems =
+        matrixData.length + matrixData.reduce((acc, curr) => acc + new Set(curr.subs).size, 0);
+      let createdCount = 0;
+      let pOrder = 1;
 
-        // 2. Loop through main categories sequentially to respect server load limits
-        for (const pItem of matrixData) {
-            createdCount++;
-            setSeedStatus(`Creating (${createdCount}/${totalItems}): ${pItem.name}`);
-            const pSlug = slugify(pItem.name);
-            
-            // Create parent via standard frontend authenticated POST
-            const { data: parentRes } = await api.post('/categories', {
-                name: pItem.name,
-                slug: pSlug,
-                sort_order: pOrder++
-            });
+      // 2. Loop through main categories sequentially to respect server load limits
+      for (const pItem of matrixData) {
+        createdCount++;
+        setSeedStatus(`Creating (${createdCount}/${totalItems}): ${pItem.name}`);
+        const pSlug = slugify(pItem.name);
 
-            let sOrder = 1;
-            const uniqueSubNames = [...new Set(pItem.subs)];
-            for (const subName of uniqueSubNames) {
-                createdCount++;
-                setSeedStatus(`Creating (${createdCount}/${totalItems}): ${subName}`);
-                const subSlug = `${pSlug}-${slugify(subName)}`;
-                
-                await api.post('/categories', {
-                    name: subName,
-                    slug: subSlug,
-                    parent: parentRes._id,
-                    sort_order: sOrder++
-                });
-            }
+        // Create parent via standard frontend authenticated POST
+        const { data: parentRes } = await api.post("/categories", {
+          name: pItem.name,
+          slug: pSlug,
+          sort_order: pOrder++,
+        });
+
+        let sOrder = 1;
+        const uniqueSubNames = [...new Set(pItem.subs)];
+        for (const subName of uniqueSubNames) {
+          createdCount++;
+          setSeedStatus(`Creating (${createdCount}/${totalItems}): ${subName}`);
+          const subSlug = `${pSlug}-${slugify(subName)}`;
+
+          await api.post("/categories", {
+            name: subName,
+            slug: subSlug,
+            parent: parentRes._id,
+            sort_order: sOrder++,
+          });
         }
+      }
 
-        toast.success("Complete Categories Matrix fully synchronized with live Cloud Database!");
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Complete Categories Matrix fully synchronized with live Cloud Database!");
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } catch (error: any) {
-        toast.error("Process stopped or encountered an API load limit. Refreshing state...");
-        qc.invalidateQueries({ queryKey: ["admin-categories"] });
-        qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.error("Process stopped or encountered an API load limit. Refreshing state...");
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      qc.invalidateQueries({ queryKey: ["categories"] });
     } finally {
-        setIsSeeding(false);
-        setSeedStatus("");
-        setSelectedIds([]);
+      setIsSeeding(false);
+      setSeedStatus("");
+      setSelectedIds([]);
     }
   };
 
@@ -266,7 +293,11 @@ function AdminCategories() {
             </button>
           )}
           <button
-            onClick={() => { setEditing(null); setShowForm(true); setPresetParentId(""); }}
+            onClick={() => {
+              setEditing(null);
+              setShowForm(true);
+              setPresetParentId("");
+            }}
             disabled={isSeeding}
             className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold disabled:opacity-50"
           >
@@ -277,66 +308,120 @@ function AdminCategories() {
 
       {isSeeding && (
         <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex items-center gap-3 shadow-sm animate-pulse">
-           <Loader2 className="size-5 animate-spin text-amber-600 shrink-0" />
-           <div className="text-sm font-medium leading-tight">
-             <span className="font-bold block mb-0.5">Live Remote Seeding in Progress</span>
-             {seedStatus}
-           </div>
+          <Loader2 className="size-5 animate-spin text-amber-600 shrink-0" />
+          <div className="text-sm font-medium leading-tight">
+            <span className="font-bold block mb-0.5">Live Remote Seeding in Progress</span>
+            {seedStatus}
+          </div>
         </div>
       )}
 
-
       {showForm && !isSeeding && (
         <form onSubmit={save} className="bg-surface rounded-xl shadow-card p-4 space-y-3 relative">
-          <button type="button" onClick={() => { setShowForm(false); setEditing(null); setPresetParentId(""); }} className="absolute top-3 right-3 text-muted-foreground">
+          <button
+            type="button"
+            onClick={() => {
+              setShowForm(false);
+              setEditing(null);
+              setPresetParentId("");
+            }}
+            className="absolute top-3 right-3 text-muted-foreground"
+          >
             <X className="size-4" />
           </button>
           <h3 className="font-semibold">{editing ? "Edit category" : "New category"}</h3>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Category Name</label>
-              <input name="name" required defaultValue={editing?.name} placeholder="e.g. Soft Toys" className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                Category Name
+              </label>
+              <input
+                name="name"
+                required
+                defaultValue={editing?.name}
+                placeholder="e.g. Soft Toys"
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              />
             </div>
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">URL Slug</label>
-              <input name="slug" defaultValue={editing?.slug} placeholder="auto-generated" className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                URL Slug
+              </label>
+              <input
+                name="slug"
+                defaultValue={editing?.slug}
+                placeholder="auto-generated"
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              />
             </div>
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Emoji Icon (Fallback)</label>
-              <input name="icon" defaultValue={editing?.icon ?? ""} placeholder="🧸" className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                Emoji Icon (Fallback)
+              </label>
+              <input
+                name="icon"
+                defaultValue={editing?.icon ?? ""}
+                placeholder="🧸"
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              />
             </div>
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Sort Order</label>
-              <input name="sort_order" type="number" defaultValue={editing?.sort_order ?? 0} className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                Sort Order
+              </label>
+              <input
+                name="sort_order"
+                type="number"
+                defaultValue={editing?.sort_order ?? 0}
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              />
             </div>
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">Parent Category <span className="text-[10px] font-normal lowercase italic">(Optional)</span></label>
-              <select 
-                name="parent" 
-                defaultValue={editing?.parent?._id || editing?.parent || presetParentId || ""} 
+              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                Parent Category{" "}
+                <span className="text-[10px] font-normal lowercase italic">(Optional)</span>
+              </label>
+              <select
+                name="parent"
+                defaultValue={editing?.parent?._id || editing?.parent || presetParentId || ""}
                 key={editing?._id || presetParentId}
                 className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
               >
                 <option value="">— Top Level Category —</option>
                 {categories
-                  .filter(cat => !cat.parent) // Only show top-level as parents to prevent infinite/3-deep recursion
-                  .filter(cat => !editing || cat._id !== editing._id) // Prevent circular parent to self
-                  .map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                  ))
-                }
+                  .filter((cat) => !cat.parent) // Only show top-level as parents to prevent infinite/3-deep recursion
+                  .filter((cat) => !editing || cat._id !== editing._id) // Prevent circular parent to self
+                  .map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase block">Category Image URL</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase block">
+                  Category Image URL
+                </label>
                 <label className="text-xs text-primary font-bold cursor-pointer hover:underline flex items-center gap-1">
                   <ImageIcon className="size-3" />
                   {uploading ? "Uploading..." : "Upload Image"}
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                  />
                 </label>
               </div>
-              <input id="cat_image_input" name="image" defaultValue={editing?.image ?? ""} placeholder="https://..." className="w-full px-3 py-2 text-sm border border-input rounded" />
+              <input
+                id="cat_image_input"
+                name="image"
+                defaultValue={editing?.image ?? ""}
+                placeholder="https://..."
+                className="w-full px-3 py-2 text-sm border border-input rounded"
+              />
             </div>
           </div>
           <button className="bg-primary text-primary-foreground px-5 py-2 rounded font-bold text-sm shadow-sm hover:brightness-105">
@@ -348,7 +433,7 @@ function AdminCategories() {
       <div className="bg-surface rounded-xl shadow-card divide-y divide-border overflow-hidden">
         {categories.length > 0 && (
           <div className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 text-sm font-semibold text-slate-700">
-            <input 
+            <input
               type="checkbox"
               checked={categories.length > 0 && selectedIds.length === categories.length}
               onChange={handleSelectAll}
@@ -360,62 +445,90 @@ function AdminCategories() {
           </div>
         )}
         {categories
-          .filter(cat => !cat.parent) // Get roots
+          .filter((cat) => !cat.parent) // Get roots
           .map((root) => {
-            const children = categories.filter(child => (child.parent?._id || child.parent) === root._id);
-            
+            const children = categories.filter(
+              (child) => (child.parent?._id || child.parent) === root._id,
+            );
+
             return (
               <div key={root._id}>
                 {/* Parent Category Row */}
                 <div className="p-4 flex items-center gap-4 hover:bg-muted/30 transition bg-muted/5 border-l-4 border-primary">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={selectedIds.includes(root._id)}
                     onChange={() => handleToggleSelect(root._id)}
                     className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
                   />
                   <div className="size-12 shrink-0 rounded-lg border border-border bg-muted overflow-hidden flex items-center justify-center shadow-sm">
                     {root.image ? (
-                      <img src={resolveImage(root.image)} alt="" className="size-full object-cover" />
+                      <img
+                        src={resolveImage(root.image)}
+                        alt=""
+                        className="size-full object-cover"
+                      />
                     ) : (
                       <span className="text-2xl">{root.icon ?? "🎁"}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <div className="font-bold text-sm md:text-base text-foreground uppercase tracking-wide">{root.name}</div>
-                      <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold border border-primary/10 uppercase">Parent</span>
+                      <div className="font-bold text-sm md:text-base text-foreground uppercase tracking-wide">
+                        {root.name}
+                      </div>
+                      <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold border border-primary/10 uppercase">
+                        Parent
+                      </span>
                     </div>
-                    <div className="text-xs text-muted-foreground">slug: <span className="font-mono text-foreground">{root.slug}</span> · order: <span className="font-bold">{root.sort_order}</span></div>
+                    <div className="text-xs text-muted-foreground">
+                      slug: <span className="font-mono text-foreground">{root.slug}</span> · order:{" "}
+                      <span className="font-bold">{root.sort_order}</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button 
+                    <button
                       onClick={() => {
                         setEditing(null);
                         setPresetParentId(root._id);
                         setShowForm(true);
-                        window.scrollTo({top: 0, behavior: 'smooth'});
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       disabled={isSeeding}
                       title="Add subcategory"
                       className="p-2 hover:bg-muted rounded disabled:opacity-50"
                     >
-                       <Plus className="size-4 text-muted-foreground" />
+                      <Plus className="size-4 text-muted-foreground" />
                     </button>
-                    <button disabled={isSeeding} onClick={() => { setEditing(root); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition disabled:opacity-50">
+                    <button
+                      disabled={isSeeding}
+                      onClick={() => {
+                        setEditing(root);
+                        setShowForm(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="p-2 hover:bg-primary/10 rounded-full transition disabled:opacity-50"
+                    >
                       <Pencil className="size-4 text-primary" />
                     </button>
-                    <button disabled={isSeeding} onClick={() => remove(root._id)} className="p-2 hover:bg-muted rounded disabled:opacity-50">
+                    <button
+                      disabled={isSeeding}
+                      onClick={() => remove(root._id)}
+                      className="p-2 hover:bg-muted rounded disabled:opacity-50"
+                    >
                       <Trash2 className="size-4 text-destructive" />
                     </button>
                   </div>
                 </div>
 
                 {/* Children Loop */}
-                {children.map(child => (
-                  <div key={child._id} className="p-3 pl-8 md:pl-14 flex items-center gap-3 hover:bg-muted/30 transition border-t border-border/50">
-                    <input 
-                      type="checkbox" 
+                {children.map((child) => (
+                  <div
+                    key={child._id}
+                    className="p-3 pl-8 md:pl-14 flex items-center gap-3 hover:bg-muted/30 transition border-t border-border/50"
+                  >
+                    <input
+                      type="checkbox"
                       checked={selectedIds.includes(child._id)}
                       onChange={() => handleToggleSelect(child._id)}
                       className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
@@ -423,19 +536,37 @@ function AdminCategories() {
                     <span className="text-muted-foreground opacity-40 text-lg">↳</span>
                     <div className="size-10 shrink-0 rounded-full border border-border bg-surface overflow-hidden flex items-center justify-center shadow-sm scale-90">
                       {child.image ? (
-                        <img src={resolveImage(child.image)} alt="" className="size-full object-cover" />
+                        <img
+                          src={resolveImage(child.image)}
+                          alt=""
+                          className="size-full object-cover"
+                        />
                       ) : (
                         <span className="text-xl">{child.icon ?? "📦"}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm text-slate-700">{child.name}</div>
-                      <div className="text-[10px] text-muted-foreground">slug: <span className="font-mono">{child.slug}</span></div>
+                      <div className="text-[10px] text-muted-foreground">
+                        slug: <span className="font-mono">{child.slug}</span>
+                      </div>
                     </div>
-                    <button disabled={isSeeding} onClick={() => { setEditing(child); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 hover:bg-primary/10 rounded-full transition scale-90 disabled:opacity-50">
+                    <button
+                      disabled={isSeeding}
+                      onClick={() => {
+                        setEditing(child);
+                        setShowForm(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="p-2 hover:bg-primary/10 rounded-full transition scale-90 disabled:opacity-50"
+                    >
                       <Pencil className="size-3.5 text-primary" />
                     </button>
-                    <button disabled={isSeeding} onClick={() => remove(child._id)} className="p-2 hover:bg-muted rounded scale-90 disabled:opacity-50">
+                    <button
+                      disabled={isSeeding}
+                      onClick={() => remove(child._id)}
+                      className="p-2 hover:bg-muted rounded scale-90 disabled:opacity-50"
+                    >
                       <Trash2 className="size-3.5 text-destructive" />
                     </button>
                   </div>
@@ -443,22 +574,42 @@ function AdminCategories() {
               </div>
             );
           })}
-        
+
         {/* If any orphaned sub-categories exist (parent not found/null but has parent value) display them here safely */}
-        {categories.filter(cat => cat.parent && !categories.find(r => r._id === (cat.parent?._id || cat.parent))).map(cat => (
-           <div key={cat._id} className="p-4 flex items-center gap-4 bg-yellow-50/30">
-              <input 
-                type="checkbox" 
+        {categories
+          .filter(
+            (cat) =>
+              cat.parent && !categories.find((r) => r._id === (cat.parent?._id || cat.parent)),
+          )
+          .map((cat) => (
+            <div key={cat._id} className="p-4 flex items-center gap-4 bg-yellow-50/30">
+              <input
+                type="checkbox"
                 checked={selectedIds.includes(cat._id)}
                 onChange={() => handleToggleSelect(cat._id)}
                 className="size-4 accent-primary cursor-pointer rounded-none border-border shrink-0"
               />
-              <div className="flex-1 font-semibold">{cat.name} <span className="text-xs text-destructive">(Orphaned Subcategory)</span></div>
-              <button disabled={isSeeding} onClick={() => { setEditing(cat); setShowForm(true); }} className="p-2"><Pencil className="size-4 text-primary"/></button>
-           </div>
-        ))}
+              <div className="flex-1 font-semibold">
+                {cat.name} <span className="text-xs text-destructive">(Orphaned Subcategory)</span>
+              </div>
+              <button
+                disabled={isSeeding}
+                onClick={() => {
+                  setEditing(cat);
+                  setShowForm(true);
+                }}
+                className="p-2"
+              >
+                <Pencil className="size-4 text-primary" />
+              </button>
+            </div>
+          ))}
 
-        {categories.length === 0 && !isLoading && !isSeeding && <div className="p-8 text-center text-sm text-muted-foreground">No categories yet. Click "⚡ Seed Matrix Data" above to populate the catalog.</div>}
+        {categories.length === 0 && !isLoading && !isSeeding && (
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            No categories yet. Click "⚡ Seed Matrix Data" above to populate the catalog.
+          </div>
+        )}
       </div>
     </div>
   );

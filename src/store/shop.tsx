@@ -45,42 +45,49 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   }, [wishlist]);
 
   // Resolve cart/wishlist products from DB
-  const ids = useMemo(() => Array.from(new Set([...cart.map((c) => c.id), ...wishlist])), [cart, wishlist]);
+  const ids = useMemo(
+    () => Array.from(new Set([...cart.map((c) => c.id), ...wishlist])),
+    [cart, wishlist],
+  );
   useEffect(() => {
     if (ids.length === 0) {
       setProductMap({});
       return;
     }
-    
-    api.get("/products")
+
+    api
+      .get("/products")
       .then(({ data }) => {
         if (!data) return;
         const products = data as any[];
         const map: Record<string, Product> = {};
-        products.filter(p => ids.includes(p._id)).forEach((r) => {
-          const img = resolveImage(r.image);
-          map[r._id] = {
-            id: r._id,
-            name: r.name,
-            description: r.description ?? "",
-            category_id: r.category?._id || r.category,
-            price: Number(r.price),
-            mrp: Number(r.mrp),
-            image: img,
-            images: (r.images && r.images.length > 0) 
-              ? r.images.map((pImg: string) => resolveImage(pImg)) 
-              : [img],
-            rating: Number(r.rating),
-            ratingCount: r.rating_count,
-            inStock: r.in_stock,
-            badge: r.badge,
-            ageRange: r.age_range ?? "All",
-            offerPct: r.offer_pct ?? 0,
-          };
-        });
+        products
+          .filter((p) => ids.includes(p._id))
+          .forEach((r) => {
+            const img = resolveImage(r.image);
+            map[r._id] = {
+              id: r._id,
+              name: r.name,
+              description: r.description ?? "",
+              category_id: r.category?._id || r.category,
+              price: Number(r.price),
+              mrp: Number(r.mrp),
+              image: img,
+              images:
+                r.images && r.images.length > 0
+                  ? r.images.map((pImg: string) => resolveImage(pImg))
+                  : [img],
+              rating: Number(r.rating),
+              ratingCount: r.rating_count,
+              inStock: r.in_stock,
+              badge: r.badge,
+              ageRange: r.age_range ?? "All",
+              offerPct: r.offer_pct ?? 0,
+            };
+          });
         setProductMap(map);
       })
-      .catch(err => console.error("Error fetching products:", err));
+      .catch((err) => console.error("Error fetching products:", err));
   }, [ids.join(",")]);
 
   const value = useMemo<ShopState>(() => {
@@ -110,7 +117,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         }),
       removeFromCart: (id) => setCart((c) => c.filter((i) => i.id !== id)),
       setQty: (id, qty) =>
-        setCart((c) => (qty <= 0 ? c.filter((i) => i.id !== id) : c.map((i) => (i.id === id ? { ...i, qty } : i)))),
+        setCart((c) =>
+          qty <= 0 ? c.filter((i) => i.id !== id) : c.map((i) => (i.id === id ? { ...i, qty } : i)),
+        ),
       toggleWishlist: (id) =>
         setWishlist((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id])),
       isInWishlist: (id) => wishlist.includes(id),

@@ -2,10 +2,28 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts, useCategories, useBanners } from "@/hooks/useCatalog";
-import { ShieldCheck, Truck, RotateCcw, Headphones, Sparkles, Zap, Star, Plus, Rocket, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Headphones,
+  Sparkles,
+  Zap,
+  Star,
+  Plus,
+  Rocket,
+  ShoppingBag,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useAuth } from "@/store/auth";
 import { resolveImage } from "@/data/products";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 import under199 from "@/assets/shopbyprice/under199.png";
 import under399 from "@/assets/shopbyprice/under399.png";
@@ -13,7 +31,6 @@ import under699 from "@/assets/shopbyprice/under699.png";
 import under999 from "@/assets/shopbyprice/under999.png";
 import under1499 from "@/assets/shopbyprice/under1499.png";
 import above1500 from "@/assets/shopbyprice/above1500.png";
-
 
 import age0_2 from "@/assets/0_2.png";
 import age2_4 from "@/assets/2_4.png";
@@ -35,41 +52,50 @@ const AGE_RANGES = [
 const INSTAGRAM_REELS = [
   {
     id: "reel-1",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-child-playing-with-toys-in-a-crib-41761-large.mp4",
+    videoUrl:
+      "https://assets.mixkit.co/videos/preview/mixkit-child-playing-with-toys-in-a-crib-41761-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "THIS KEPT MY CHILD BUSY LONGER THAN CARTOONS 😂",
   },
   {
     id: "reel-2",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-little-child-playing-with-wooden-toys-at-home-43033-large.mp4",
+    videoUrl:
+      "https://assets.mixkit.co/videos/preview/mixkit-little-child-playing-with-wooden-toys-at-home-43033-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "PREMIUM WOODEN BLOCKS & LEARNING TOYS 🪵",
   },
   {
     id: "reel-3",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-kids-hands-playing-with-colorful-building-blocks-42323-large.mp4",
+    videoUrl:
+      "https://assets.mixkit.co/videos/preview/mixkit-kids-hands-playing-with-colorful-building-blocks-42323-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "CREATIVE & IMAGINATIVE PLAY FOR TODDLERS 🧩",
   },
   {
     id: "reel-4",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-toddler-girl-playing-with-soft-plush-toys-in-bed-48866-large.mp4",
+    videoUrl:
+      "https://assets.mixkit.co/videos/preview/mixkit-toddler-girl-playing-with-soft-plush-toys-in-bed-48866-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "SUPER CUTE SOFT TOYS FOR THE PERFECT SLEEP 🧸",
   },
   {
     id: "reel-5",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
+    videoUrl:
+      "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
     caption: "SMART TOYS BY TOY HAAT 😊",
-  }
+  },
 ];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Toy Haat — Shop Toys Online | Dolls, Vehicles, Soft Toys & more" },
-      { name: "description", content: "Discover thousands of toys at unbeatable prices. Free shipping on prepaid orders." },
+      {
+        name: "description",
+        content:
+          "Discover thousands of toys at unbeatable prices. Free shipping on prepaid orders.",
+      },
       { property: "og:title", content: "Toy Haat — Shop Toys Online" },
       { property: "og:description", content: "Discover thousands of toys at unbeatable prices." },
     ],
@@ -78,14 +104,70 @@ export const Route = createFileRoute("/")({
 });
 
 const ALL_TESTIMONIALS = [
-  { n: "Priya Sharma", c: "Mumbai", r: 5, t: "Quality is fantastic and delivery was super quick. My daughter adores the unicorn plush!", d: "2 days ago", i: "👩" },
-  { n: "Rahul Mehta", c: "Bangalore", r: 5, t: "The building blocks set is genuinely premium. Keep my kids engaged for hours. Highly recommended!", d: "5 days ago", i: "👨" },
-  { n: "Aarti Kapur", c: "Delhi", r: 5, t: "Amazing experience! The gift wrapping was beautiful and the educational toys are absolute top quality.", d: "Yesterday", i: "👩" },
-  { n: "Vikram Singh", c: "Jaipur", r: 5, t: "Super fast shipping to Rajasthan. The remote control vehicle is robust and powerful. Will order again!", d: "1 week ago", i: "👨" },
-  { n: "Sneha Patel", c: "Ahmedabad", r: 5, t: "Extremely happy with the learning board sets. Best e-commerce site to buy safe toys in India.", d: "3 days ago", i: "👩" },
-  { n: "Deepak Nair", c: "Chennai", r: 5, t: "Got my order within 48 hours! Very safe packaging. Kids absolutely loved the puzzle gifts.", d: "4 days ago", i: "👨" },
-  { n: "Ananya Sen", c: "Kolkata", r: 5, t: "Value for money deals are crazy good. Got three premium brand dolls under ₹999. Genuine products!", d: "2 days ago", i: "👧" },
-  { n: "Rohit Varma", c: "Pune", r: 5, t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work Toy Haat!", d: "1 week ago", i: "🧑" },
+  {
+    n: "Priya Sharma",
+    c: "Mumbai",
+    r: 5,
+    t: "Quality is fantastic and delivery was super quick. My daughter adores the unicorn plush!",
+    d: "2 days ago",
+    i: "👩",
+  },
+  {
+    n: "Rahul Mehta",
+    c: "Bangalore",
+    r: 5,
+    t: "The building blocks set is genuinely premium. Keep my kids engaged for hours. Highly recommended!",
+    d: "5 days ago",
+    i: "👨",
+  },
+  {
+    n: "Aarti Kapur",
+    c: "Delhi",
+    r: 5,
+    t: "Amazing experience! The gift wrapping was beautiful and the educational toys are absolute top quality.",
+    d: "Yesterday",
+    i: "👩",
+  },
+  {
+    n: "Vikram Singh",
+    c: "Jaipur",
+    r: 5,
+    t: "Super fast shipping to Rajasthan. The remote control vehicle is robust and powerful. Will order again!",
+    d: "1 week ago",
+    i: "👨",
+  },
+  {
+    n: "Sneha Patel",
+    c: "Ahmedabad",
+    r: 5,
+    t: "Extremely happy with the learning board sets. Best e-commerce site to buy safe toys in India.",
+    d: "3 days ago",
+    i: "👩",
+  },
+  {
+    n: "Deepak Nair",
+    c: "Chennai",
+    r: 5,
+    t: "Got my order within 48 hours! Very safe packaging. Kids absolutely loved the puzzle gifts.",
+    d: "4 days ago",
+    i: "👨",
+  },
+  {
+    n: "Ananya Sen",
+    c: "Kolkata",
+    r: 5,
+    t: "Value for money deals are crazy good. Got three premium brand dolls under ₹999. Genuine products!",
+    d: "2 days ago",
+    i: "👧",
+  },
+  {
+    n: "Rohit Varma",
+    c: "Pune",
+    r: 5,
+    t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work Toy Haat!",
+    d: "1 week ago",
+    i: "🧑",
+  },
 ];
 
 function HomePage() {
@@ -95,12 +177,12 @@ function HomePage() {
   const { isAdmin } = useAuth();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const scrollReels = (direction: 'left' | 'right') => {
+  const scrollReels = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
       const scrollAmount = 300;
       scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
       });
     }
   };
@@ -114,21 +196,31 @@ function HomePage() {
   }, []);
 
   const offers = products.filter((p) => p.isSale);
-  const trendingProducts = products.filter(p =>
-    p.badge && p.badge.toLowerCase().split(",").some(b => ["trending", "trending product"].includes(b.trim()))
+  const trendingProducts = products.filter(
+    (p) =>
+      p.badge &&
+      p.badge
+        .toLowerCase()
+        .split(",")
+        .some((b) => ["trending", "trending product"].includes(b.trim())),
   );
-  const bestSellers = products.filter(p =>
-    p.badge && p.badge.toLowerCase().split(",").some(b => ["best seller", "best seller product", "bestseller"].includes(b.trim()))
+  const bestSellers = products.filter(
+    (p) =>
+      p.badge &&
+      p.badge
+        .toLowerCase()
+        .split(",")
+        .some((b) => ["best seller", "best seller product", "bestseller"].includes(b.trim())),
   );
 
-  const heroBanners = banners.filter(b => b.position !== 'promo');
-  const promoBanners = banners.filter(b => b.position === 'promo').slice(0, 2);
+  const heroBanners = banners.filter((b) => b.position !== "promo");
+  const promoBanners = banners.filter((b) => b.position === "promo").slice(0, 2);
 
   const [api, setApi] = useState<CarouselApi>();
   const [heroIdx, setHeroIdx] = useState(0);
 
   // Pre-filter for performance
-  const rootCats = categories.filter(c => !c.parent_id);
+  const rootCats = categories.filter((c) => !c.parent_id);
 
   useEffect(() => {
     if (!api || heroBanners.length < 2) return;
@@ -156,8 +248,16 @@ function HomePage() {
               <CarouselContent className="-ml-0">
                 {heroBanners.map((b, i) => (
                   <CarouselItem key={i} className="pl-0">
-                    <Link to="/products" search={b.category?.slug ? { category: b.category.slug } : undefined} className="block w-full cursor-grab active:cursor-grabbing">
-                      <img src={resolveImage(b.image)} alt="Hero Banner" className="w-full h-auto min-h-[150px] object-cover select-none" />
+                    <Link
+                      to="/products"
+                      search={b.category?.slug ? { category: b.category.slug } : undefined}
+                      className="block w-full cursor-grab active:cursor-grabbing"
+                    >
+                      <img
+                        src={resolveImage(b.image)}
+                        alt="Hero Banner"
+                        className="w-full h-auto min-h-[150px] object-cover select-none"
+                      />
                     </Link>
                   </CarouselItem>
                 ))}
@@ -217,10 +317,18 @@ function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Rocket className="size-6 text-orange-600 animate-bounce" />
-                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-orange-950">Trending Products</h2>
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-orange-950">
+                    Trending Products
+                  </h2>
                 </div>
               </div>
-              <Link to="/products" search={{ badge: "Trending" } as never} className="text-xs md:text-sm font-semibold text-orange-700 underline hover:opacity-80">View more →</Link>
+              <Link
+                to="/products"
+                search={{ badge: "Trending" } as never}
+                className="text-xs md:text-sm font-semibold text-orange-700 underline hover:opacity-80"
+              >
+                View more →
+              </Link>
             </div>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x">
               {trendingProducts.slice(0, 16).map((p) => (
@@ -242,7 +350,9 @@ function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Star className="size-6 text-slate-800 fill-current" />
-                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-slate-900">Best Sellers</h2>
+                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-slate-900">
+                    Best Sellers
+                  </h2>
                 </div>
               </div>
               <Link
@@ -266,10 +376,10 @@ function HomePage() {
       {/* Categories Section */}
       <section className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h2 className="font-display text-3xl md:text-4xl text-foreground">
-            Shop by Category
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">Explore our wide selection of premium toys</p>
+          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Explore our wide selection of premium toys
+          </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
           {(() => {
@@ -283,7 +393,7 @@ function HomePage() {
               "bg-orange-50/80 border-orange-100/80 text-orange-600",
               "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
               "bg-pink-50/80 border-pink-100/80 text-pink-600",
-              "bg-teal-50/80 border-teal-100/80 text-teal-600"
+              "bg-teal-50/80 border-teal-100/80 text-teal-600",
             ];
             return rootCats.map((c, idx) => {
               const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
@@ -294,7 +404,9 @@ function HomePage() {
                   params={{ slug: c.slug } as never}
                   className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                 >
-                  <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}>
+                  <div
+                    className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
+                  >
                     {c.image ? (
                       <img
                         src={resolveImage(c.image)}
@@ -302,7 +414,9 @@ function HomePage() {
                         className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
                       />
                     ) : (
-                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">{c.icon ?? "🎁"}</span>
+                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
+                        {c.icon ?? "🎁"}
+                      </span>
                     )}
                   </div>
 
@@ -322,7 +436,9 @@ function HomePage() {
       <section className="container mx-auto px-4 py-8 bg-slate-50/50 border-y border-slate-100">
         <div className="text-center mb-8">
           <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
-          <p className="text-sm text-muted-foreground mt-1">Find perfect toys suited for every stage</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Find perfect toys suited for every stage
+          </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
@@ -352,7 +468,6 @@ function HomePage() {
         </div>
       </section>
 
-
       {/* Shop by Price */}
       <section className="container mx-auto px-4 py-4 mb-8">
         <div className="text-center mb-6">
@@ -360,12 +475,32 @@ function HomePage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { val: 199, img: under199, query: { minPrice: 0, maxPrice: 199, sort: 'price_desc' as const } },
-            { val: 399, img: under399, query: { minPrice: 200, maxPrice: 399, sort: 'price_desc' as const } },
-            { val: 699, img: under699, query: { minPrice: 400, maxPrice: 699, sort: 'price_desc' as const } },
-            { val: 999, img: under999, query: { minPrice: 700, maxPrice: 999, sort: 'price_desc' as const } },
-            { val: 1499, img: under1499, query: { minPrice: 1000, maxPrice: 1499, sort: 'price_desc' as const } },
-            { val: '1500+', img: above1500, query: { minPrice: 1500, sort: 'price_asc' as const } },
+            {
+              val: 199,
+              img: under199,
+              query: { minPrice: 0, maxPrice: 199, sort: "price_desc" as const },
+            },
+            {
+              val: 399,
+              img: under399,
+              query: { minPrice: 200, maxPrice: 399, sort: "price_desc" as const },
+            },
+            {
+              val: 699,
+              img: under699,
+              query: { minPrice: 400, maxPrice: 699, sort: "price_desc" as const },
+            },
+            {
+              val: 999,
+              img: under999,
+              query: { minPrice: 700, maxPrice: 999, sort: "price_desc" as const },
+            },
+            {
+              val: 1499,
+              img: under1499,
+              query: { minPrice: 1000, maxPrice: 1499, sort: "price_desc" as const },
+            },
+            { val: "1500+", img: above1500, query: { minPrice: 1500, sort: "price_asc" as const } },
           ].map((tier, idx) => (
             <Link
               key={idx}
@@ -373,7 +508,11 @@ function HomePage() {
               search={tier.query as never}
               className="block rounded-2xl overflow-hidden shadow-card hover:scale-[1.02] transition-transform duration-300"
             >
-              <img src={tier.img} className="w-full h-auto object-contain" alt={`Price tier ${tier.val}`} />
+              <img
+                src={tier.img}
+                className="w-full h-auto object-contain"
+                alt={`Price tier ${tier.val}`}
+              />
             </Link>
           ))}
         </div>
@@ -390,7 +529,11 @@ function HomePage() {
                 search={banner.category?.slug ? { category: banner.category.slug } : undefined}
                 className="block rounded-2xl overflow-hidden shadow-card bg-muted"
               >
-                <img src={resolveImage(banner.image)} alt="Promo" className="w-full h-auto object-contain rounded-2xl" />
+                <img
+                  src={resolveImage(banner.image)}
+                  alt="Promo"
+                  className="w-full h-auto object-contain rounded-2xl"
+                />
               </Link>
             ))}
           </div>
@@ -411,7 +554,7 @@ function HomePage() {
         <div
           ref={scrollContainerRef}
           className="flex md:grid gap-3 md:gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {INSTAGRAM_REELS.map((reel) => (
             <a
@@ -454,16 +597,23 @@ function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-6">
           {randomReviews.map((r, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-100 hover:border-[#BFDDF0] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_30px_-10px_rgba(191,221,240,0.4)] p-6 relative transition-all duration-300 flex flex-col">
+            <div
+              key={i}
+              className="bg-white rounded-2xl border border-slate-100 hover:border-[#BFDDF0] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_30px_-10px_rgba(191,221,240,0.4)] p-6 relative transition-all duration-300 flex flex-col"
+            >
               <div className="absolute -top-3 right-6 bg-emerald-50 border border-emerald-100 text-emerald-700 font-black text-[9px] tracking-wider uppercase px-3 py-1 rounded-full shadow-xs flex items-center gap-1">
                 <ShieldCheck className="size-3 fill-emerald-100" /> VERIFIED BUYER
               </div>
 
               <div className="flex items-center gap-0.5 mb-3.5 text-amber-400">
-                {[...Array(r.r)].map((_, idx) => <Star key={idx} className="size-4 fill-current" />)}
+                {[...Array(r.r)].map((_, idx) => (
+                  <Star key={idx} className="size-4 fill-current" />
+                ))}
               </div>
 
-              <p className="text-[13px] leading-relaxed font-medium text-slate-700 italic mb-6 flex-1">"{r.t}"</p>
+              <p className="text-[13px] leading-relaxed font-medium text-slate-700 italic mb-6 flex-1">
+                "{r.t}"
+              </p>
 
               <div className="flex items-center gap-3 pt-4 border-t border-slate-50 mt-auto">
                 <div className="size-10 rounded-full bg-slate-100 border border-slate-200 text-xl flex items-center justify-center shadow-xs shrink-0">
@@ -485,4 +635,3 @@ function HomePage() {
     </div>
   );
 }
-

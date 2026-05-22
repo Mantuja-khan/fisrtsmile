@@ -51,25 +51,36 @@ function AdminUsers() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {users.map((u: any) => (
-          <div key={u._id} className="bg-surface rounded-xl shadow-card border border-border/40 p-4 flex flex-col">
+          <div
+            key={u._id}
+            className="bg-surface rounded-xl shadow-card border border-border/40 p-4 flex flex-col"
+          >
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="font-bold text-base leading-tight">{u.full_name}</h3>
-                <span className={`text-[10px] font-bold uppercase tracking-wider mt-0.5 inline-block ${u.role === 'admin' ? 'text-purple-600' : 'text-muted-foreground'}`}>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider mt-0.5 inline-block ${u.role === "admin" ? "text-purple-600" : "text-muted-foreground"}`}
+                >
                   {u.role}
                 </span>
               </div>
               {u.isBlocked ? (
-                <span className="px-2 py-0.5 rounded bg-destructive/10 text-destructive text-[10px] font-bold uppercase">Blocked</span>
+                <span className="px-2 py-0.5 rounded bg-destructive/10 text-destructive text-[10px] font-bold uppercase">
+                  Blocked
+                </span>
               ) : (
-                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase">Active</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase">
+                  Active
+                </span>
               )}
             </div>
 
             <div className="space-y-2 mb-4 flex-1">
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <Mail className="size-3.5 text-slate-400 shrink-0" />
-                <span className="truncate" title={u.email}>{u.email}</span>
+                <span className="truncate" title={u.email}>
+                  {u.email}
+                </span>
               </div>
               {u.phone && (
                 <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -79,7 +90,14 @@ function AdminUsers() {
               )}
               <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1 border-t border-border/40">
                 <Calendar className="size-3.5 text-slate-300 shrink-0" />
-                <span>Joined {new Date(u.createdAt).toLocaleDateString("en-IN", { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span>
+                  Joined{" "}
+                  {new Date(u.createdAt).toLocaleDateString("en-IN", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
             </div>
 
@@ -113,8 +131,8 @@ function AdminUsers() {
 
         {users.length === 0 && (
           <div className="col-span-full py-12 bg-surface rounded-xl shadow-sm border border-dashed border-border flex flex-col items-center text-muted-foreground">
-             <User className="size-8 opacity-30 mb-2" />
-             <p className="italic text-sm">No registered users yet.</p>
+            <User className="size-8 opacity-30 mb-2" />
+            <p className="italic text-sm">No registered users yet.</p>
           </div>
         )}
       </div>

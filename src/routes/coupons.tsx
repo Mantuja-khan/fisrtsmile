@@ -78,9 +78,13 @@ function CouponsPage() {
       {!isOfferClaimed && (
         <div className="bg-gradient-to-br from-[#802a8f]/5 via-white to-secondary/5 rounded-2xl p-6 border border-[#802a8f]/10 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="flex-1 max-w-md">
-            <div className="inline-block px-2.5 py-1 bg-warning/20 text-warning-foreground text-[10px] font-extrabold uppercase rounded mb-2 tracking-wider">Available Offer</div>
+            <div className="inline-block px-2.5 py-1 bg-warning/20 text-warning-foreground text-[10px] font-extrabold uppercase rounded mb-2 tracking-wider">
+              Available Offer
+            </div>
             <h2 className="text-xl    text-foreground">Get 5% Instant Discount</h2>
-            <p className="text-sm text-muted-foreground mt-1">Unlock a 5% discount on all purchases by entering your mobile number.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Unlock a 5% discount on all purchases by entering your mobile number.
+            </p>
           </div>
           <form onSubmit={handleClaimOffer} className="flex gap-2 w-full md:w-auto shrink-0">
             <input
@@ -90,10 +94,15 @@ function CouponsPage() {
               maxLength={10}
               placeholder="10-digit mobile"
               value={claimPhone}
-              onChange={e => setClaimPhone(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => setClaimPhone(e.target.value.replace(/\D/g, ""))}
               className="px-4 py-3 border border-border bg-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#802a8f]/30 max-w-[180px]"
             />
-            <button type="submit" className="px-5 py-3 bg-[#802a8f] text-white text-sm    rounded-xl shadow-sm hover:brightness-110 transition shrink-0">Get Offer</button>
+            <button
+              type="submit"
+              className="px-5 py-3 bg-[#802a8f] text-white text-sm    rounded-xl shadow-sm hover:brightness-110 transition shrink-0"
+            >
+              Get Offer
+            </button>
           </form>
         </div>
       )}
@@ -113,31 +122,44 @@ function CouponsPage() {
           {coupons.map((coupon, i) => {
             const isUsed = !coupon.active;
             return (
-              <div key={i} className={`bg-gradient-to-r from-[#802a8f]/10 to-transparent rounded-2xl border border-[#802a8f]/20 overflow-hidden relative shadow-sm transition-all duration-300 ${isUsed ? 'opacity-60 grayscale blur-[1px] cursor-not-allowed select-none' : ''}`}>
-                <div className={`absolute top-0 left-0 bottom-0 w-2 ${isUsed ? 'bg-gray-400' : 'bg-[#802a8f]'}`} />
+              <div
+                key={i}
+                className={`bg-gradient-to-r from-[#802a8f]/10 to-transparent rounded-2xl border border-[#802a8f]/20 overflow-hidden relative shadow-sm transition-all duration-300 ${isUsed ? "opacity-60 grayscale blur-[1px] cursor-not-allowed select-none" : ""}`}
+              >
+                <div
+                  className={`absolute top-0 left-0 bottom-0 w-2 ${isUsed ? "bg-gray-400" : "bg-[#802a8f]"}`}
+                />
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <span className={`inline-block px-2 py-1 text-xs    uppercase rounded-md mb-2 ${isUsed ? 'bg-gray-400/20 text-gray-500' : 'bg-[#802a8f]/20 text-[#802a8f]'}`}>
-                        {isUsed ? 'Used Offer' : 'Special Offer'}
+                      <span
+                        className={`inline-block px-2 py-1 text-xs    uppercase rounded-md mb-2 ${isUsed ? "bg-gray-400/20 text-gray-500" : "bg-[#802a8f]/20 text-[#802a8f]"}`}
+                      >
+                        {isUsed ? "Used Offer" : "Special Offer"}
                       </span>
                       <h3 className="text-xl    text-foreground">Get {coupon.discount}% Off</h3>
                       <p className="text-sm text-muted-foreground">Valid on all products</p>
                     </div>
                     <div className="size-10 rounded-full bg-white flex items-center justify-center shadow-sm text-xl border border-border">
-                      {isUsed ? '🔒' : '🎁'}
+                      {isUsed ? "🔒" : "🎁"}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-border border-dashed">
-                    <span className={`font-mono    text-lg text-foreground tracking-wider ${isUsed ? 'line-through text-muted-foreground' : ''}`}>{coupon.code}</span>
+                    <span
+                      className={`font-mono    text-lg text-foreground tracking-wider ${isUsed ? "line-through text-muted-foreground" : ""}`}
+                    >
+                      {coupon.code}
+                    </span>
                     <button
                       disabled={isUsed}
                       onClick={() => handleCopy(coupon.code)}
-                      className={`p-2 text-muted-foreground hover:text-[#802a8f] transition rounded-lg ${isUsed ? 'bg-gray-100 cursor-not-allowed' : 'bg-muted'}`}
+                      className={`p-2 text-muted-foreground hover:text-[#802a8f] transition rounded-lg ${isUsed ? "bg-gray-100 cursor-not-allowed" : "bg-muted"}`}
                     >
                       {isUsed ? (
-                        <span className="text-xs    uppercase text-red-500 tracking-wider">Used</span>
+                        <span className="text-xs    uppercase text-red-500 tracking-wider">
+                          Used
+                        </span>
                       ) : copiedCode === coupon.code ? (
                         <CheckCircle2 className="size-5 text-green-500" />
                       ) : (

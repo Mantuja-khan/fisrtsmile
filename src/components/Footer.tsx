@@ -12,7 +12,7 @@ export function Footer() {
         style={{
           backgroundImage: `url(${footerBg})`,
           filter: "blur(3px) brightness(0.65)",
-          opacity: "0.5"
+          opacity: "0.5",
         }}
       />
 
@@ -29,34 +29,94 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Categories</h4>
+            <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">
+              Categories
+            </h4>
             <ul className="space-y-2.5 text-sm text-slate-300/80">
-              <li><Link to="/categories" className="hover:text-white transition-colors">All Categories</Link></li>
-              <li><Link to="/products" className="hover:text-white transition-colors">All Products</Link></li>
-              <li><Link to="/products" search={{ category: "soft-toys" } as never} className="hover:text-white transition-colors">Soft Toys</Link></li>
-              <li><Link to="/products" search={{ category: "educational-toys" } as never} className="hover:text-white transition-colors">Educational</Link></li>
+              <li>
+                <Link to="/categories" className="hover:text-white transition-colors">
+                  All Categories
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className="hover:text-white transition-colors">
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/products"
+                  search={{ category: "soft-toys" } as never}
+                  className="hover:text-white transition-colors"
+                >
+                  Soft Toys
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/products"
+                  search={{ category: "educational-toys" } as never}
+                  className="hover:text-white transition-colors"
+                >
+                  Educational
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Help</h4>
             <ul className="space-y-2.5 text-sm text-slate-300/80">
-              <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link to="/track" className="hover:text-white transition-colors">Track Order</Link></li>
-              <li><Link to="/policies/shipping" className="hover:text-white transition-colors">Shipping</Link></li>
-              <li><Link to="/policies/returns" className="hover:text-white transition-colors">Returns & Exchange</Link></li>
-              <li><Link to="/policies/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/policies/terms" className="hover:text-white transition-colors">Terms of Use</Link></li>
-              <li><Link to="/policies/legal" className="hover:text-white transition-colors">Legal Notice</Link></li>
+              <li>
+                <Link to="/contact" className="hover:text-white transition-colors">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/track" className="hover:text-white transition-colors">
+                  Track Order
+                </Link>
+              </li>
+              <li>
+                <Link to="/policies/shipping" className="hover:text-white transition-colors">
+                  Shipping
+                </Link>
+              </li>
+              <li>
+                <Link to="/policies/returns" className="hover:text-white transition-colors">
+                  Returns & Exchange
+                </Link>
+              </li>
+              <li>
+                <Link to="/policies/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/policies/terms" className="hover:text-white transition-colors">
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link to="/policies/legal" className="hover:text-white transition-colors">
+                  Legal Notice
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Reach Us</h4>
             <ul className="space-y-3 text-sm text-slate-300/80">
-              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Mail className="size-4.5 shrink-0 text-slate-400" /> support@toyhaat.com</li>
-              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><MessageCircle className="size-4.5 shrink-0 text-slate-400" /> +91 7827743263</li>
-              <li className="flex items-center gap-2.5 hover:text-white transition-colors"><Instagram className="size-4.5 shrink-0 text-slate-400" /> @toyhaat</li>
+              <li className="flex items-center gap-2.5 hover:text-white transition-colors">
+                <Mail className="size-4.5 shrink-0 text-slate-400" /> support@toyhaat.com
+              </li>
+              <li className="flex items-center gap-2.5 hover:text-white transition-colors">
+                <MessageCircle className="size-4.5 shrink-0 text-slate-400" /> +91 7827743263
+              </li>
+              <li className="flex items-center gap-2.5 hover:text-white transition-colors">
+                <Instagram className="size-4.5 shrink-0 text-slate-400" /> @toyhaat
+              </li>
             </ul>
           </div>
         </div>
@@ -65,9 +125,13 @@ export function Footer() {
         <div className="border-t border-white/10 bg-slate-950/40 backdrop-blur-xs">
           <div className="container mx-auto px-4 py-5 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3">
             <div className="flex gap-4">
-              <span>© {new Date().getFullYear()} Toy Haat. Indian jurisdiction. Users must be 18+.</span>
+              <span>
+                © {new Date().getFullYear()} Toy Haat. Indian jurisdiction. Users must be 18+.
+              </span>
             </div>
-            <span className="font-medium text-slate-300 flex items-center gap-1">Made with <span className="text-rose-500 animate-pulse">❤️</span> for little explorers</span>
+            <span className="font-medium text-slate-300 flex items-center gap-1">
+              Made with <span className="text-rose-500 animate-pulse">❤️</span> for little explorers
+            </span>
           </div>
         </div>
       </div>

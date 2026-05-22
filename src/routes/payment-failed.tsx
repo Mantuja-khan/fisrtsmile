@@ -14,10 +14,14 @@ function PaymentFailed() {
         </div>
         <h1 className="text-2xl    text-slate-900 mb-2">Payment Cancelled / Failed</h1>
         <p className="text-slate-500 mb-6">
-          Oops! The payment session timed out or was declined. Please verify your card or bank funds and try again.
+          Oops! The payment session timed out or was declined. Please verify your card or bank funds
+          and try again.
         </p>
         <div className="flex flex-col gap-3">
-          <Link to="/account" className="w-full bg-slate-900 text-white    py-3 rounded-xl hover:bg-slate-800 transition">
+          <Link
+            to="/account"
+            className="w-full bg-slate-900 text-white    py-3 rounded-xl hover:bg-slate-800 transition"
+          >
             Retry from My Orders
           </Link>
           <Link to="/contact" className="text-sm text-slate-500 font-medium hover:underline">

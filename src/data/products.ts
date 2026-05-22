@@ -61,27 +61,31 @@ export type Category = {
 export const resolveImage = (img: string | null | undefined): string => {
   if (!img) return teddy;
   if (imageMap[img]) return imageMap[img];
-  
+
   // Handle legacy localhost URLs stored in DB
   let normalized = img;
-  const isLocalhost = typeof window !== 'undefined' && 
-    (window.location.hostname === 'localhost' || 
-     window.location.hostname === '127.0.0.1' || 
-     window.location.hostname.startsWith('192.168.'));
-  const apiHost = isLocalhost 
-    ? "http://localhost:5003/api" 
-    : (import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api");
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.startsWith("192.168."));
+  const apiHost = isLocalhost
+    ? "http://localhost:5003/api"
+    : import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api";
   const baseUrl = apiHost.replace(/\/api\/?$/, ""); // get base domain without trailing slash or /api
-  
-  if (normalized.includes("http://localhost:5000") || normalized.includes("http://localhost:5003")) {
-      normalized = normalized.replace(/http:\/\/localhost:(5000|5003)/, baseUrl);
+
+  if (
+    normalized.includes("http://localhost:5000") ||
+    normalized.includes("http://localhost:5003")
+  ) {
+    normalized = normalized.replace(/http:\/\/localhost:(5000|5003)/, baseUrl);
   }
-  
+
   // If it starts with /uploads (relative path), prepend baseUrl
   if (normalized.startsWith("/uploads")) {
-      return `${baseUrl}${normalized}`;
+    return `${baseUrl}${normalized}`;
   }
-  
+
   return normalized;
 };
 

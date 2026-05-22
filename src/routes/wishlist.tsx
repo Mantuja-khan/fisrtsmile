@@ -21,14 +21,21 @@ function WishlistPage() {
         <div className="bg-surface rounded-xl shadow-card p-10 text-center">
           <div className="text-6xl mb-3">💝</div>
           <p className="font-semibold">No items in your wishlist yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Tap the heart on any product to save it.</p>
-          <Link to="/products" className="inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold">
+          <p className="text-sm text-muted-foreground mt-1">
+            Tap the heart on any product to save it.
+          </p>
+          <Link
+            to="/products"
+            className="inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold"
+          >
             Browse Toys
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {items.map((p: Product) => <ProductCard key={p.id} product={p} />)}
+          {items.map((p: Product) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       )}
     </div>

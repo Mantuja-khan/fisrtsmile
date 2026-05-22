@@ -37,14 +37,23 @@ export function ProductCard({ product }: { product: Product }) {
             Sale {product.offerPct}%
           </span>
         )}
-        {product.badge && String(product.badge).split(",")
-          .map(b => b.trim())
-          .filter(b => Boolean(b) && !["best seller", "best seller product", "bestseller"].includes(b.toLowerCase()))
-          .map((b) => (
-            <span key={b} className="text-[9px] sm:text-[10px] font-  uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
-              {b}
-            </span>
-          ))}
+        {product.badge &&
+          String(product.badge)
+            .split(",")
+            .map((b) => b.trim())
+            .filter(
+              (b) =>
+                Boolean(b) &&
+                !["best seller", "best seller product", "bestseller"].includes(b.toLowerCase()),
+            )
+            .map((b) => (
+              <span
+                key={b}
+                className="text-[9px] sm:text-[10px] font-  uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm"
+              >
+                {b}
+              </span>
+            ))}
         {!product.inStock && (
           <span className="text-[9px] sm:text-[10px] font-  uppercase bg-slate-600 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
             Sold Out
@@ -105,11 +114,17 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Age Ranges */}
         {product.age_range && (
           <div className="flex flex-wrap items-center justify-center gap-1 mb-1.5">
-            {String(product.age_range).split(",").filter(Boolean).map((age) => (
-              <span key={age} className="text-[9px] font-extra  bg-[#BFDDF0]/30 text-slate-800 px-1.5 py-0.5 rounded border border-[#BFDDF0]/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] uppercase tracking-wider">
-                {age.trim()}
-              </span>
-            ))}
+            {String(product.age_range)
+              .split(",")
+              .filter(Boolean)
+              .map((age) => (
+                <span
+                  key={age}
+                  className="text-[9px] font-extra  bg-[#BFDDF0]/30 text-slate-800 px-1.5 py-0.5 rounded border border-[#BFDDF0]/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] uppercase tracking-wider"
+                >
+                  {age.trim()}
+                </span>
+              ))}
           </div>
         )}
 
@@ -118,10 +133,20 @@ export function ProductCard({ product }: { product: Product }) {
           {/* Price Section */}
           <div className="flex flex-col lg:flex-row items-center lg:items-baseline lg:justify-center lg:gap-2">
             <div className="text-slate-900 font-black text-xs sm:text-base tracking-wide">
-              Rs. {finalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              Rs.{" "}
+              {finalPrice.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </div>
             <div className="text-[9px] sm:text-[11px] text-gray-500 font-semi  lg:mt-0 mt-0.5">
-              <span className="line-through ml-0.5">Rs. {product.mrp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="line-through ml-0.5">
+                Rs.{" "}
+                {product.mrp.toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
             </div>
           </div>
 
@@ -134,10 +159,11 @@ export function ProductCard({ product }: { product: Product }) {
                 toast.success("Added to cart 🛒");
               }
             }}
-            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extra  uppercase tracking-widest transition-all duration-300 border rounded-full ${product.inStock
-              ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
-              : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
-              }`}
+            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extra  uppercase tracking-widest transition-all duration-300 border rounded-full ${
+              product.inStock
+                ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
+                : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
+            }`}
           >
             {product.inStock ? "ADD TO CART" : "NOTIFY ME"}
           </button>

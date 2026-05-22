@@ -18,7 +18,9 @@ export function DiscountPopup() {
 
     // Check if already added for this phone to prevent duplication
     const existing = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
-    const alreadyHas = existing.find((c: any) => c.phone === phoneToUse && c.code.startsWith("FS5OFF"));
+    const alreadyHas = existing.find(
+      (c: any) => c.phone === phoneToUse && c.code.startsWith("FS5OFF"),
+    );
     if (alreadyHas) return alreadyHas.code;
 
     const code = "FS5OFF-" + Math.floor(1000 + Math.random() * 9000);
@@ -107,8 +109,12 @@ export function DiscountPopup() {
         {/* Right side content */}
         <div className="w-full md:w-1/2 p-6 md:p-8 text-center flex flex-col justify-center items-center relative z-10 bg-white/40 md:bg-white backdrop-blur-sm md:backdrop-blur-none">
           <img src={logoImg} alt="Toy Haat" className="h-12 mb-4 object-contain" />
-          <h2 className="font-display text-4xl mb-2 text-gray-800 tracking-wide uppercase">Wait!</h2>
-          <p className="text-xl text-gray-700 mb-2">Unlock your <span className="  ">5%</span> before you go.</p>
+          <h2 className="font-display text-4xl mb-2 text-gray-800 tracking-wide uppercase">
+            Wait!
+          </h2>
+          <p className="text-xl text-gray-700 mb-2">
+            Unlock your <span className="  ">5%</span> before you go.
+          </p>
           <p className="text-sm italic text-gray-600 mb-6 font-serif">
             Your little one's next favourite toy is just a step away.
           </p>
@@ -135,7 +141,9 @@ export function DiscountPopup() {
               <p className="text-lg    text-primary mb-2">Offer Unlocked! 🎉</p>
               <div className="bg-[#d4eedb] border border-[#009b4d] rounded-xl p-4 my-4">
                 <p className="text-xs text-[#009b4d] uppercase    mb-1">Your Coupon Code</p>
-                <p className="text-2xl font-mono    tracking-widest text-[#009b4d]">{generatedCoupon}</p>
+                <p className="text-2xl font-mono    tracking-widest text-[#009b4d]">
+                  {generatedCoupon}
+                </p>
               </div>
               <p className="text-sm text-muted-foreground">
                 You can find this code in your{" "}

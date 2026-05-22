@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -9,18 +9,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 /**
  * Generates a professional HTML Email Template wrapper
  */
 export const getEmailTemplate = (title, content) => {
-    return `
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -159,26 +159,26 @@ export const getEmailTemplate = (title, content) => {
 };
 
 export const sendEmail = async (to, subject, text, html) => {
-    try {
-        const logoPath = path.join(__dirname, '../../src/assets/firstsmile_logo.png');
-        
-        await transporter.sendMail({
-            from: `"Toy Haat" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            text,
-            html,
-            attachments: [
-                {
-                    filename: 'firstsmile_logo.png',
-                    path: logoPath,
-                    cid: 'firstsmile_logo'
-                }
-            ]
-        });
-        return true;
-    } catch (error) {
-        console.error('Email send failed:', error);
-        return false;
-    }
+  try {
+    const logoPath = path.join(__dirname, "../../src/assets/firstsmile_logo.png");
+
+    await transporter.sendMail({
+      from: `"Toy Haat" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: "firstsmile_logo.png",
+          path: logoPath,
+          cid: "firstsmile_logo",
+        },
+      ],
+    });
+    return true;
+  } catch (error) {
+    console.error("Email send failed:", error);
+    return false;
+  }
 };

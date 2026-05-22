@@ -48,10 +48,10 @@ function AdminPasswordPage() {
 
     setBusy(true);
     try {
-      await api.post("/auth/reset-password", { 
-        email: user.email, 
-        otp, 
-        newPassword 
+      await api.post("/auth/reset-password", {
+        email: user.email,
+        otp,
+        newPassword,
       });
       toast.success("Admin password successfully updated with verification!");
       setOtpSent(false);
@@ -80,7 +80,9 @@ function AdminPasswordPage() {
             <ShieldCheck className="size-6" />
           </div>
           <div>
-            <span className="text-xs font-bold text-muted-foreground uppercase block">Admin Account</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase block">
+              Admin Account
+            </span>
             <span className="text-sm font-bold text-foreground">{user?.email}</span>
           </div>
         </div>
@@ -88,7 +90,8 @@ function AdminPasswordPage() {
         {!otpSent ? (
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              To change your password, we will dispatch a one-time verification passcode (OTP) to your registered admin email inbox.
+              To change your password, we will dispatch a one-time verification passcode (OTP) to
+              your registered admin email inbox.
             </p>
             <button
               onClick={sendOtp}
@@ -103,29 +106,39 @@ function AdminPasswordPage() {
           <form onSubmit={updatePassword} className="space-y-4">
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-primary font-medium flex justify-between items-center">
               <span>OTP sent to {user?.email}</span>
-              <button type="button" onClick={sendOtp} className="underline font-bold hover:opacity-80">Resend</button>
+              <button
+                type="button"
+                onClick={sendOtp}
+                className="underline font-bold hover:opacity-80"
+              >
+                Resend
+              </button>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase block">Enter 6-Digit OTP</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase block">
+                Enter 6-Digit OTP
+              </label>
               <input
                 required
                 maxLength={6}
                 value={otp}
-                onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                 placeholder="000000"
                 className="w-full px-3 py-2.5 text-center text-lg font-bold tracking-[0.5em] border border-input rounded-md outline-none focus:border-primary"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase block">New Password</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase block">
+                New Password
+              </label>
               <div className="relative flex items-center">
                 <input
                   type={showNewPassword ? "text" : "password"}
                   required
                   value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter robust new password"
                   className="w-full pl-3 pr-10 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
                 />
@@ -140,13 +153,15 @@ function AdminPasswordPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase block">Confirm New Password</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase block">
+                Confirm New Password
+              </label>
               <div className="relative flex items-center">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   required
                   value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter new password"
                   className="w-full pl-3 pr-10 py-2 text-sm border border-input rounded-md outline-none focus:border-primary"
                 />
@@ -155,7 +170,11 @@ function AdminPasswordPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 text-muted-foreground hover:text-foreground focus:outline-none transition"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>

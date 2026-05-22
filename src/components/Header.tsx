@@ -1,5 +1,17 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingCart, User, Menu, Grid3x3, ChevronDown, Headphones, Heart, ChevronRight, X, Sparkles } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Menu,
+  Grid3x3,
+  ChevronDown,
+  Headphones,
+  Heart,
+  ChevronRight,
+  X,
+  Sparkles,
+} from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useShop } from "@/store/shop";
 import { useAuth } from "@/store/auth";
@@ -18,6 +30,17 @@ export function Header() {
   const { user, signOut } = useAuth();
   const { data: categories = [] } = useCategories();
   const { data: products = [] } = useProducts();
+
+  const uniqueBrands = useMemo(() => {
+    const brandSet = new Set<string>();
+    products.forEach((p) => {
+      if (p.brand) {
+        brandSet.add(p.brand.trim());
+      }
+    });
+    BRANDS.forEach((b) => brandSet.add(b));
+    return Array.from(brandSet).sort((a, b) => a.localeCompare(b));
+  }, [products]);
 
   const [catOpen, setCatOpen] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
@@ -42,7 +65,9 @@ export function Header() {
     } else {
       document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [sidebarSearchOpen, mobileMenuOpen]);
 
   // Close dropdowns on outside click
@@ -102,19 +127,33 @@ export function Header() {
     const term = q.trim().toLowerCase();
     if (!term) return [];
     return products
-      .filter((p) =>
-        p.name.toLowerCase().includes(term) ||
-        (p.category_name ?? "").toLowerCase().includes(term),
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(term) ||
+          (p.category_name ?? "").toLowerCase().includes(term),
       )
       .slice(0, 6);
   }, [q, products]);
 
   const name = user?.full_name || user?.email?.split("@")[0] || "User";
-  const announcements = ["Get 5% off on your first order", "COD Charge should be 60 rupees", "New arrivals every week"]; const [annIndex, setAnnIndex] = useState(0); useEffect(() => { const timer = setInterval(() => setAnnIndex(i => (i + 1) % announcements.length), 4000); return () => clearInterval(timer); }, []);
+  const announcements = [
+    "Get 5% off on your first order",
+    "COD Charge should be 60 rupees",
+    "New arrivals every week",
+  ];
+  const [annIndex, setAnnIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setAnnIndex((i) => (i + 1) % announcements.length), 4000);
+    return () => clearInterval(timer);
+  }, []);
   return (
     <>
-      <header className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
-        <div className="bg-[#1E3A8A] text-slate-100 text-center py-1 font-semibold text-sm w-full">{announcements[annIndex]}</div>
+      <header
+        className={`flex flex-col w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
+      >
+        <div className="bg-[#1E3A8A] text-slate-100 text-center py-1 font-semibold text-sm w-full">
+          {announcements[annIndex]}
+        </div>
         {/* Consolidated Light Blue Bar */}
         <div className="bg-[#BFDDF0] text-slate-900 relative shadow-md transition-all">
           <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-0.5 md:py-1">
@@ -125,7 +164,6 @@ export function Header() {
 
             {/* Center: Desktop Consolidated Navigation */}
             <nav className="hidden lg:flex items-center gap-1 mx-auto">
-
               {/* Categories Button & Hover Dropdown */}
               <div
                 ref={catRef}
@@ -135,7 +173,7 @@ export function Header() {
                   setAgeOpen(false);
                   setBrandOpen(false);
                   if (categories.length > 0 && !activeCatId) {
-                    const root = categories.find(c => !c.parent_id);
+                    const root = categories.find((c) => !c.parent_id);
                     if (root) setActiveCatId(root.id);
                   }
                 }}
@@ -147,36 +185,40 @@ export function Header() {
                     setAgeOpen(false);
                     setBrandOpen(false);
                     if (!catOpen && categories.length > 0) {
-                      const root = categories.find(c => !c.parent_id);
+                      const root = categories.find((c) => !c.parent_id);
                       if (root) setActiveCatId(root.id);
                     }
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${catOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                    }`}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${
+                    catOpen
+                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                  }`}
                 >
-                  <Grid3x3 className="size-3.5 shrink-0" /> Categories <ChevronDown className={`size-3 transition ${catOpen ? "rotate-180" : ""}`} />
+                  <Grid3x3 className="size-3.5 shrink-0" /> Categories{" "}
+                  <ChevronDown className={`size-3 transition ${catOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {catOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
                     <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-3 grid grid-cols-2 gap-1 max-h-80 overflow-y-auto custom-scrollbar">
-                        {categories.filter(c => !c.parent_id).map((parent) => (
-                          <Link
-                            key={parent.id}
-                            to="/subcategories/$slug"
-                            params={{ slug: parent.slug } as never}
-                            onClick={() => setCatOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950  text-[11px] tracking-wider uppercase transition-all rounded-none"
-                          >
-                            <span className="size-4 flex items-center justify-center shrink-0">
-                              {parent.icon ?? "🎁"}
-                            </span>
-                            <span className="truncate">{parent.name}</span>
-                          </Link>
-                        ))}
+                        {categories
+                          .filter((c) => !c.parent_id)
+                          .map((parent) => (
+                            <Link
+                              key={parent.id}
+                              to="/subcategories/$slug"
+                              params={{ slug: parent.slug } as never}
+                              onClick={() => setCatOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950  text-[11px] tracking-wider uppercase transition-all rounded-none"
+                            >
+                              <span className="size-4 flex items-center justify-center shrink-0">
+                                {parent.icon ?? "🎁"}
+                              </span>
+                              <span className="truncate">{parent.name}</span>
+                            </Link>
+                          ))}
                       </div>
                       <div className="border-t border-slate-100 bg-slate-50 p-2 text-center">
                         <Link
@@ -204,19 +246,25 @@ export function Header() {
                 onMouseLeave={() => setBrandOpen(false)}
               >
                 <button
-                  onClick={() => { setBrandOpen((v) => !v); setAgeOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${brandOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                    }`}
+                  onClick={() => {
+                    setBrandOpen((v) => !v);
+                    setAgeOpen(false);
+                    setCatOpen(false);
+                  }}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${
+                    brandOpen
+                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                  }`}
                 >
-                  Brands <ChevronDown className={`size-3 transition ${brandOpen ? "rotate-180" : ""}`} />
+                  Brands{" "}
+                  <ChevronDown className={`size-3 transition ${brandOpen ? "rotate-180" : ""}`} />
                 </button>
                 {brandOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
-                        {BRANDS.map((b) => (
+                        {uniqueBrands.map((b) => (
                           <Link
                             key={b}
                             to="/products"
@@ -245,11 +293,16 @@ export function Header() {
                 onMouseLeave={() => setAgeOpen(false)}
               >
                 <button
-                  onClick={() => { setAgeOpen((v) => !v); setBrandOpen(false); setCatOpen(false); }}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${ageOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
-                    }`}
+                  onClick={() => {
+                    setAgeOpen((v) => !v);
+                    setBrandOpen(false);
+                    setCatOpen(false);
+                  }}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider cursor-pointer transition-all ${
+                    ageOpen
+                      ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                      : "text-slate-800 hover:bg-white/30 hover:text-slate-950"
+                  }`}
                 >
                   Age <ChevronDown className={`size-3 transition ${ageOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -257,7 +310,15 @@ export function Header() {
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="w-52 bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
                       <div className="p-2 flex flex-col gap-1">
-                        {["0-18 month", "18-36 month", "3-5 year", "5-7 year", "7-9 year", "9-12 year", "12 +years"].map((age) => (
+                        {[
+                          "0-18 month",
+                          "18-36 month",
+                          "3-5 year",
+                          "5-7 year",
+                          "7-9 year",
+                          "9-12 year",
+                          "12 +years",
+                        ].map((age) => (
                           <Link
                             key={age}
                             to="/products"
@@ -295,7 +356,7 @@ export function Header() {
               {user && (
                 <Link
                   to="/account"
-                  search={{ view: 'orders' } as any}
+                  search={{ view: "orders" } as any}
                   className="px-3 py-2 rounded-full text-sm font-medium uppercase tracking-wider text-slate-800 hover:bg-white/30 hover:text-slate-950 transition-all"
                 >
                   Orders
@@ -317,12 +378,10 @@ export function Header() {
               >
                 Contact
               </Link>
-
             </nav>
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 lg:gap-5 shrink-0">
-
               {/* Search Toggle Icon */}
               <button
                 onClick={() => setSidebarSearchOpen(true)}
@@ -342,7 +401,10 @@ export function Header() {
               </Link>
 
               {/* Cart */}
-              <Link to="/cart" className="relative hidden md:flex flex-col items-center justify-center shrink-0 hover:opacity-80 transition-opacity text-slate-800">
+              <Link
+                to="/cart"
+                className="relative hidden md:flex flex-col items-center justify-center shrink-0 hover:opacity-80 transition-opacity text-slate-800"
+              >
                 <div className="relative">
                   <ShoppingCart className="size-6" />
                   <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px]    rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
@@ -363,17 +425,27 @@ export function Header() {
               </div>
 
               {/* Mobile Search Toggle */}
-              <button className="md:hidden p-2 text-slate-900 flex items-center" onClick={() => setSidebarSearchOpen(true)}>
+              <button
+                className="md:hidden p-2 text-slate-900 flex items-center"
+                onClick={() => setSidebarSearchOpen(true)}
+              >
                 <Search className="size-5.5" />
               </button>
 
               {/* Mobile Wishlist Toggle */}
-              <Link to="/wishlist" className="md:hidden p-2 text-slate-900 flex items-center relative">
+              <Link
+                to="/wishlist"
+                className="md:hidden p-2 text-slate-900 flex items-center relative"
+              >
                 <Heart className="size-5.5 fill-[#FEFD99] text-slate-900" />
               </Link>
 
               {/* Mobile Menu Toggle */}
-              <button className="md:hidden p-2 text-slate-900 flex items-center" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <button
+                className="md:hidden p-2 text-slate-900 flex items-center"
+                aria-label="Menu"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
                 <Menu className="size-5.5" />
               </button>
             </div>
@@ -383,20 +455,23 @@ export function Header() {
 
       {/* Slide-out Mobile Navigation Drawer (Sliding from Left) */}
       <div
-        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-start ${mobileMenuOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-start ${
+          mobileMenuOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
+        }`}
       >
         {/* Backdrop (hides when clicking anywhere) */}
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"
-            }`}
+          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+            mobileMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
         />
 
         {/* Drawer Content */}
         <div
-          className={`relative w-full max-w-[280px] bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+          className={`relative w-full max-w-[280px] bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
           {/* Header with Close button */}
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -414,8 +489,13 @@ export function Header() {
           {/* Body Navigation Links */}
           <div className="flex-1 overflow-y-auto bg-white">
             <div className="flex flex-col">
-              <Link to="/categories" className="p-4 border-b border-slate-100 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <Grid3x3 className="size-5 text-slate-700" /> <span className="   text-slate-800">All Categories</span>
+              <Link
+                to="/categories"
+                className="p-4 border-b border-slate-100 flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Grid3x3 className="size-5 text-slate-700" />{" "}
+                <span className="   text-slate-800">All Categories</span>
               </Link>
 
               {/* Shop by Age collapsible */}
@@ -425,17 +505,30 @@ export function Header() {
                   className="w-full p-4 flex items-center justify-between    text-left text-slate-800"
                 >
                   <span>Shop by Age</span>
-                  <ChevronDown className={`size-4 text-slate-400 transition-transform ${mobileAgeOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`size-4 text-slate-400 transition-transform ${mobileAgeOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {mobileAgeOpen && (
                   <div className="bg-slate-50/70 border-t border-slate-100 flex flex-col pl-8 pr-4 py-2 gap-2.5">
-                    {["0-18 month", "18-36 month", "3-5 year", "5-7 year", "7-9 year", "9-12 year", "12 +years"].map(age => (
+                    {[
+                      "0-18 month",
+                      "18-36 month",
+                      "3-5 year",
+                      "5-7 year",
+                      "7-9 year",
+                      "9-12 year",
+                      "12 +years",
+                    ].map((age) => (
                       <Link
                         key={age}
                         to="/products"
                         search={{ age } as never}
                         className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors   "
-                        onClick={() => { setMobileMenuOpen(false); setMobileAgeOpen(false); }}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setMobileAgeOpen(false);
+                        }}
                       >
                         {age}
                       </Link>
@@ -451,17 +544,22 @@ export function Header() {
                   className="w-full p-4 flex items-center justify-between    text-left text-slate-800"
                 >
                   <span>Shop by Brand</span>
-                  <ChevronDown className={`size-4 text-slate-400 transition-transform ${mobileBrandOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`size-4 text-slate-400 transition-transform ${mobileBrandOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {mobileBrandOpen && (
                   <div className="bg-slate-50/70 border-t border-slate-100 grid grid-cols-2 pl-8 pr-4 py-3 gap-x-4 gap-y-2.5">
-                    {BRANDS.map(brand => (
+                    {uniqueBrands.map((brand) => (
                       <Link
                         key={brand}
                         to="/products"
                         search={{ brand } as never}
                         className="py-1 text-sm text-slate-600 hover:text-slate-900 transition-colors    truncate"
-                        onClick={() => { setMobileMenuOpen(false); setMobileBrandOpen(false); }}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setMobileBrandOpen(false);
+                        }}
                       >
                         {brand}
                       </Link>
@@ -470,12 +568,18 @@ export function Header() {
                 )}
               </div>
 
-              <Link to="/coupons" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Coupons</Link>
+              <Link
+                to="/coupons"
+                className="p-4 border-b border-slate-100    text-slate-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Coupons
+              </Link>
 
               {user && (
                 <Link
                   to="/account"
-                  search={{ view: 'orders' } as any}
+                  search={{ view: "orders" } as any}
                   className="p-4 border-b border-slate-100    text-slate-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -483,10 +587,26 @@ export function Header() {
                 </Link>
               )}
 
-              <Link to="/about" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
-              <Link to="/contact" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
+              <Link
+                to="/about"
+                className="p-4 border-b border-slate-100    text-slate-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About Us
+              </Link>
+              <Link
+                to="/contact"
+                className="p-4 border-b border-slate-100    text-slate-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact Us
+              </Link>
 
-              <Link to="/account" className="p-4    text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/account"
+                className="p-4    text-slate-800 flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <User className="size-5 text-slate-700" /> {user ? name : "Sign In"}
               </Link>
             </div>
@@ -496,21 +616,23 @@ export function Header() {
 
       {/* Slide-out Search Sidebar */}
       <div
-        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-end ${sidebarSearchOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-[1000] transition-all duration-300 flex justify-end ${
+          sidebarSearchOpen ? "visible pointer-events-auto" : "invisible pointer-events-none"
+        }`}
       >
         {/* Backdrop */}
         <div
           onClick={() => setSidebarSearchOpen(false)}
-          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${sidebarSearchOpen ? "opacity-100" : "opacity-0"
-            }`}
-
+          className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+            sidebarSearchOpen ? "opacity-100" : "opacity-0"
+          }`}
         />
 
         {/* Drawer Content */}
         <div
-          className={`relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${sidebarSearchOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+            sidebarSearchOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         >
           {/* Header */}
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -537,12 +659,17 @@ export function Header() {
             >
               <input
                 value={q}
-                onChange={(e) => { setQ(e.target.value); }}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                }}
                 placeholder="Search for toys, dolls, games..."
                 className="w-full px-4 py-3 bg-slate-100 border border-slate-200 focus:border-slate-300 focus:bg-white rounded-xl outline-none text-sm transition-all placeholder:text-slate-400 text-slate-800   "
                 autoFocus
               />
-              <button type="submit" className="absolute right-2 top-1.5 bottom-1.5 bg-[#BFDDF0] hover:bg-[#BFDDF0]/80 text-slate-950  px-4 rounded-lg text-xs flex items-center transition-colors border border-[#BFDDF0]">
+              <button
+                type="submit"
+                className="absolute right-2 top-1.5 bottom-1.5 bg-[#BFDDF0] hover:bg-[#BFDDF0]/80 text-slate-950  px-4 rounded-lg text-xs flex items-center transition-colors border border-[#BFDDF0]"
+              >
                 Search
               </button>
             </form>
@@ -553,16 +680,24 @@ export function Header() {
             {!q.trim() ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 px-4 py-12">
                 <Sparkles className="size-12 text-[#BFDDF0] mb-3 animate-pulse fill-current" />
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Start Typing...</p>
-                <p className="text-xs text-slate-400 mt-1 font-medium">Discover the best toys and deals instantly.</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
+                  Start Typing...
+                </p>
+                <p className="text-xs text-slate-400 mt-1 font-medium">
+                  Discover the best toys and deals instantly.
+                </p>
               </div>
             ) : searchResults.length === 0 ? (
               <div className="text-center py-12 px-4">
-                <p className="text-sm text-slate-500 font-medium">No results matched "<strong>{q}</strong>".</p>
+                <p className="text-sm text-slate-500 font-medium">
+                  No results matched "<strong>{q}</strong>".
+                </p>
               </div>
             ) : (
               <div className="space-y-3 pb-6">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Found {searchResults.length} Matches</h4>
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+                  Found {searchResults.length} Matches
+                </h4>
                 {searchResults.map((p) => {
                   const fp = effectivePrice(p.price, p.offerPct);
                   return (
@@ -570,20 +705,34 @@ export function Header() {
                       key={p.id}
                       to="/product/$id"
                       params={{ id: p.id }}
-                      onClick={() => { setSidebarSearchOpen(false); setQ(""); }}
+                      onClick={() => {
+                        setSidebarSearchOpen(false);
+                        setQ("");
+                      }}
                       className="flex items-center gap-4 p-3 bg-white border border-slate-100 rounded-xl hover:border-[#BFDDF0] hover:shadow-md transition-all shadow-xs group"
                     >
                       <div className="size-16 bg-slate-50 rounded-lg overflow-hidden border border-slate-100 shrink-0 flex items-center justify-center p-1">
-                        <img src={resolveImage(p.image)} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                        <img
+                          src={resolveImage(p.image)}
+                          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h5 className="text-xs font-black text-slate-800 truncate group-hover:text-slate-950 uppercase tracking-wide">
                           <HighlightText text={p.name} highlight={q} />
                         </h5>
-                        <p className="text-[10px] text-slate-400    tracking-wide">{p.category_name || "Toys"}</p>
+                        <p className="text-[10px] text-slate-400    tracking-wide">
+                          {p.category_name || "Toys"}
+                        </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm font-black text-slate-950">₹{fp.toLocaleString("en-IN")}</span>
-                          {p.offerPct > 0 && <span className="text-[10px] line-through text-slate-400   ">₹{p.mrp.toLocaleString("en-IN")}</span>}
+                          <span className="text-sm font-black text-slate-950">
+                            ₹{fp.toLocaleString("en-IN")}
+                          </span>
+                          {p.offerPct > 0 && (
+                            <span className="text-[10px] line-through text-slate-400   ">
+                              ₹{p.mrp.toLocaleString("en-IN")}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 group-hover:text-[#BFDDF0] transition-all shrink-0" />

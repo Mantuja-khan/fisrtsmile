@@ -13,7 +13,8 @@ export const Route = createFileRoute("/policies/returns")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 font-medium">
-        We want you to have a smooth experience while shopping with <strong>Toy Haat</strong>. <br />
+        We want you to have a smooth experience while shopping with <strong>Toy Haat</strong>.{" "}
+        <br />
         Please read the policy carefully before placing your order.
       </p>
 
@@ -23,7 +24,9 @@ export const Route = createFileRoute("/policies/returns")({
           <CheckCircle2 className="size-4 text-green-600" />
           Return / Exchange Eligibility
         </h2>
-        <p className="text-sm text-muted-foreground font-semibold">We accept exchange requests only in the following cases:</p>
+        <p className="text-sm text-muted-foreground font-semibold">
+          We accept exchange requests only in the following cases:
+        </p>
         <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
           <li>Product is damaged or defective</li>
           <li>Wrong product has been delivered</li>
@@ -53,7 +56,9 @@ export const Route = createFileRoute("/policies/returns")({
 
       {/* Exchange Policy */}
       <div className="space-y-2 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Exchange Policy</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Exchange Policy
+        </h2>
         <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5 leading-relaxed">
           <li>Exchange is allowed only for the same product.</li>
           <li>If the product is not available, store credit will be issued.</li>
@@ -68,21 +73,42 @@ export const Route = createFileRoute("/policies/returns")({
           Not Eligible for Return / Exchange
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs    text-muted-foreground">
-          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Used products</div>
-          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Products without original tags/packaging</div>
-          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Customized products</div>
-          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">• Sale or discounted items</div>
-          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30 sm:col-span-2">• Requests based on personal preference (color, design, etc.)</div>
+          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">
+            • Used products
+          </div>
+          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">
+            • Products without original tags/packaging
+          </div>
+          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">
+            • Customized products
+          </div>
+          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30">
+            • Sale or discounted items
+          </div>
+          <div className="bg-muted/30 px-3 py-2 rounded-lg border border-border/30 sm:col-span-2">
+            • Requests based on personal preference (color, design, etc.)
+          </div>
         </div>
       </div>
 
       {/* Return Process */}
       <div className="space-y-3 border-t border-border/30 pt-5">
-        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">Return Process</h2>
+        <h2 className="text-base    text-foreground uppercase tracking-wider m-0">
+          Return Process
+        </h2>
         <ol className="space-y-2 text-sm text-muted-foreground list-decimal pl-5">
-          <li><span className="   text-foreground/80">Email your request</span> along with your Order ID.</li>
-          <li><span className="   text-foreground/80">Share the unboxing video</span> and clear issue details.</li>
-          <li>After approval, <span className="   text-foreground/80">return instructions</span> will be shared.</li>
+          <li>
+            <span className="   text-foreground/80">Email your request</span> along with your Order
+            ID.
+          </li>
+          <li>
+            <span className="   text-foreground/80">Share the unboxing video</span> and clear issue
+            details.
+          </li>
+          <li>
+            After approval, <span className="   text-foreground/80">return instructions</span> will
+            be shared.
+          </li>
         </ol>
         <div className="text-xs font-medium text-muted-foreground italic pl-5 mt-2 space-y-1">
           <p>• Reverse pickup depends on courier service availability.</p>
@@ -104,8 +130,12 @@ export const Route = createFileRoute("/policies/returns")({
             <Clock className="size-3.5" /> Refund Details
           </h3>
           <ul className="space-y-1 text-xs font-medium text-[#0c4a6e] list-disc pl-4 mt-1">
-            <li>Processed within <strong>4–10 working days</strong>.</li>
-            <li>Credited directly back to the <strong>original payment method</strong>.</li>
+            <li>
+              Processed within <strong>4–10 working days</strong>.
+            </li>
+            <li>
+              Credited directly back to the <strong>original payment method</strong>.
+            </li>
           </ul>
         </div>
       </div>
@@ -116,8 +146,21 @@ export const Route = createFileRoute("/policies/returns")({
           <Mail className="size-4" /> How to Request
         </h2>
         <div className="space-y-1 text-sm">
-          <p><span className="   opacity-70 text-xs">Email:</span> <a href="mailto:support@toyhaat.com" className="font-extrabold hover:underline text-rose-200">support@toyhaat.com</a></p>
-          <p><span className="   opacity-70 text-xs">Subject Line:</span> <code className="bg-white/10 px-2 py-0.5 rounded text-white font-mono text-xs">Return/Exchange Request – [Order ID]</code></p>
+          <p>
+            <span className="   opacity-70 text-xs">Email:</span>{" "}
+            <a
+              href="mailto:support@toyhaat.com"
+              className="font-extrabold hover:underline text-rose-200"
+            >
+              support@toyhaat.com
+            </a>
+          </p>
+          <p>
+            <span className="   opacity-70 text-xs">Subject Line:</span>{" "}
+            <code className="bg-white/10 px-2 py-0.5 rounded text-white font-mono text-xs">
+              Return/Exchange Request – [Order ID]
+            </code>
+          </p>
         </div>
       </div>
     </div>

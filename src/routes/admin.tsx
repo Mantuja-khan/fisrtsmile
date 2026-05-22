@@ -16,7 +16,7 @@ import {
   ChevronDown,
   Smile,
   Cloud,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -29,7 +29,11 @@ function AdminLayout() {
   const location = useLocation();
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-16 text-center text-muted-foreground font-medium">Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground font-medium">
+        Loading...
+      </div>
+    );
   }
 
   // Allow login page to render without admin check
@@ -42,10 +46,11 @@ function AdminLayout() {
       <div className="container mx-auto px-4 py-16 text-center">
         <Shield className="size-12 mx-auto text-primary mb-3" />
         <h1 className="text-xl font-bold">Admin access required</h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          Please log in to the admin panel.
-        </p>
-        <Link to="/admin/login" className="inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold">
+        <p className="text-sm text-muted-foreground mt-2">Please log in to the admin panel.</p>
+        <Link
+          to="/admin/login"
+          className="inline-block mt-4 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold"
+        >
           Go to Admin Login
         </Link>
       </div>
@@ -64,7 +69,19 @@ function AdminLayout() {
   }
 
   // Strictly use the user's existing application buttons/features to preserve clean live mapping
-  const tabs: { to: "/admin" | "/admin/banners" | "/admin/promo" | "/admin/products" | "/admin/categories" | "/admin/orders" | "/admin/users"; label: string; icon: any; exact?: boolean }[] = [
+  const tabs: {
+    to:
+      | "/admin"
+      | "/admin/banners"
+      | "/admin/promo"
+      | "/admin/products"
+      | "/admin/categories"
+      | "/admin/orders"
+      | "/admin/users";
+    label: string;
+    icon: any;
+    exact?: boolean;
+  }[] = [
     { to: "/admin", label: "Dashboard", icon: LayoutGrid, exact: true },
     { to: "/admin/banners", label: "Hero Banners", icon: ImageIcon },
     { to: "/admin/promo", label: "Promo Banners", icon: Sparkles },
@@ -76,7 +93,6 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col md:flex-row relative font-sans">
-
       {/* 
         Masterclass Left Sidebar Structure matching reference screenshot:
         Composed of the extreme-left thick Solid Purple Column and the next adjacent White Panel.
@@ -90,7 +106,6 @@ function AdminLayout() {
 
       {/* Main Sidebar Links Menu Panel */}
       <aside className="w-full md:w-60 bg-white border-b md:border-b-0 md:border-r border-slate-100 flex flex-col shrink-0 relative z-10">
-
         {/* Back Button Area replacing MyCloud PRO */}
         <div className="h-16 px-6 flex items-center border-b border-slate-50">
           <Link
@@ -105,10 +120,11 @@ function AdminLayout() {
         {/* Tab Links Menu area */}
         <nav className="flex-1 p-4 flex md:flex-col gap-1.5 overflow-x-auto md:overflow-x-visible no-scrollbar">
           {tabs.map((t) => {
-            const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
+            const active = t.exact
+              ? location.pathname === t.to
+              : location.pathname.startsWith(t.to);
             return (
               <div key={t.to} className="relative group shrink-0 md:shrink">
-
                 {/* 
                   Masterpiece overlapping active icon box matching reference screenshot precisely:
                   Pops out across the border bounding the left solid purple column and the white sidebar panel.
@@ -121,12 +137,15 @@ function AdminLayout() {
 
                 <Link
                   to={t.to}
-                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs tracking-wide transition-all block ${active
+                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-xs tracking-wide transition-all block ${
+                    active
                       ? "bg-[#F3EEFF] text-[#7C3AED] ml-1"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
+                  }`}
                 >
-                  <t.icon className={`size-4 stroke-[2.5] shrink-0 ${active ? "text-[#7C3AED]" : "text-slate-400"}`} />
+                  <t.icon
+                    className={`size-4 stroke-[2.5] shrink-0 ${active ? "text-[#7C3AED]" : "text-slate-400"}`}
+                  />
                   <span className="truncate">{t.label}</span>
                 </Link>
               </div>
@@ -148,7 +167,6 @@ function AdminLayout() {
 
       {/* Main Right Contents Workspace Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
         {/* Premium Top Bar matching screenshot elements */}
         <header className="h-16 bg-white border-b border-slate-100 px-8 flex items-center justify-between gap-4 sticky top-0 z-10">
           {/* Custom Search Box */}
@@ -186,9 +204,7 @@ function AdminLayout() {
         <main className="p-6 md:p-8 flex-1 overflow-y-auto">
           <Outlet />
         </main>
-
       </div>
-
     </div>
   );
 }

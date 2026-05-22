@@ -18,7 +18,14 @@ function PoliciesLayout() {
         <h2 className="   mb-3">Policies</h2>
         <nav className="space-y-1 text-sm">
           {links.map((l) => (
-            <Link key={l.to} to={l.to} className="block px-2 py-1.5 rounded hover:bg-muted" activeProps={{ className: "block px-2 py-1.5 rounded bg-accent text-primary font-semibold" }}>
+            <Link
+              key={l.to}
+              to={l.to}
+              className="block px-2 py-1.5 rounded hover:bg-muted"
+              activeProps={{
+                className: "block px-2 py-1.5 rounded bg-accent text-primary font-semibold",
+              }}
+            >
               {l.label}
             </Link>
           ))}
