@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/store/auth";
 import { toast } from "sonner";
-import { Zap, ShieldCheck } from "lucide-react";
+import { Zap } from "lucide-react";
 import api from "@/services/api";
 
 interface ShiprocketLoginButtonProps {
@@ -13,7 +13,7 @@ interface ShiprocketLoginButtonProps {
 export default function ShiprocketLoginButton({
   onSuccess,
   className = "",
-  buttonText = "Fast Login via OTP",
+  buttonText = "Instant OTP Login",
 }: ShiprocketLoginButtonProps) {
   const { signInWithShiprocket } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -112,11 +112,8 @@ export default function ShiprocketLoginButton({
     <button
       onClick={handleLogin}
       disabled={loading}
-      className={`relative group overflow-hidden flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-[#ff6600] to-[#ff8000] hover:from-[#e65c00] hover:to-[#ff6600] disabled:from-slate-400 disabled:to-slate-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98] cursor-pointer ${className}`}
+      className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#e65c00] disabled:bg-slate-400 text-white font-semibold text-sm rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.99] cursor-pointer ${className}`}
     >
-      {/* Light sweep animation on hover */}
-      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none"></span>
-
       {loading ? (
         <>
           <svg
@@ -138,13 +135,12 @@ export default function ShiprocketLoginButton({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span>Securing connection...</span>
+          <span>Connecting...</span>
         </>
       ) : (
         <>
-          <Zap className="size-4 animate-pulse fill-current text-amber-200" />
+          <Zap className="size-4 fill-current text-amber-200" />
           <span>{buttonText}</span>
-          <ShieldCheck className="size-4 opacity-75 ml-auto" />
         </>
       )}
     </button>
