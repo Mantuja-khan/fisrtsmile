@@ -269,6 +269,20 @@
     }
   }
 
+  .marquee-track-reverse {
+    display: flex;
+    width: max-content;
+    animation: marquee-reverse 30s linear infinite;
+  }
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   @keyframes loader-bar {
     0% {
       transform: translateX(-100%);

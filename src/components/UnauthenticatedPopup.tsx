@@ -4,7 +4,6 @@ import { X, Sparkles, LogIn, Percent } from "lucide-react";
 import { useAuth } from "@/store/auth";
 import offersGetImg from "@/assets/offerget.png";
 import logoImg from "@/assets/firstsmile_logo.png";
-import ShiprocketLoginButton from "@/components/ShiprocketLoginButton";
 
 export function UnauthenticatedPopup() {
   const { user, loading } = useAuth();
@@ -87,12 +86,6 @@ export function UnauthenticatedPopup() {
           </p>
 
           <div className="w-full flex flex-col gap-3">
-            {/* Express OTP Login Button */}
-            <ShiprocketLoginButton
-              buttonText="Instant OTP Login"
-              className="w-full py-3.5 text-xs font-black"
-              onSuccess={handleClose}
-            />
 
             <div className="w-full flex gap-2.5">
               <button

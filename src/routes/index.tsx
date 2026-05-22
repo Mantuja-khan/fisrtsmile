@@ -33,17 +33,28 @@ import under1499 from "@/assets/shopbyprice/under1499.png";
 import above1500 from "@/assets/shopbyprice/above1500.png";
 
 import age0_2 from "@/assets/0_2.png";
-import age2_4 from "@/assets/2_4.png";
-import age4_7 from "@/assets/4_7.png";
+import age18_36 from "@/assets/18_36.png";
+import age3_5 from "@/assets/3_5.png";
+import age5_7 from "@/assets/5_7.png";
 import age7_9 from "@/assets/7_9.png";
 import age9_12 from "@/assets/9_12.png";
 import age12Plus from "@/assets/12+.png";
 
+import slider1 from "@/assets/slider/Barbie_570x.webp";
+import slider2 from "@/assets/slider/Funskool_570x.webp";
+import slider3 from "@/assets/slider/Hot_Wheels_570x.webp";
+import slider4 from "@/assets/slider/Lego_570x.webp";
+import slider5 from "@/assets/slider/Marvel_570x.webp";
+import slider6 from "@/assets/slider/Mattel_Games_570x.webp";
+import slider7 from "@/assets/slider/disney-logo-square_570x.webp";
+import slider8 from "@/assets/slider/majorettelogo.avif";
+import { se } from "date-fns/locale";
+
 const AGE_RANGES = [
   { label: "0-18 month", value: "0-18 month", image: age0_2 },
-  { label: "18-36 month", value: "18-36 month", image: age2_4 },
-  { label: "3-5 year", value: "3-5 year", image: age4_7 },
-  { label: "5-7 year", value: "5-7 year", image: age4_7 },
+  { label: "18-36 month", value: "18-36 month", image: age18_36 },
+  { label: "3-5 year", value: "3-5 year", image: age3_5 },
+  { label: "5-7 year", value: "5-7 year", image: age5_7 },
   { label: "7-9 year", value: "7-9 year", image: age7_9 },
   { label: "9-12 year", value: "9-12 year", image: age9_12 },
   { label: "12 +years", value: "12 +years", image: age12Plus },
@@ -218,6 +229,7 @@ function HomePage() {
 
   const [api, setApi] = useState<CarouselApi>();
   const [heroIdx, setHeroIdx] = useState(0);
+  const [brandApi, setBrandApi] = useState<CarouselApi>();
 
   // Pre-filter for performance
   const rootCats = categories.filter((c) => !c.parent_id);
@@ -238,8 +250,32 @@ function HomePage() {
     });
   }, [api]);
 
+  useEffect(() => {
+    if (!brandApi) return;
+    const t = setInterval(() => {
+      brandApi.scrollNext();
+    }, 3000);
+    return () => clearInterval(t);
+  }, [brandApi]);
+
   return (
     <div>
+      {/* Brand Carousel */}
+      <section className="bg-white py-4 border-b border-slate-100">
+        <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 1 }} className="w-full">
+          <CarouselContent className="items-center -ml-4">
+            {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
+              <CarouselItem key={i} className="pl-2 basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-[12.5%]">
+                <div className="flex items-center justify-center h-[76px] w-full">
+                  <img src={src} className="h-full w-full object-contain scale-[1.15] select-none" alt={`Brand ${i + 1}`} />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </section>
+
+
       {/* Hero Banners */}
       <section className="bg-surface relative overflow-hidden">
         {heroBanners.length > 0 ? (
@@ -374,64 +410,60 @@ function HomePage() {
         </section>
       )}
       {/* Categories Section */}
-      <section className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Explore our wide selection of premium toys
-          </p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
-          {(() => {
-            const PASTEL_COLORS = [
-              "bg-rose-50/80 border-rose-100/80 text-rose-600",
-              "bg-blue-50/80 border-blue-100/80 text-blue-600",
-              "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
-              "bg-amber-50/80 border-amber-100/80 text-amber-600",
-              "bg-purple-50/80 border-purple-100/80 text-purple-600",
-              "bg-sky-50/80 border-sky-100/80 text-sky-600",
-              "bg-orange-50/80 border-orange-100/80 text-orange-600",
-              "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
-              "bg-pink-50/80 border-pink-100/80 text-pink-600",
-              "bg-teal-50/80 border-teal-100/80 text-teal-600",
-            ];
-            return rootCats.map((c, idx) => {
-              const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
-              return (
-                <Link
-                  key={c.id}
-                  to="/subcategories/$slug"
-                  params={{ slug: c.slug } as never}
-                  className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
-                >
-                  <div
-                    className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
+      <section className="w-full bg-pink-50 py-10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Explore our wide selection of premium toys
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+            {(() => {
+              const PASTEL_COLORS = [
+                "bg-rose-50/80 border-rose-100/80 text-rose-600",
+                "bg-blue-50/80 border-blue-100/80 text-blue-600",
+                "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
+                "bg-amber-50/80 border-amber-100/80 text-amber-600",
+                "bg-purple-50/80 border-purple-100/80 text-purple-600",
+                "bg-sky-50/80 border-sky-100/80 text-sky-600",
+                "bg-orange-50/80 border-orange-100/80 text-orange-600",
+                "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
+                "bg-pink-50/80 border-pink-100/80 text-pink-600",
+                "bg-teal-50/80 border-teal-100/80 text-teal-600",
+              ];
+              return rootCats.map((c, idx) => {
+                const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
+                return (
+                  <Link
+                    key={c.id}
+                    to="/subcategories/$slug"
+                    params={{ slug: c.slug } as never}
+                    className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                   >
-                    {c.image ? (
-                      <img
-                        src={resolveImage(c.image)}
-                        alt={c.name}
-                        className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
-                      />
-                    ) : (
-                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
-                        {c.icon ?? "🎁"}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Rectangular Box Text matching Shop by Age design */}
-                  <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
-                    <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap truncate block text-slate-950">
-                      {c.name}
-                    </span>
-                  </div>
-                </Link>
-              );
-            });
-          })()}
+                    <div
+                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
+                    >
+                      {c.image ? (
+                        <img
+                          src={resolveImage(c.image)}
+                          alt={c.name}
+                          className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                        />
+                      ) : (
+                        <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
+                          {c.icon ?? "🎁"}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              });
+            })()}
+          </div>
         </div>
       </section>
+
       {/* Shop by Age (New Section) */}
       <section className="container mx-auto px-4 py-8 bg-slate-50/50 border-y border-slate-100">
         <div className="text-center mb-8">
@@ -441,7 +473,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
           {AGE_RANGES.map((age, i) => (
             <Link
               key={i}
@@ -449,19 +481,12 @@ function HomePage() {
               search={{ age: age.value } as never}
               className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
-              <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100">
+              <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
                 <img
                   src={age.image}
                   alt={age.label}
                   className="w-full h-full object-cover select-none"
                 />
-              </div>
-
-              {/* The Rectangular Box Text below - matching user design */}
-              <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
-                <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap text-slate-950">
-                  {age.label}
-                </span>
               </div>
             </Link>
           ))}

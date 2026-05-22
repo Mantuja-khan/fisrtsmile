@@ -30,7 +30,6 @@ import { z } from "zod";
 import loginBg from "@/assets/loginsignup.png";
 import signupHereImg from "@/assets/signuphere.png";
 import loginHereImg from "@/assets/loginhere.png";
-import ShiprocketLoginButton from "@/components/ShiprocketLoginButton";
 
 const searchSchema = z.object({
   view: z.enum(["profile", "orders", "addresses", "password", "notifications"]).optional(),
@@ -397,23 +396,6 @@ function AccountPage() {
             <p className="text-xs text-muted-foreground mt-1">Welcome to Toy Haat</p>
           </div>
 
-          {(mode === "login" || mode === "signup") && (
-            <div className="max-w-sm mx-auto w-full mb-5">
-              {/* Express OTP Login button */}
-              <ShiprocketLoginButton
-                buttonText={mode === "login" ? "Instant OTP Login" : "Instant OTP Signup"}
-                className="w-full py-3.5 !rounded-full text-xs font-black shadow-md hover:shadow-lg"
-              />
-
-              <div className="relative flex py-3 items-center">
-                <div className="flex-grow border-t border-slate-100"></div>
-                <span className="flex-shrink mx-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                  or email access
-                </span>
-                <div className="flex-grow border-t border-slate-100"></div>
-              </div>
-            </div>
-          )}
 
           <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
             {mode === "signup" && (

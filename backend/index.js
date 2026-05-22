@@ -89,6 +89,24 @@ const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Global 404 handler (always returns JSON)
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `API Route Not Found - ${req.method} ${req.originalUrl}`
+  });
+});
+
+// Global 500 error handler (always returns JSON)
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    stack: process.env.NODE_ENV === "production" ? null : err.stack
+  });
+});
+
 // Port
 const PORT = process.env.PORT || 5003;
 

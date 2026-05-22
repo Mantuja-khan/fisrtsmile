@@ -213,8 +213,12 @@ export function Header() {
                               onClick={() => setCatOpen(false)}
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950  text-[11px] tracking-wider uppercase transition-all rounded-none"
                             >
-                              <span className="size-4 flex items-center justify-center shrink-0">
-                                {parent.icon ?? "🎁"}
+                              <span className="size-6 flex items-center justify-center shrink-0">
+                                {parent.image ? (
+                                  <img src={resolveImage(parent.image)} alt={parent.name} className="max-w-full max-h-full object-contain" />
+                                ) : (
+                                  parent.icon ?? "🎁"
+                                )}
                               </span>
                               <span className="truncate">{parent.name}</span>
                             </Link>

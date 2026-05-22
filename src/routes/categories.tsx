@@ -113,75 +113,44 @@ function CategoriesPage() {
             </button>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredData.map(({ parent, children }) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+            {filteredData.map(({ parent, children }, idx) => {
+              const PASTEL_COLORS = [
+                "bg-rose-50/80 border-rose-100/80 text-rose-600",
+                "bg-blue-50/80 border-blue-100/80 text-blue-600",
+                "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
+                "bg-amber-50/80 border-amber-100/80 text-amber-600",
+                "bg-purple-50/80 border-purple-100/80 text-purple-600",
+                "bg-sky-50/80 border-sky-100/80 text-sky-600",
+                "bg-orange-50/80 border-orange-100/80 text-orange-600",
+                "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
+                "bg-pink-50/80 border-pink-100/80 text-pink-600",
+                "bg-teal-50/80 border-teal-100/80 text-teal-600",
+              ];
+              const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
               return (
-                <div
+                <Link
                   key={parent.id}
-                  className="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between"
+                  to="/subcategories/$slug"
+                  params={{ slug: parent.slug } as never}
+                  className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                 >
-                  <div>
-                    {/* Header */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="size-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-2 shrink-0">
-                        {parent.image ? (
-                          <img
-                            src={resolveImage(parent.image)}
-                            alt={parent.name}
-                            className="max-w-full max-h-full object-contain select-none"
-                          />
-                        ) : (
-                          <span className="text-xl">{parent.icon ?? "🎁"}</span>
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h2 className="text-sm font-bold text-slate-900 truncate">{parent.name}</h2>
-                        <span className="text-[10px] text-slate-400 font-medium">
-                          {children.length} collections
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Subcategories list */}
-                    {children.length > 0 ? (
-                      <div className="space-y-1 mt-2">
-                        {children.map((child) => (
-                          <Link
-                            key={child.id}
-                            to="/products"
-                            search={{ category: child.slug } as never}
-                            className="flex items-center justify-between py-1 px-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-xs"
-                          >
-                            <span className="truncate flex items-center gap-1.5">
-                              {child.icon ? (
-                                <span className="text-xs">{child.icon}</span>
-                              ) : (
-                                <span className="size-1 bg-slate-300 rounded-full shrink-0" />
-                              )}
-                              {child.name}
-                            </span>
-                            <ChevronRight className="size-3 text-slate-450 shrink-0" />
-                          </Link>
-                        ))}
-                      </div>
+                  <div
+                    className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
+                  >
+                    {parent.image ? (
+                      <img
+                        src={resolveImage(parent.image)}
+                        alt={parent.name}
+                        className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                      />
                     ) : (
-                      <p className="text-[10px] text-slate-450 italic py-2">
-                        Direct product catalog
-                      </p>
+                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
+                        {parent.icon ?? "🎁"}
+                      </span>
                     )}
                   </div>
-
-                  {/* Actions */}
-                  <div className="mt-4 pt-3 border-t border-slate-100">
-                    <Link
-                      to="/products"
-                      search={{ category: parent.slug } as never}
-                      className="w-full py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-colors"
-                    >
-                      Shop All
-                    </Link>
-                  </div>
-                </div>
+                </Link>
               );
             })}
           </div>
