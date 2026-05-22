@@ -31,10 +31,10 @@ export function Footer() {
           <div>
             <h4 className=" text-[13px] uppercase tracking-widest mb-4 text-[#BFDDF0]">Categories</h4>
             <ul className="space-y-2.5 text-sm text-slate-300/80">
+              <li><Link to="/categories" className="hover:text-white transition-colors">All Categories</Link></li>
               <li><Link to="/products" className="hover:text-white transition-colors">All Products</Link></li>
-              <li><Link to="/products" search={{ category: "Soft Toys" } as never} className="hover:text-white transition-colors">Soft Toys</Link></li>
-              <li><Link to="/products" search={{ category: "Educational Toys" } as never} className="hover:text-white transition-colors">Educational</Link></li>
-              <li><Link to="/products" search={{ category: "Remote Control" } as never} className="hover:text-white transition-colors">Remote Control</Link></li>
+              <li><Link to="/products" search={{ category: "soft-toys" } as never} className="hover:text-white transition-colors">Soft Toys</Link></li>
+              <li><Link to="/products" search={{ category: "educational-toys" } as never} className="hover:text-white transition-colors">Educational</Link></li>
             </ul>
           </div>
 

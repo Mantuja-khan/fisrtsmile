@@ -46,6 +46,7 @@ export const addOrderItems = async (req, res) => {
             payment_method: paymentMethod,
             subtotal: itemsPrice,
             shipping: shippingPrice,
+            cod_charge: paymentMethod === 'cod' ? 60 : 0,
             total: totalPrice,
             customer_name,
             customer_email,
@@ -265,6 +266,8 @@ export const initPayUPayment = async (req, res) => {
 
     const hash = generatePayUHash(txnParams);
 
+    const apiBaseUrl = `${req.protocol}://${req.get('host')}/api`;
+
     res.json({
         hash,
         key: txnParams.key,
@@ -274,8 +277,8 @@ export const initPayUPayment = async (req, res) => {
         firstname: txnParams.firstname,
         email: txnParams.email,
         phone: order.shipping_address.phone || "",
-        surl: `${process.env.API_URL || 'http://localhost:5003/api'}/orders/payu/response`,
-        furl: `${process.env.API_URL || 'http://localhost:5003/api'}/orders/payu/response`,
+        surl: `${apiBaseUrl}/orders/payu/response`,
+        furl: `${apiBaseUrl}/orders/payu/response`,
         udf1: txnParams.udf1,
         action: process.env.PAYU_MODE === 'PROD' 
             ? 'https://secure.payu.in/_payment' 
@@ -288,7 +291,9 @@ export const initPayUPayment = async (req, res) => {
 export const handlePayUResponse = async (req, res) => {
     const PAYU_SALT = process.env.PAYU_SALT || "test_salt";
     const isValid = verifyPayUResponseHash(req.body, PAYU_SALT);
-    const frontendBase = process.env.FRONTEND_URL || "http://localhost:5173";
+    const host = req.get('host') || '';
+    const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.');
+    const frontendBase = isLocal ? "http://localhost:5173" : (process.env.FRONTEND_URL || "https://toyhaat.com");
 
     if (!isValid) {
         console.error("🚫 PayU Hash Compromise Alert!");

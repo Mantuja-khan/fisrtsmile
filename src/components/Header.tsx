@@ -162,7 +162,7 @@ export function Header() {
                 {catOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
                     <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
-                      <div className="p-3 grid grid-cols-2 gap-1 max-h-96 overflow-y-auto custom-scrollbar">
+                      <div className="p-3 grid grid-cols-2 gap-1 max-h-80 overflow-y-auto custom-scrollbar">
                         {categories.filter(c => !c.parent_id).map((parent) => (
                           <Link
                             key={parent.id}
@@ -177,6 +177,15 @@ export function Header() {
                             <span className="truncate">{parent.name}</span>
                           </Link>
                         ))}
+                      </div>
+                      <div className="border-t border-slate-100 bg-slate-50 p-2 text-center">
+                        <Link
+                          to="/categories"
+                          onClick={() => setCatOpen(false)}
+                          className="inline-flex items-center gap-1.5 text-xs font-black text-indigo-600 hover:text-[#1E3A8A] uppercase tracking-widest transition-colors py-1.5 cursor-pointer"
+                        >
+                          View All Categories <ChevronRight className="size-3.5 stroke-[2.5]" />
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -405,7 +414,7 @@ export function Header() {
           {/* Body Navigation Links */}
           <div className="flex-1 overflow-y-auto bg-white">
             <div className="flex flex-col">
-              <Link to="/products" className="p-4 border-b border-slate-100 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/categories" className="p-4 border-b border-slate-100 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <Grid3x3 className="size-5 text-slate-700" /> <span className="   text-slate-800">All Categories</span>
               </Link>
 
@@ -478,7 +487,7 @@ export function Header() {
               <Link to="/contact" className="p-4 border-b border-slate-100    text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
 
               <Link to="/account" className="p-4    text-slate-800 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <User className="size-5 text-slate-700" /> {user ? name : ""}
+                <User className="size-5 text-slate-700" /> {user ? name : "Sign In"}
               </Link>
             </div>
           </div>
@@ -495,6 +504,7 @@ export function Header() {
           onClick={() => setSidebarSearchOpen(false)}
           className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${sidebarSearchOpen ? "opacity-100" : "opacity-0"
             }`}
+
         />
 
         {/* Drawer Content */}

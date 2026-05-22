@@ -272,33 +272,50 @@ function HomePage() {
           <p className="text-sm text-muted-foreground mt-1">Explore our wide selection of premium toys</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
-          {rootCats.map((c) => (
-            <Link
-              key={c.id}
-              to="/subcategories/$slug"
-              params={{ slug: c.slug } as never}
-              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
-            >
-              <div className="w-full aspect-square flex items-center justify-center overflow-hidden relative p-2 sm:p-3 group-hover:scale-105 transition-transform duration-300 bg-transparent">
-                {c.image ? (
-                  <img
-                    src={resolveImage(c.image)}
-                    alt={c.name}
-                    className="max-w-full max-h-full object-contain select-none"
-                  />
-                ) : (
-                  <span className="text-5xl sm:text-6xl transition-transform duration-300">{c.icon ?? "🎁"}</span>
-                )}
-              </div>
+          {(() => {
+            const PASTEL_COLORS = [
+              "bg-rose-50/80 border-rose-100/80 text-rose-600",
+              "bg-blue-50/80 border-blue-100/80 text-blue-600",
+              "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
+              "bg-amber-50/80 border-amber-100/80 text-amber-600",
+              "bg-purple-50/80 border-purple-100/80 text-purple-600",
+              "bg-sky-50/80 border-sky-100/80 text-sky-600",
+              "bg-orange-50/80 border-orange-100/80 text-orange-600",
+              "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
+              "bg-pink-50/80 border-pink-100/80 text-pink-600",
+              "bg-teal-50/80 border-teal-100/80 text-teal-600"
+            ];
+            return rootCats.map((c, idx) => {
+              const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
+              return (
+                <Link
+                  key={c.id}
+                  to="/subcategories/$slug"
+                  params={{ slug: c.slug } as never}
+                  className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+                >
+                  <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}>
+                    {c.image ? (
+                      <img
+                        src={resolveImage(c.image)}
+                        alt={c.name}
+                        className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">{c.icon ?? "🎁"}</span>
+                    )}
+                  </div>
 
-              {/* Rectangular Box Text matching Shop by Age design */}
-              <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
-                <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap truncate block text-slate-950">
-                  {c.name}
-                </span>
-              </div>
-            </Link>
-          ))}
+                  {/* Rectangular Box Text matching Shop by Age design */}
+                  <div className="mt-4 border-2 border-slate-950 bg-white px-2 py-1.5 w-full max-w-[160px] text-center shadow-[3px_3px_0px_#FEFD99] group-hover:bg-[#BFDDF0] group-hover:text-slate-950 group-hover:border-slate-950 group-hover:shadow-[3px_3px_0px_#BFDDF0] transition-all duration-300">
+                    <span className="font-extrabold text-xs tracking-wider uppercase whitespace-nowrap truncate block text-slate-950">
+                      {c.name}
+                    </span>
+                  </div>
+                </Link>
+              );
+            });
+          })()}
         </div>
       </section>
       {/* Shop by Age (New Section) */}

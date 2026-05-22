@@ -752,7 +752,7 @@ function MyOrdersEngine() {
         const diffTime = Math.abs(new Date().getTime() - new Date(o.createdAt).getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         const withinFourDays = diffDays <= 4;
-        const canRequestReturn = isDelivered && withinFourDays && lstatus !== "return requested" && lstatus !== "returned";
+        const canRequestReturn = isDelivered && withinFourDays && (lstatus as string) !== "return requested" && (lstatus as string) !== "returned";
 
         return (
           <div key={o._id} className="p-6 md:px-8 hover:bg-slate-50/50 transition">

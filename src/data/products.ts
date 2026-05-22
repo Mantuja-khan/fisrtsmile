@@ -35,6 +35,7 @@ export type Product = {
   inStock: boolean;
   badge?: string | null;
   ageRange: string;
+  age_range?: string | null;
   offerPct: number;
   brand?: string | null;
   offerStartsAt?: string | null;
@@ -63,7 +64,13 @@ export const resolveImage = (img: string | null | undefined): string => {
   
   // Handle legacy localhost URLs stored in DB
   let normalized = img;
-  const apiHost = import.meta.env.VITE_API_URL || "http://localhost:5003/api";
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || 
+     window.location.hostname === '127.0.0.1' || 
+     window.location.hostname.startsWith('192.168.'));
+  const apiHost = isLocalhost 
+    ? "http://localhost:5003/api" 
+    : (import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api");
   const baseUrl = apiHost.replace(/\/api\/?$/, ""); // get base domain without trailing slash or /api
   
   if (normalized.includes("http://localhost:5000") || normalized.includes("http://localhost:5003")) {
@@ -82,5 +89,4 @@ export const discountPct = (price: number, mrp: number) =>
   mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;
 
 // Effective price after admin offer
-export const effectivePrice = (price: number, offerPct: number) =>
-  Math.round(price * (1 - (offerPct || 0) / 100));
+export const effectivePrice = (price: number, offerPct: number) => price;

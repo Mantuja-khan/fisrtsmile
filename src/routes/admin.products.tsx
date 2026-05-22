@@ -1323,12 +1323,12 @@ function AdminProducts() {
                             {/* Errors & Status */}
                             <td className="p-3 max-w-[240px]">
                               <div className="flex flex-col gap-1">
-                                {r.errors && r.errors.map((err, i) => (
+                                {r.errors && r.errors.map((err: string, i: number) => (
                                   <span key={i} className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-rose-200 w-fit">
                                     <AlertCircle className="size-3 text-rose-600 shrink-0" /> {err}
                                   </span>
                                 ))}
-                                {r.warnings && r.warnings.map((warn, i) => (
+                                {r.warnings && r.warnings.map((warn: string, i: number) => (
                                   <span key={i} className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border border-amber-200 w-fit">
                                     <AlertTriangle className="size-3 text-amber-600 shrink-0" /> {warn}
                                   </span>

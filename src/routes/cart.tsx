@@ -61,7 +61,7 @@ function CartPage() {
                 </Link>
                 <div className="text-xs text-muted-foreground mt-0.5">{item.product.category_name ?? ""}</div>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-bold">₹{Math.round(item.product.price * (1 - (item.product.offerPct || 0) / 100)).toLocaleString("en-IN")}</span>
+                  <span className="font-bold">₹{item.product.price.toLocaleString("en-IN")}</span>
                   <span className="text-xs line-through text-muted-foreground">₹{item.product.mrp.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex items-center gap-3 mt-2">

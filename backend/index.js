@@ -29,9 +29,7 @@ app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 const allowedOrigins = [
     'https://toyhaat.com',
     'https://www.toyhaat.com',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000'
+    'http://localhost:8080'
 ];
 
 app.use((req, res, next) => {
