@@ -4,6 +4,7 @@ import OTP from "../models/OTP.js";
 import jwt from "jsonwebtoken";
 import { sendEmail, getEmailTemplate } from "../config/email.js";
 import crypto from "crypto";
+import axios from "axios";
 
 // Generate JWT
 const generateToken = (id) => {
@@ -330,62 +331,35 @@ export const verifyOTP = async (req, res) => {
   res.json({ message: "OTP verified successfully" });
 };
 
-// @desc    Fetch Shiprocket/Fastrr Login Access Token
-// @route   POST /api/auth/shiprocket-token
+// @desc    Fetch Shiprocket Token
+// @route   GET /api/auth/shiprocket-token
 // @access  Public
-export const getShiprocketFastrrToken = async (req, res) => {
+export const getShiprocketToken = async (req, res) => {
   try {
-    const apiKey = process.env.SHIPROCKET_FASTARR_API_KEY;
-    const secretKey = process.env.SHIPROCKET_FASTARR_SECRET_KEY;
-
-    if (!apiKey || !secretKey) {
-      console.error("⚠️ Shiprocket Fastrr credentials missing in backend/.env!");
-      return res.status(500).json({
-        message:
-          "Shiprocket Fastrr configuration is missing on the server. Please define SHIPROCKET_FASTARR_API_KEY and SHIPROCKET_FASTARR_SECRET_KEY in backend/.env.",
-      });
-    }
-
-    const currentISOString = new Date().toISOString();
-    const requestBody = {
-      address: true,
-      timestamp: currentISOString,
-    };
-
-    const serializedBody = JSON.stringify(requestBody);
-
-    // Generate HMAC SHA256 Base64 hash using secret key
-    const hmacHash = crypto.createHmac("sha256", secretKey).update(serializedBody).digest("base64");
-
-    // Send POST request to production Shiprocket Fastrr login access token API
-    const response = await fetch("https://checkout-api.shiprocket.com/api/v1/access-token/login", {
-      method: "POST",
-      headers: {
-        "X-Api-Key": apiKey,
-        "X-Api-HMAC-SHA256": hmacHash,
-        "Content-Type": "application/json",
+    console.log("SHIPROCKET_EMAIL:", process.env.SHIPROCKET_EMAIL ? "Exists" : "Undefined");
+    console.log("SHIPROCKET_PASSWORD:", process.env.SHIPROCKET_PASSWORD ? "Exists" : "Undefined");
+    const response = await axios.post(
+      "https://apiv2.shiprocket.in/v1/external/auth/login",
+      {
+        email: process.env.SHIPROCKET_EMAIL,
+        password: process.env.SHIPROCKET_PASSWORD,
       },
-      body: serializedBody,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json({
+      token: response.data.token,
     });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        message: responseData.message || "Failed to fetch access token from Shiprocket",
-        error: responseData,
-      });
-    }
-
-    return res.json(responseData);
   } catch (error) {
-    console.error("Shiprocket Fastrr Token Error:", error);
-    return res
-      .status(500)
-      .json({
-        message: "Internal server error while fetching Shiprocket token",
-        error: error.message,
-      });
+    console.log(error.response?.data || error.message);
+
+    res.status(500).json({
+      error: "Failed to generate Shiprocket token",
+    });
   }
 };
 

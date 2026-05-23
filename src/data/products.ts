@@ -64,14 +64,7 @@ export const resolveImage = (img: string | null | undefined): string => {
 
   // Handle legacy localhost URLs stored in DB
   let normalized = img;
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1" ||
-      window.location.hostname.startsWith("192.168."));
-  const apiHost = isLocalhost
-    ? "http://localhost:5003/api"
-    : import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api";
+  const apiHost = import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api";
   const baseUrl = apiHost.replace(/\/api\/?$/, ""); // get base domain without trailing slash or /api
 
   if (

@@ -199,6 +199,7 @@ function HomePage() {
   };
 
   const [randomReviews, setRandomReviews] = useState<typeof ALL_TESTIMONIALS>([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
     // Select 3 random unique reviews on component mount
@@ -261,7 +262,7 @@ function HomePage() {
   return (
     <div>
       {/* Brand Carousel */}
-      <section className="bg-white py-4 border-b border-slate-100">
+      <section className="bg-pink-50 py-4 border-b border-slate-100">
         <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 1 }} className="w-full">
           <CarouselContent className="items-center -ml-4">
             {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
@@ -410,7 +411,7 @@ function HomePage() {
         </section>
       )}
       {/* Categories Section */}
-      <section className="w-full bg-pink-50 py-10">
+      <section className="w-full bg-pink-100 py-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
@@ -418,22 +419,10 @@ function HomePage() {
               Explore our wide selection of premium toys
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+          <div className="grid grid-cols-4 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
             {(() => {
-              const PASTEL_COLORS = [
-                "bg-rose-50/80 border-rose-100/80 text-rose-600",
-                "bg-blue-50/80 border-blue-100/80 text-blue-600",
-                "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
-                "bg-amber-50/80 border-amber-100/80 text-amber-600",
-                "bg-purple-50/80 border-purple-100/80 text-purple-600",
-                "bg-sky-50/80 border-sky-100/80 text-sky-600",
-                "bg-orange-50/80 border-orange-100/80 text-orange-600",
-                "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
-                "bg-pink-50/80 border-pink-100/80 text-pink-600",
-                "bg-teal-50/80 border-teal-100/80 text-teal-600",
-              ];
-              return rootCats.map((c, idx) => {
-                const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
+              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 10);
+              return displayedCats.map((c, idx) => {
                 return (
                   <Link
                     key={c.id}
@@ -441,14 +430,12 @@ function HomePage() {
                     params={{ slug: c.slug } as never}
                     className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                   >
-                    <div
-                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
-                    >
+                    <div className="w-full max-w-[200px] aspect-square flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
                           alt={c.name}
-                          className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
                         />
                       ) : (
                         <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
@@ -461,6 +448,16 @@ function HomePage() {
               });
             })()}
           </div>
+          {!showAllCategories && rootCats.length > 10 && (
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={() => setShowAllCategories(true)}
+                className="bg-primary text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg hover:bg-primary/90 transition-all"
+              >
+                View More Categories
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -473,13 +470,13 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x px-2 lg:px-0">
           {AGE_RANGES.map((age, i) => (
             <Link
               key={i}
               to="/products"
               search={{ age: age.value } as never}
-              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+              className="group flex flex-col items-center w-[165px] sm:w-[200px] shrink-0 snap-start transition-transform hover:-translate-y-2"
             >
               <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
                 <img

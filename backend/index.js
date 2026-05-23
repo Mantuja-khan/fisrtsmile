@@ -25,48 +25,13 @@ const app = express();
 app.use(express.json({ limit: "500mb" }));
 app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 
-// Global Preflight & CORS Override Layer
-const allowedOrigins = ["https://toyhaat.com", "https://www.toyhaat.com", "http://localhost:8080"];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else if (origin && origin.includes("toyhaat.com")) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    // Fallback to a default explicit origin if origin is not set or unknown
-    res.setHeader("Access-Control-Allow-Origin", "https://toyhaat.com");
-  }
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-  next();
-});
-
-// Dynamic CORS Configuration fallback
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || origin.includes("toyhaat.com")) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept", "X-Requested-With"],
-};
-
-// Apply CORS
-app.use(cors(corsOptions));
+// CORS Configuration
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080", "https://toyhaat.com", "https://www.toyhaat.com"],
+    credentials: true,
+  })
+);
 
 // Default Route
 app.get("/", (req, res) => {

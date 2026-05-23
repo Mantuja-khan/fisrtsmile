@@ -224,15 +224,6 @@ export function Header() {
                             </Link>
                           ))}
                       </div>
-                      <div className="border-t border-slate-100 bg-slate-50 p-2 text-center">
-                        <Link
-                          to="/categories"
-                          onClick={() => setCatOpen(false)}
-                          className="inline-flex items-center gap-1.5 text-xs font-black text-indigo-600 hover:text-[#1E3A8A] uppercase tracking-widest transition-colors py-1.5 cursor-pointer"
-                        >
-                          View All Categories <ChevronRight className="size-3.5 stroke-[2.5]" />
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 )}

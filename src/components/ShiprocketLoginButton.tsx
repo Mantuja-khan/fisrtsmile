@@ -25,7 +25,7 @@ export default function ShiprocketLoginButton({
     setLoading(true);
     try {
       // 1. Fetch secure access token from Express backend
-      const { data } = await api.post("/auth/shiprocket-token");
+      const { data } = await api.get("/auth/shiprocket-token");
 
       const token = data.token || data.access_token || data.data?.token;
       if (!token) {
