@@ -421,35 +421,34 @@ function HomePage() {
           </div>
           <div className="grid grid-cols-4 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
             {(() => {
-              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 10);
+              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 8);
               return displayedCats.map((c, idx) => {
                 return (
                   <Link
                     key={c.id}
                     to="/subcategories/$slug"
                     params={{ slug: c.slug } as never}
-                    className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+                    className="group flex flex-col items-center w-full transition-transform hover:-translate-y-1"
                   >
-                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300">
+                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative transition-all duration-300 shadow-sm border border-slate-100 bg-white">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
                           alt={c.name}
-                          className="w-full h-full object-cover select-none group-hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-contain p-2 select-none"
                         />
                       ) : (
-                        <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
+                        <span className="text-5xl sm:text-6xl transition-transform duration-300">
                           {c.icon ?? "🎁"}
                         </span>
                       )}
                     </div>
-                    <span className="mt-3 font-semibold text-slate-800 text-center">{c.name}</span>
                   </Link>
                 );
               });
             })()}
           </div>
-          {!showAllCategories && rootCats.length > 10 && (
+          {!showAllCategories && rootCats.length > 8 && (
             <div className="mt-10 flex justify-center">
               <button
                 onClick={() => setShowAllCategories(true)}
