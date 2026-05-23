@@ -430,12 +430,12 @@ function HomePage() {
                     params={{ slug: c.slug } as never}
                     className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                   >
-                    <div className="w-full max-w-[200px] aspect-square flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300">
+                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300 bg-white shadow-sm border border-slate-100">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
                           alt={c.name}
-                          className="w-full h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-cover select-none group-hover:scale-110 transition-transform duration-300"
                         />
                       ) : (
                         <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
@@ -443,6 +443,7 @@ function HomePage() {
                         </span>
                       )}
                     </div>
+                    <span className="mt-3 font-semibold text-slate-800 text-center">{c.name}</span>
                   </Link>
                 );
               });
