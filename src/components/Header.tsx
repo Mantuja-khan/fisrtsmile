@@ -201,8 +201,8 @@ export function Header() {
 
                 {catOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
-                    <div className="w-[400px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
-                      <div className="p-3 grid grid-cols-2 gap-1 max-h-80 overflow-y-auto custom-scrollbar">
+                    <div className="w-[450px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
+                      <div className="p-3 grid grid-cols-2 gap-2">
                         {categories
                           .filter((c) => !c.parent_id)
                           .map((parent) => (
@@ -211,16 +211,16 @@ export function Header() {
                               to="/subcategories/$slug"
                               params={{ slug: parent.slug } as never}
                               onClick={() => setCatOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950  text-[11px] tracking-wider uppercase transition-all rounded-none"
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950 text-[11px] tracking-wider uppercase transition-all rounded-none"
                             >
-                              <span className="size-6 flex items-center justify-center shrink-0">
+                              <span className="size-8 flex items-center justify-center shrink-0">
                                 {parent.image ? (
                                   <img src={resolveImage(parent.image)} alt={parent.name} className="max-w-full max-h-full object-contain" />
                                 ) : (
                                   parent.icon ?? "🎁"
                                 )}
                               </span>
-                              <span className="truncate">{parent.name}</span>
+                              <span>{parent.name}</span>
                             </Link>
                           ))}
                       </div>

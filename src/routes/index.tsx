@@ -430,15 +430,15 @@ function HomePage() {
                     params={{ slug: c.slug } as never}
                     className="group flex flex-col items-center w-full transition-transform hover:-translate-y-1"
                   >
-                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative transition-all duration-300 shadow-sm border border-slate-100 bg-white">
+                    <div className="w-full max-w-[240px] aspect-square flex items-center justify-center relative transition-all duration-300">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
                           alt={c.name}
-                          className="w-full h-full object-contain p-2 select-none"
+                          className="w-full h-full object-contain select-none"
                         />
                       ) : (
-                        <span className="text-5xl sm:text-6xl transition-transform duration-300">
+                        <span className="text-6xl sm:text-7xl transition-transform duration-300">
                           {c.icon ?? "🎁"}
                         </span>
                       )}
