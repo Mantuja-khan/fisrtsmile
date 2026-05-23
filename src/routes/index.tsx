@@ -430,7 +430,7 @@ function HomePage() {
                     params={{ slug: c.slug } as never}
                     className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
                   >
-                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300 bg-white shadow-sm border border-slate-100">
+                    <div className="w-full max-w-[200px] aspect-square rounded-2xl flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-all duration-300">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
