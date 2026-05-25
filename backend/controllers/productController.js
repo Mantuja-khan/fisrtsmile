@@ -9,6 +9,25 @@ export const getProducts = async (req, res) => {
   res.json(products);
 };
 
+// @desc    Fetch products by collection slug
+// @route   GET /api/collections/:slug/products
+// @access  Public
+export const getProductsByCollection = async (req, res) => {
+  try {
+    const Category = (await import("../models/Category.js")).default;
+    const category = await Category.findOne({ slug: req.params.slug });
+    
+    if (!category) {
+      return res.status(404).json({ message: "Collection not found" });
+    }
+
+    const products = await Product.find({ category: category._id }).populate("category");
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
 // @desc    Fetch single product
 // @route   GET /api/products/:id
 // @access  Public

@@ -94,12 +94,12 @@ export function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Content Body */}
-      <div className="p-1.5 sm:p-2.5 flex flex-col flex-1 justify-between">
+      <div className="p-0 sm:p-0.5 flex flex-col flex-1 justify-between">
         {/* Responsive Centered Name with Dynamic Highlight */}
         <Link
           to="/product/$id"
           params={{ id: product.id }}
-          className="text-[11px] sm:text-[13px] font-  text-gray-700 hover:text-slate-950 hover:underline decoration-[#BFDDF0] decoration-2 line-clamp-2 leading-relaxed mb-1 sm:mb-1.5 transition-all min-h-[2rem] sm:min-h-[2.3rem] flex items-center justify-center px-0.5"
+          className="text-[11px] sm:text-[13px] font-  text-gray-700 hover:text-slate-950 hover:underline decoration-[#BFDDF0] decoration-2 line-clamp-2 leading-tight mb-0.5 transition-all min-h-[1.25rem] sm:min-h-[1.5rem] flex items-center justify-center px-0.5"
         >
           {/* Truncated view for mobile screens */}
           <span className="sm:hidden block">
@@ -113,7 +113,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Age Ranges */}
         {product.age_range && (
-          <div className="flex flex-wrap items-center justify-center gap-1 mb-1.5">
+          <div className="flex flex-wrap items-center justify-center gap-0.5 mb-1">
             {String(product.age_range)
               .split(",")
               .filter(Boolean)
@@ -129,7 +129,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
 
         {/* Spacer push downward layout components */}
-        <div className="mt-auto flex flex-col gap-1 sm:gap-1.5">
+        <div className="mt-auto flex flex-col gap-0 sm:gap-0.5">
           {/* Price Section */}
           <div className="flex flex-col lg:flex-row items-center lg:items-baseline lg:justify-center lg:gap-2">
             <div className="text-slate-900 font-black text-xs sm:text-base tracking-wide">
@@ -159,7 +159,7 @@ export function ProductCard({ product }: { product: Product }) {
                 toast.success("Added to cart 🛒");
               }
             }}
-            className={`w-full py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extra  uppercase tracking-widest transition-all duration-300 border rounded-full ${
+            className={`w-full py-0.5 sm:py-1 text-[9px] sm:text-[11px] font-extra  uppercase tracking-widest transition-all duration-300 border rounded-full ${
               product.inStock
                 ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
                 : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"

@@ -65,7 +65,7 @@ function ProductPage() {
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-6">
-      <div className="bg-surface rounded-2xl shadow-card p-4 md:p-6 grid md:grid-cols-[1fr_1.4fr] gap-6">
+      <div className="grid md:grid-cols-[1fr_1.4fr] gap-6">
         <div>
           <div className="flex flex-col md:flex-row gap-3">
             {/* Thumbnails — left column on desktop, row below on mobile (rendered after main) */}
@@ -310,8 +310,8 @@ function ProductPage() {
       <ProductReviews productId={product.id} />
 
       {related.length > 0 && (
-        <div className="mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="text-center py-6 border-b border-slate-100 bg-slate-50/30">
+        <div className="mt-10 overflow-hidden">
+          <div className="text-center py-6 border-b border-slate-100">
             <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
               Related Products
             </h2>

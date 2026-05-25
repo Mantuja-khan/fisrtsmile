@@ -54,8 +54,8 @@ const AGE_RANGES = [
   { label: "0-18 month", value: "0-18 month", image: age0_2 },
   { label: "18-36 month", value: "18-36 month", image: age18_36 },
   { label: "3-5 year", value: "3-5 year", image: age3_5 },
-  { label: "5-7 year", value: "5-7 year", image: age5_7 },
-  { label: "7-9 year", value: "7-9 year", image: age7_9 },
+  { label: "5-7 year", value: "5-7 year", image: age7_9 },
+  { label: "7-9 year", value: "7-9 year", image: age5_7 },
   { label: "9-12 year", value: "9-12 year", image: age9_12 },
   { label: "12 +years", value: "12 +years", image: age12Plus },
 ];
@@ -354,7 +354,7 @@ function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <Rocket className="size-6 text-orange-600 animate-bounce" />
-                  <h2 className="font-display text-xl md:text-3xl lg:text-4xl text-orange-950">
+                  <h2 className="font-[cursive] italic tracking-wide text-lg md:text-xl lg:text-2xl text-orange-950 drop-shadow-sm">
                     Trending Products
                   </h2>
                 </div>
@@ -369,7 +369,7 @@ function HomePage() {
             </div>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x">
               {trendingProducts.slice(0, 16).map((p) => (
-                <div key={p.id} className="w-[165px] sm:w-[220px] md:w-[250px] shrink-0 snap-start">
+                <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
                   <ProductCard product={p} />
                 </div>
               ))}
@@ -402,7 +402,7 @@ function HomePage() {
             </div>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x relative z-10">
               {bestSellers.slice(0, 16).map((p) => (
-                <div key={p.id} className="w-[165px] sm:w-[220px] md:w-[250px] shrink-0 snap-start">
+                <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
                   <ProductCard product={p} />
                 </div>
               ))}
@@ -419,18 +419,21 @@ function HomePage() {
               Explore our wide selection of premium toys
             </p>
           </div>
-          <div className="grid grid-cols-4 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+          <div className={showAllCategories 
+            ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center"
+            : "flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-2 lg:px-0 pb-4 pt-1 snap-x snap-mandatory touch-pan-x"
+          }>
             {(() => {
-              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 8);
+              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 6);
               return displayedCats.map((c, idx) => {
                 return (
                   <Link
                     key={c.id}
                     to="/subcategories/$slug"
                     params={{ slug: c.slug } as never}
-                    className="group flex flex-col items-center w-full transition-transform hover:-translate-y-1"
+                    className="group flex flex-col items-center w-[100px] sm:w-[150px] md:w-[180px] shrink-0 snap-start transition-transform hover:-translate-y-1"
                   >
-                    <div className="w-full max-w-[240px] aspect-square flex items-center justify-center relative transition-all duration-300">
+                    <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
                       {c.image ? (
                         <img
                           src={resolveImage(c.image)}
@@ -448,8 +451,8 @@ function HomePage() {
               });
             })()}
           </div>
-          {!showAllCategories && rootCats.length > 8 && (
-            <div className="mt-10 flex justify-center">
+          {!showAllCategories && rootCats.length > 6 && (
+            <div className="mt-6 flex justify-center">
               <button
                 onClick={() => setShowAllCategories(true)}
                 className="bg-primary text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg hover:bg-primary/90 transition-all"
@@ -470,13 +473,13 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x px-2 lg:px-0">
+        <div className="grid grid-cols-7 gap-2 md:gap-4 px-2 lg:px-0">
           {AGE_RANGES.map((age, i) => (
             <Link
               key={i}
               to="/products"
               search={{ age: age.value } as never}
-              className="group flex flex-col items-center w-[165px] sm:w-[200px] shrink-0 snap-start transition-transform hover:-translate-y-2"
+              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
             >
               <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
                 <img

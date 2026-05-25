@@ -113,39 +113,24 @@ function CategoriesPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center">
             {filteredData.map(({ parent, children }, idx) => {
-              const PASTEL_COLORS = [
-                "bg-rose-50/80 border-rose-100/80 text-rose-600",
-                "bg-blue-50/80 border-blue-100/80 text-blue-600",
-                "bg-emerald-50/80 border-emerald-100/80 text-emerald-600",
-                "bg-amber-50/80 border-amber-100/80 text-amber-600",
-                "bg-purple-50/80 border-purple-100/80 text-purple-600",
-                "bg-sky-50/80 border-sky-100/80 text-sky-600",
-                "bg-orange-50/80 border-orange-100/80 text-orange-600",
-                "bg-indigo-50/80 border-indigo-100/80 text-indigo-600",
-                "bg-pink-50/80 border-pink-100/80 text-pink-600",
-                "bg-teal-50/80 border-teal-100/80 text-teal-600",
-              ];
-              const colorClass = PASTEL_COLORS[idx % PASTEL_COLORS.length];
               return (
                 <Link
                   key={parent.id}
                   to="/subcategories/$slug"
                   params={{ slug: parent.slug } as never}
-                  className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+                  className="group flex flex-col items-center w-full transition-transform hover:-translate-y-1"
                 >
-                  <div
-                    className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border flex items-center justify-center overflow-hidden relative p-4 sm:p-5 group-hover:scale-105 transition-all duration-300 shadow-xs ${colorClass}`}
-                  >
+                  <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
                     {parent.image ? (
                       <img
                         src={resolveImage(parent.image)}
                         alt={parent.name}
-                        className="max-w-full max-h-full object-contain select-none group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full object-contain select-none"
                       />
                     ) : (
-                      <span className="text-5xl sm:text-6xl transition-transform duration-300 group-hover:scale-110">
+                      <span className="text-6xl sm:text-7xl transition-transform duration-300 group-hover:scale-110">
                         {parent.icon ?? "🎁"}
                       </span>
                     )}

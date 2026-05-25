@@ -300,6 +300,27 @@ function ProductListPage() {
           )}
         </div>
 
+        {/* Search Input Filter */}
+        <div className="space-y-2 pb-4 border-b border-slate-100">
+          <div className="relative flex items-center bg-slate-50 rounded-xl border border-slate-200/50 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-white focus-within:border-indigo-400 transition-all p-1 shadow-xs">
+            <input
+              type="text"
+              placeholder="Search toys..."
+              value={search.q || ""}
+              onChange={(e) => update({ q: e.target.value || undefined })}
+              className="w-full bg-transparent px-2.5 py-1.5 outline-none text-xs text-slate-800 placeholder:text-slate-400"
+            />
+            {search.q && (
+              <button
+                onClick={() => update({ q: undefined })}
+                className="absolute right-2 top-2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center cursor-pointer"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* 1. Category Filter */}
         <div className="space-y-2">
           <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
@@ -649,44 +670,6 @@ function ProductListPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20">
-      {/* Header and Statistics */}
-      <section className="bg-white border-b border-slate-100 py-6 md:py-8 shadow-xs">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-slate-900 uppercase tracking-wide">
-                {activeCategoryName || (search.sale ? "Sale Area" : "All Premium Toys")}
-              </h1>
-              <p className="text-xs md:text-sm text-slate-400 mt-1">
-                Found <strong className="text-slate-800">{filtered.length}</strong> beautiful toys
-                matching your criteria.
-              </p>
-            </div>
-
-            {/* Search filter input inside Page header */}
-            <div className="flex items-center gap-3">
-              <div className="relative max-w-sm w-full bg-slate-50 rounded-xl border border-slate-200/50 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-white focus-within:border-indigo-400 transition-all p-1 shadow-xs">
-                <input
-                  type="text"
-                  placeholder="Filter toys directly..."
-                  value={search.q || ""}
-                  onChange={(e) => update({ q: e.target.value || undefined })}
-                  className="w-full bg-transparent px-3 py-1.5 outline-none text-xs text-slate-800 placeholder:text-slate-400"
-                />
-                {search.q && (
-                  <button
-                    onClick={() => update({ q: undefined })}
-                    className="absolute right-2 top-2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Main 2-Column Grid */}
       <section className="container mx-auto px-4 max-w-7xl mt-8">
         <div className="flex gap-8 items-start">

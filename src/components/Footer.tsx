@@ -1,15 +1,49 @@
-import { Link } from "@tanstack/react-router";
-import { Mail, MessageCircle, Instagram } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Mail, MessageCircle, Instagram, Truck, Headphones, CornerDownLeft, Banknote } from "lucide-react";
 import logo from "@/assets/firstsmile_logo.png";
 import footerBg from "@/assets/footer_banner.jpg";
 
 export function Footer() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   return (
-    <footer className="mt-12 relative bg-[#0d1527] text-white overflow-hidden border-t border-slate-800">
-      {/* Background Image with Blur, Darkened for optimal contrast */}
-      <div
-        className="absolute inset-0 bg-cover bg-center z-0 pointer-events-none select-none scale-105"
-        style={{
+    <>
+      {/* Features Block */}
+      {isHomePage && (
+        <div className="bg-white py-8 border-t border-slate-100">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#1E3A8A] text-slate-100 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform">
+              <Truck className="size-7 md:size-8 mb-3 text-[#BFDDF0]" />
+              <h3 className="font-bold text-sm md:text-base mb-1">Free Shipping</h3>
+              <p className="text-[10px] md:text-xs text-white/90">Enjoy <strong>free shipping</strong> across India!</p>
+            </div>
+            <div className="bg-[#1E3A8A] text-slate-100 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform">
+              <Headphones className="size-7 md:size-8 mb-3 text-[#BFDDF0]" />
+              <h3 className="font-bold text-sm md:text-base mb-1">Customer Support</h3>
+              <p className="text-[10px] md:text-xs text-white/90">Contact us via <strong>Email & WhatsApp</strong> anytime!</p>
+            </div>
+            <div className="bg-[#1E3A8A] text-slate-100 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform">
+              <CornerDownLeft className="size-7 md:size-8 mb-3 text-[#BFDDF0]" />
+              <h3 className="font-bold text-sm md:text-base mb-1">5 Day Returns</h3>
+              <p className="text-[10px] md:text-xs text-white/90">Enjoy free delivery on all orders</p>
+            </div>
+            <div className="bg-[#1E3A8A] text-slate-100 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform">
+              <Banknote className="size-7 md:size-8 mb-3 text-[#BFDDF0]" />
+              <h3 className="font-bold text-sm md:text-base mb-1">COD Available</h3>
+              <p className="text-[10px] md:text-xs text-white/90">COD available for all orders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
+
+      <footer className="relative bg-[#0d1527] text-white overflow-hidden border-t border-slate-800">
+        {/* Background Image with Blur, Darkened for optimal contrast */}
+        <div
+          className="absolute inset-0 bg-cover bg-center z-0 pointer-events-none select-none scale-105"
+          style={{
           backgroundImage: `url(${footerBg})`,
           filter: "blur(3px) brightness(0.65)",
           opacity: "0.5",
@@ -136,5 +170,6 @@ export function Footer() {
         </div>
       </div>
     </footer>
+    </>
   );
 }

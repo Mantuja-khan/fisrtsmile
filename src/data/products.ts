@@ -87,3 +87,14 @@ export const discountPct = (price: number, mrp: number) =>
 
 // Effective price after admin offer
 export const effectivePrice = (price: number, offerPct: number) => price;
+
+
+
+
+
+
+
+
+
+
+
