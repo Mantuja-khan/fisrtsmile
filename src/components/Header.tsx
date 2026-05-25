@@ -119,7 +119,7 @@ export function Header() {
       </div>
 
       {/* First Navbar */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 shadow-sm z-50 w-full">
+      <header className="bg-pink-100 border-b border-slate-100 sticky top-0 shadow-sm z-50 w-full">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
             {/* Left: Logo */}
             <Link to="/" className="flex items-center shrink-0">
@@ -163,7 +163,7 @@ export function Header() {
                                 <HighlightText text={p.name} highlight={q} className="text-sm font-semibold text-slate-800 truncate" />
                                 <div className="flex items-center gap-2 mt-0.5">
                                   <span className="text-sm font-bold text-slate-900">₹{p.price}</span>
-                                  {p.originalPrice && <span className="text-[11px] text-slate-400 line-through">₹{p.originalPrice}</span>}
+                                  {p.mrp > p.price && <span className="text-[11px] text-slate-400 line-through">₹{p.mrp}</span>}
                                 </div>
                               </div>
                             </Link>

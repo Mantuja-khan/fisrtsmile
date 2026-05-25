@@ -3,11 +3,12 @@ import React from "react";
 interface HighlightTextProps {
   text: string;
   highlight?: string;
+  className?: string;
 }
 
-export function HighlightText({ text, highlight }: HighlightTextProps) {
+export function HighlightText({ text, highlight, className }: HighlightTextProps) {
   if (!highlight || !highlight.trim()) {
-    return <>{text}</>;
+    return <span className={className}>{text}</span>;
   }
 
   // Escape special regex characters
@@ -16,7 +17,7 @@ export function HighlightText({ text, highlight }: HighlightTextProps) {
   const parts = text.split(regex);
 
   return (
-    <>
+    <span className={className}>
       {parts.map((part, i) =>
         regex.test(part) ? (
           <mark
@@ -29,6 +30,6 @@ export function HighlightText({ text, highlight }: HighlightTextProps) {
           <span key={i}>{part}</span>
         ),
       )}
-    </>
+    </span>
   );
 }
