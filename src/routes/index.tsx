@@ -429,8 +429,8 @@ function HomePage() {
                 return (
                   <Link
                     key={c.id}
-                    to="/subcategories/$slug"
-                    params={{ slug: c.slug } as never}
+                    to="/products"
+                    search={{ category: c.slug } as never}
                     className="group flex flex-col items-center w-[100px] sm:w-[150px] md:w-[180px] shrink-0 snap-start transition-transform hover:-translate-y-1"
                   >
                     <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
@@ -455,7 +455,7 @@ function HomePage() {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => setShowAllCategories(true)}
-                className="bg-primary text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg hover:bg-primary/90 transition-all"
+                className="bg-slate-900 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg hover:bg-slate-800 transition-all"
               >
                 View More Categories
               </button>

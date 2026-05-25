@@ -102,347 +102,336 @@ export function Header() {
   }, [q, products]);
 
   const name = user?.full_name || user?.email?.split("@")[0] || "User";
-  const announcements = [
-    "Get 5% off on your first order",
-    "COD Charges will be 60 rupees",
-    "New arrivals every week",
-  ];
-  const [annIndex, setAnnIndex] = useState(0);
-  useEffect(() => {
-    const timer = setInterval(() => setAnnIndex((i) => (i + 1) % announcements.length), 4000);
-    return () => clearInterval(timer);
-  }, []);
+
+
   return (
     <>
-      <div className="bg-[#1E3A8A] text-slate-100 text-center py-1 font-semibold text-sm w-full relative z-10">
-        {announcements[annIndex]}
-      </div>
-
       {/* First Navbar */}
       <header className="bg-pink-100 border-b border-slate-100 sticky top-0 shadow-sm z-50 w-full">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
-            {/* Left: Logo */}
-            <Link to="/" className="flex items-center shrink-0">
-              <img src={logo} alt="Toy Haat" className="h-10 md:h-12 w-auto object-contain" />
+          {/* Left: Logo */}
+          
+          <Link to="/" className="flex items-center shrink-0">
+            <img src={logo} alt="Toy Haat" className="h-10 md:h-12 w-auto object-contain" />
+          </Link>
+
+          {/* Center: Search Bar (Desktop) */}
+          <div className="hidden lg:flex flex-1 max-w-xl mx-auto relative group">
+            <input
+              type="text"
+              placeholder="Search toys directly..."
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-full py-2 pl-5 pr-10 outline-none focus:ring-2 focus:ring-[#BFDDF0] focus:bg-white transition-all text-sm cursor-text shadow-inner"
+            />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 size-4 group-focus-within:text-[#1E3A8A] transition-colors" />
+
+            {/* Inline Search Dropdown */}
+            {q.trim().length > 0 && (
+              <div className="absolute top-[110%] left-0 w-full bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="max-h-80 overflow-y-auto p-2 flex flex-col gap-1 custom-scrollbar">
+                  {(() => {
+                    const filtered = products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())));
+                    if (filtered.length === 0) {
+                      return <div className="p-4 text-center text-sm text-slate-500 font-medium">No products found for "{q}"</div>;
+                    }
+                    return (
+                      <>
+                        {filtered.slice(0, 8).map(p => (
+                          <Link
+                            key={p.id}
+                            to="/product/$id"
+                            params={{ id: p.id }}
+                            onClick={() => setQ('')}
+                            className="flex items-center gap-3 p-2 hover:bg-[#BFDDF0]/30 rounded-lg transition-colors group"
+                          >
+                            <div className="size-12 bg-white rounded-md border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden p-1">
+                              <img src={p.images?.[0] ? resolveImage(p.images[0]) : logo} alt={p.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
+                            </div>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                              <HighlightText text={p.name} highlight={q} className="text-sm font-semibold text-slate-800 truncate" />
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-sm font-bold text-slate-900">₹{p.price}</span>
+                                {p.mrp > p.price && <span className="text-[11px] text-slate-400 line-through">₹{p.mrp}</span>}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}s
+                        {filtered.length > 8 && (
+                          <Link
+                            to="/products"
+                            search={{ search: q } as never}
+                            onClick={() => setQ('')}
+                            className="text-center p-2.5 mt-1 text-sm font-bold text-[#1E3A8A] hover:bg-[#BFDDF0]/20 rounded-lg transition-colors uppercase tracking-wider"
+                          >
+                            View all {filtered.length} results
+                          </Link>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+            {/* About & Contact Links (Desktop) */}
+            <div className="hidden lg:flex items-center gap-4 mr-2">
+              <Link to="/about" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">About</Link>
+              <Link to="/contact" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">Contact</Link>
+            </div>
+
+            {/* Wishlist */}
+            <Link to="/wishlist" className="flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:scale-110 transition-transform">
+              <Heart className="size-6 fill-[#FEFD99]" />
             </Link>
 
-            {/* Center: Search Bar (Desktop) */}
-            <div className="hidden lg:flex flex-1 max-w-xl mx-auto relative group">
-              <input
-                type="text"
-                placeholder="Search toys directly..."
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-full py-2 pl-5 pr-10 outline-none focus:ring-2 focus:ring-[#BFDDF0] focus:bg-white transition-all text-sm cursor-text shadow-inner"
-              />
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 size-4 group-focus-within:text-[#1E3A8A] transition-colors" />
-              
-              {/* Inline Search Dropdown */}
-              {q.trim().length > 0 && (
-                <div className="absolute top-[110%] left-0 w-full bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="max-h-80 overflow-y-auto p-2 flex flex-col gap-1 custom-scrollbar">
-                    {(() => {
-                      const filtered = products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())));
-                      if (filtered.length === 0) {
-                        return <div className="p-4 text-center text-sm text-slate-500 font-medium">No products found for "{q}"</div>;
-                      }
-                      return (
-                        <>
-                          {filtered.slice(0, 8).map(p => (
-                            <Link
-                              key={p.id}
-                              to="/product/$id"
-                              params={{ id: p.id }}
-                              onClick={() => setQ('')}
-                              className="flex items-center gap-3 p-2 hover:bg-[#BFDDF0]/30 rounded-lg transition-colors group"
-                            >
-                              <div className="size-12 bg-white rounded-md border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden p-1">
-                                 <img src={p.images?.[0] ? resolveImage(p.images[0]) : logo} alt={p.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
-                              </div>
-                              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                <HighlightText text={p.name} highlight={q} className="text-sm font-semibold text-slate-800 truncate" />
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-sm font-bold text-slate-900">₹{p.price}</span>
-                                  {p.mrp > p.price && <span className="text-[11px] text-slate-400 line-through">₹{p.mrp}</span>}
-                                </div>
-                              </div>
-                            </Link>
-                          ))}
-                          {filtered.length > 8 && (
-                            <Link
-                              to="/products"
-                              search={{ search: q } as never}
-                              onClick={() => setQ('')}
-                              className="text-center p-2.5 mt-1 text-sm font-bold text-[#1E3A8A] hover:bg-[#BFDDF0]/20 rounded-lg transition-colors uppercase tracking-wider"
-                            >
-                              View all {filtered.length} results
-                            </Link>
-                          )}
-                        </>
-                      );
-                    })()}
+            {/* Cart */}
+            <Link to="/cart" className="relative flex flex-col items-center justify-center shrink-0 hover:scale-110 transition-transform text-slate-800">
+              <div className="relative">
+                <ShoppingCart className="size-6" />
+                <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px] rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
+                  {cartCount}
+                </span>
+              </div>
+            </Link>
+
+            {/* Profile */}
+            <div className="relative hidden md:block shrink-0 hover:scale-110 transition-transform text-slate-800">
+              <Link to="/account" className="flex flex-col items-center justify-center">
+                <User className="size-6" />
+              </Link>
+            </div>
+
+            {/* Mobile Search Toggle */}
+            <button className="lg:hidden p-1 text-slate-900 flex items-center" onClick={() => setSidebarSearchOpen(true)}>
+              <Search className="size-5.5" />
+            </button>
+
+            {/* Mobile Menu Toggle */}
+            <button className="lg:hidden p-1 text-slate-900 flex items-center" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Menu className="size-5.5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Second Navbar (Categories, Brands, etc.) */}
+      <div className="bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40">
+        <div className="container mx-auto flex items-center justify-center px-4 py-1">
+          <nav className="flex items-center gap-1 mx-auto">
+            {/* Categories Button & Hover Dropdown */}
+            <div
+              ref={catRef}
+              className="h-full relative"
+              onMouseEnter={() => {
+                setCatOpen(true);
+                setAgeOpen(false);
+                setBrandOpen(false);
+                if (categories.length > 0 && !activeCatId) {
+                  const root = categories.find((c) => !c.parent_id);
+                  if (root) setActiveCatId(root.id);
+                }
+              }}
+              onMouseLeave={() => setCatOpen(false)}
+            >
+              <button
+                onClick={() => {
+                  setCatOpen((v) => !v);
+                  setAgeOpen(false);
+                  setBrandOpen(false);
+                  if (!catOpen && categories.length > 0) {
+                    const root = categories.find((c) => !c.parent_id);
+                    if (root) setActiveCatId(root.id);
+                  }
+                }}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${catOpen
+                  ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                  : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
+                  }`}
+              >
+                <Grid3x3 className="size-4 shrink-0" /> Categories{" "}
+                <ChevronDown className={`size-3.5 transition ${catOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {catOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
+                  <div className="w-[450px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="p-3 grid grid-cols-2 gap-2">
+                      {categories
+                        .filter((c) => !c.parent_id)
+                        .map((parent) => (
+                          <Link
+                            key={parent.id}
+                            to="/products"
+                            search={{ category: parent.slug } as never}
+                            onClick={() => setCatOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950 text-[11px] tracking-wider uppercase transition-all rounded-none"
+                          >
+                            <span className="size-8 flex items-center justify-center shrink-0">
+                              {parent.image ? (
+                                <img src={resolveImage(parent.image)} alt={parent.name} className="max-w-full max-h-full object-contain" />
+                              ) : (
+                                parent.icon ?? "🎁"
+                              )}
+                            </span>
+                            <span>{parent.name}</span>
+                          </Link>
+                        ))}
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Right: Actions */}
-            <div className="flex items-center gap-3 lg:gap-6 shrink-0">
-              {/* About & Contact Links (Desktop) */}
-              <div className="hidden lg:flex items-center gap-4 mr-2">
-                <Link to="/about" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">About</Link>
-                <Link to="/contact" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">Contact</Link>
-              </div>
-
-              {/* Wishlist */}
-              <Link to="/wishlist" className="flex flex-col items-center justify-center cursor-pointer text-slate-800 hover:scale-110 transition-transform">
-                <Heart className="size-6 fill-[#FEFD99]" />
-              </Link>
-
-              {/* Cart */}
-              <Link to="/cart" className="relative flex flex-col items-center justify-center shrink-0 hover:scale-110 transition-transform text-slate-800">
-                <div className="relative">
-                  <ShoppingCart className="size-6" />
-                  <span className="absolute -top-1.5 -right-2 bg-slate-950 text-white text-[10px] rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-sm px-0.5">
-                    {cartCount}
-                  </span>
-                </div>
-              </Link>
-
-              {/* Profile */}
-              <div className="relative hidden md:block shrink-0 hover:scale-110 transition-transform text-slate-800">
-                <Link to="/account" className="flex flex-col items-center justify-center">
-                  <User className="size-6" />
-                </Link>
-              </div>
-
-              {/* Mobile Search Toggle */}
-              <button className="lg:hidden p-1 text-slate-900 flex items-center" onClick={() => setSidebarSearchOpen(true)}>
-                <Search className="size-5.5" />
-              </button>
-
-              {/* Mobile Menu Toggle */}
-              <button className="lg:hidden p-1 text-slate-900 flex items-center" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                <Menu className="size-5.5" />
-              </button>
-            </div>
-          </div>
-      </header>
-
-        {/* Second Navbar (Categories, Brands, etc.) */}
-        <div className="bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40">
-          <div className="container mx-auto flex items-center justify-center px-4 py-1">
-            <nav className="flex items-center gap-1 mx-auto">
-              {/* Categories Button & Hover Dropdown */}
-              <div
-                ref={catRef}
-                className="h-full relative"
-                onMouseEnter={() => {
-                  setCatOpen(true);
-                  setAgeOpen(false);
-                  setBrandOpen(false);
-                  if (categories.length > 0 && !activeCatId) {
-                    const root = categories.find((c) => !c.parent_id);
-                    if (root) setActiveCatId(root.id);
-                  }
-                }}
-                onMouseLeave={() => setCatOpen(false)}
-              >
-                <button
-                  onClick={() => {
-                    setCatOpen((v) => !v);
-                    setAgeOpen(false);
-                    setBrandOpen(false);
-                    if (!catOpen && categories.length > 0) {
-                      const root = categories.find((c) => !c.parent_id);
-                      if (root) setActiveCatId(root.id);
-                    }
-                  }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${catOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
-                    }`}
-                >
-                  <Grid3x3 className="size-4 shrink-0" /> Categories{" "}
-                  <ChevronDown className={`size-3.5 transition ${catOpen ? "rotate-180" : ""}`} />
-                </button>
-
-                {catOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
-                    <div className="w-[450px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
-                      <div className="p-3 grid grid-cols-2 gap-2">
-                        {categories
-                          .filter((c) => !c.parent_id)
-                          .map((parent) => (
-                            <Link
-                              key={parent.id}
-                              to="/subcategories/$slug"
-                              params={{ slug: parent.slug } as never}
-                              onClick={() => setCatOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-slate-700 hover:text-slate-950 text-[11px] tracking-wider uppercase transition-all rounded-none"
-                            >
-                              <span className="size-8 flex items-center justify-center shrink-0">
-                                {parent.image ? (
-                                  <img src={resolveImage(parent.image)} alt={parent.name} className="max-w-full max-h-full object-contain" />
-                                ) : (
-                                  parent.icon ?? "🎁"
-                                )}
-                              </span>
-                              <span>{parent.name}</span>
-                            </Link>
-                          ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Brands Dropdown */}
-              <div
-                ref={brandRef}
-                className="h-full relative"
-                onMouseEnter={() => {
-                  setBrandOpen(true);
+            {/* Brands Dropdown */}
+            <div
+              ref={brandRef}
+              className="h-full relative"
+              onMouseEnter={() => {
+                setBrandOpen(true);
+                setAgeOpen(false);
+                setCatOpen(false);
+              }}
+              onMouseLeave={() => setBrandOpen(false)}
+            >
+              <button
+                onClick={() => {
+                  setBrandOpen((v) => !v);
                   setAgeOpen(false);
                   setCatOpen(false);
                 }}
-                onMouseLeave={() => setBrandOpen(false)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${brandOpen
+                  ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                  : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
+                  }`}
               >
-                <button
-                  onClick={() => {
-                    setBrandOpen((v) => !v);
-                    setAgeOpen(false);
-                    setCatOpen(false);
-                  }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${brandOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
-                    }`}
-                >
-                  Brands{" "}
-                  <ChevronDown className={`size-3.5 transition ${brandOpen ? "rotate-180" : ""}`} />
-                </button>
-                {brandOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="w-[340px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
-                      <div className="p-2 grid grid-cols-2 gap-1">
-                        {uniqueBrands.map((b) => {
-                          const brandImages: Record<string, string> = {
-                            "AAYUSHI": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s",
-                            "CENTY TOYS": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmq2WqHD1EhHrSe3iKKSTyWDbqhr6bQf68A&s",
-                            "DASH STAR": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQVZK6aBU46A5kJjE5savdwbANyeHPzj5iMQ&s",
-                            "GENERIC": "https://images-platform.99static.com/3-Gw3-XKAjke2wz61jujQkx8dUs=/378x266:1622x1510/fit-in/99designs-contests-attachments/138/138432/attachment_138432570",
-                            "MEE MEE": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s",
-                            "ZEPHYR": "https://media.licdn.com/dms/image/v2/C510BAQHo9PDB8ZPkgw/company-logo_200_200/company-logo_200_200/0/1630586683562?e=2147483647&v=beta&t=rqa9o7BSWJ4GrfgSj6QSmffZTaMoT5bYu1a_8dGFRAM",
-                            "ANNIE": "https://i.pinimg.com/736x/02/a4/48/02a448c3723e8e133778a6a1aaf44064.jpg",
-                            "BALAK": "https://img.magnific.com/premium-vector/classic-vintage-toy-store-horse-retro-label-badge-logo-design_560919-82.jpg?semt=ais_hybrid&w=740&q=80",
-                            "COSCO": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s",
-                            "EKTA": "https://toys-catalog.odoo.com/web/image/1747-9f780afd/IMG-20241017-WA0017.webp",
-                            "MATTEL": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mattel_%282019%29.svg/1280px-Mattel_%282019%29.svg.png",
-                            "PANDA": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Ct-B-3ZCVQjjaVL91APYc6n2_yM7JzS34g&s",
-                          };
-                          const imgUrl = brandImages[b.toUpperCase()];
-                          
-                          return (
-                            <Link
-                              key={b}
-                              to="/products"
-                              search={{ brand: b } as never}
-                              onClick={() => setBrandOpen(false)}
-                              className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-none text-[11px] uppercase tracking-wider transition"
-                            >
-                              <div className="size-6 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
-                                {imgUrl ? (
-                                  <img src={imgUrl} alt={b} className="w-full h-full object-contain" />
-                                ) : (
-                                  <span className="text-slate-400 font-bold">{b.charAt(0)}</span>
-                                )}
-                              </div>
-                              <span className="truncate">{b}</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                Brands{" "}
+                <ChevronDown className={`size-3.5 transition ${brandOpen ? "rotate-180" : ""}`} />
+              </button>
+              {brandOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="w-[340px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="p-2 grid grid-cols-2 gap-1">
+                      {uniqueBrands.map((b) => {
+                        const brandImages: Record<string, string> = {
+                          "AAYUSHI": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s",
+                          "CENTY TOYS": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmq2WqHD1EhHrSe3iKKSTyWDbqhr6bQf68A&s",
+                          "DASH STAR": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQVZK6aBU46A5kJjE5savdwbANyeHPzj5iMQ&s",
+                          "GENERIC": "https://images-platform.99static.com/3-Gw3-XKAjke2wz61jujQkx8dUs=/378x266:1622x1510/fit-in/99designs-contests-attachments/138/138432/attachment_138432570",
+                          "MEE MEE": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s",
+                          "ZEPHYR": "https://media.licdn.com/dms/image/v2/C510BAQHo9PDB8ZPkgw/company-logo_200_200/company-logo_200_200/0/1630586683562?e=2147483647&v=beta&t=rqa9o7BSWJ4GrfgSj6QSmffZTaMoT5bYu1a_8dGFRAM",
+                          "ANNIE": "https://i.pinimg.com/736x/02/a4/48/02a448c3723e8e133778a6a1aaf44064.jpg",
+                          "BALAK": "https://img.magnific.com/premium-vector/classic-vintage-toy-store-horse-retro-label-badge-logo-design_560919-82.jpg?semt=ais_hybrid&w=740&q=80",
+                          "COSCO": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s",
+                          "EKTA": "https://toys-catalog.odoo.com/web/image/1747-9f780afd/IMG-20241017-WA0017.webp",
+                          "MATTEL": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mattel_%282019%29.svg/1280px-Mattel_%282019%29.svg.png",
+                          "PANDA": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Ct-B-3ZCVQjjaVL91APYc6n2_yM7JzS34g&s",
+                        };
+                        const imgUrl = brandImages[b.toUpperCase()];
 
-              {/* Shop by Age Dropdown */}
-              <div
-                ref={ageRef}
-                className="h-full relative"
-                onMouseEnter={() => {
-                  setAgeOpen(true);
-                  setBrandOpen(false);
-                  setCatOpen(false);
-                }}
-                onMouseLeave={() => setAgeOpen(false)}
-              >
-                <button
-                  onClick={() => {
-                    setAgeOpen((v) => !v);
-                    setBrandOpen(false);
-                    setCatOpen(false);
-                  }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${ageOpen
-                    ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
-                    : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
-                    }`}
-                >
-                  Age <ChevronDown className={`size-3.5 transition ${ageOpen ? "rotate-180" : ""}`} />
-                </button>
-                {ageOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="w-[280px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
-                      <div className="p-2 grid grid-cols-1 gap-1">
-                        {[
-                          { label: "0-18 month", value: "0-18 month", image: age0_2 },
-                          { label: "18-36 month", value: "18-36 month", image: age18_36 },
-                          { label: "3-5 year", value: "3-5 year", image: age3_5 },
-                          { label: "5-7 year", value: "5-7 year", image: age5_7 },
-                          { label: "7-9 year", value: "7-9 year", image: age7_9 },
-                          { label: "9-12 year", value: "9-12 year", image: age9_12 },
-                          { label: "12 +years", value: "12 +years", image: age12Plus },
-                        ].map((ageObj) => (
+                        return (
                           <Link
-                            key={ageObj.value}
+                            key={b}
                             to="/products"
-                            search={{ age: ageObj.value } as never}
-                            onClick={() => setAgeOpen(false)}
-                            className="flex items-center gap-3 px-3 py-1.5 rounded-none hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[11px] uppercase tracking-wider transition"
+                            search={{ brand: b } as never}
+                            onClick={() => setBrandOpen(false)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#BFDDF0]/20 hover:text-slate-900 rounded-none text-[11px] uppercase tracking-wider transition"
                           >
-                            <div className="size-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
-                              <img src={ageObj.image} alt={ageObj.label} className="w-full h-full object-contain" />
+                            <div className="size-6 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                              {imgUrl ? (
+                                <img src={imgUrl} alt={b} className="w-full h-full object-contain" />
+                              ) : (
+                                <span className="text-slate-400 font-bold">{b.charAt(0)}</span>
+                              )}
                             </div>
-                            <span className="truncate">{ageObj.label}</span>
+                            <span className="truncate">{b}</span>
                           </Link>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              {/* Sale Link */}
-              <Link
-                to="/products"
-                search={{ sale: true } as never}
-                className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-rose-600 hover:bg-white/40 transition-all"
+            {/* Shop by Age Dropdown */}
+            <div
+              ref={ageRef}
+              className="h-full relative"
+              onMouseEnter={() => {
+                setAgeOpen(true);
+                setBrandOpen(false);
+                setCatOpen(false);
+              }}
+              onMouseLeave={() => setAgeOpen(false)}
+            >
+              <button
+                onClick={() => {
+                  setAgeOpen((v) => !v);
+                  setBrandOpen(false);
+                  setCatOpen(false);
+                }}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider cursor-pointer transition-all ${ageOpen
+                  ? "bg-slate-900 text-[#BFDDF0] shadow-sm"
+                  : "text-slate-800 hover:bg-white/40 hover:text-slate-950"
+                  }`}
               >
-                Sale
-              </Link>
+                Age <ChevronDown className={`size-3.5 transition ${ageOpen ? "rotate-180" : ""}`} />
+              </button>
+              {ageOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="w-[280px] bg-white text-foreground rounded-none shadow-2xl border border-slate-100 overflow-hidden">
+                    <div className="p-2 grid grid-cols-1 gap-1">
+                      {[
+                        { label: "0-18 month", value: "0-18 month", image: age0_2 },
+                        { label: "18-36 month", value: "18-36 month", image: age18_36 },
+                        { label: "3-5 year", value: "3-5 year", image: age3_5 },
+                        { label: "5-7 year", value: "5-7 year", image: age5_7 },
+                        { label: "7-9 year", value: "7-9 year", image: age7_9 },
+                        { label: "9-12 year", value: "9-12 year", image: age9_12 },
+                        { label: "12 +years", value: "12 +years", image: age12Plus },
+                      ].map((ageObj) => (
+                        <Link
+                          key={ageObj.value}
+                          to="/products"
+                          search={{ age: ageObj.value } as never}
+                          onClick={() => setAgeOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-none hover:bg-[#BFDDF0]/20 hover:text-slate-900 text-[11px] uppercase tracking-wider transition"
+                        >
+                          <div className="size-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                            <img src={ageObj.image} alt={ageObj.label} className="w-full h-full object-contain" />
+                          </div>
+                          <span className="truncate">{ageObj.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
-              {/* Coupons Link */}
-              <Link
-                to="/coupons"
-                className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
-              >
-                Coupons
-              </Link>
-            </nav>
-          </div>
+            {/* Sale Link */}
+            <Link
+              to="/products"
+              search={{ sale: true } as never}
+              className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-rose-600 hover:bg-white/40 transition-all"
+            >
+              Sale
+            </Link>
+
+            {/* Coupons Link */}
+            <Link
+              to="/coupons"
+              className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
+            >
+              Coupons
+            </Link>
+          </nav>
         </div>
+      </div>
 
       {/* Slide-out Mobile Navigation Drawer (Sliding from Left) */}
       <div

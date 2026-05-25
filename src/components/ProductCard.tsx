@@ -44,7 +44,7 @@ export function ProductCard({ product }: { product: Product }) {
             .filter(
               (b) =>
                 Boolean(b) &&
-                !["best seller", "best seller product", "bestseller"].includes(b.toLowerCase()),
+                !["best seller", "best seller product", "bestseller", "trending", "trending product", "hot selling", "hot"].includes(b.toLowerCase()),
             )
             .map((b) => (
               <span
