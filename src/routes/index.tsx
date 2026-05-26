@@ -421,7 +421,7 @@ function HomePage() {
           </div>
           <div className={showAllCategories 
             ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center"
-            : "flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-2 lg:px-0 pb-4 pt-1 snap-x snap-mandatory touch-pan-x"
+            : "grid grid-cols-3 md:flex gap-4 md:gap-6 md:overflow-x-auto md:scrollbar-hide px-2 lg:px-0 pb-4 pt-1 md:snap-x md:snap-mandatory md:touch-pan-x"
           }>
             {(() => {
               const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 6);
@@ -431,7 +431,7 @@ function HomePage() {
                     key={c.id}
                     to="/products"
                     search={{ category: c.slug } as never}
-                    className="group flex flex-col items-center w-[100px] sm:w-[150px] md:w-[180px] shrink-0 snap-start transition-transform hover:-translate-y-1"
+                    className="group flex flex-col items-center w-full md:w-[180px] shrink-0 md:snap-start transition-transform hover:-translate-y-1"
                   >
                     <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
                       {c.image ? (
@@ -473,7 +473,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 md:gap-4 px-2 lg:px-0">
+        <div className="grid grid-cols-4 md:grid-cols-7 gap-2 md:gap-4 px-2 lg:px-0">
           {AGE_RANGES.map((age, i) => (
             <Link
               key={i}

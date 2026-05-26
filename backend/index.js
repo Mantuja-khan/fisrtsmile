@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 // CORS Configuration
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080", "https://toyhaat.com", "https://www.toyhaat.com"],
+    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080", "https://trivoxotoys.com", "https://www.trivoxotoys.com"],
     credentials: true,
   })
 );
