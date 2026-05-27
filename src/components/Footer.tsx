@@ -17,7 +17,7 @@ export function Footer() {
               <div className="text-slate-800 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform border border-slate-100">
                 <Truck className="size-7 md:size-8 mb-3 text-slate-700" />
                 <h3 className="font-bold text-sm md:text-base mb-1">Free Shipping</h3>
-                <p className="text-[10px] md:text-xs text-slate-600">Free shipping on order above ₹499.00</p>
+                <p className="text-[10px] md:text-xs text-slate-600">Free shipping on order above ₹999.00</p>
               </div>
               <div className="text-slate-800 rounded-lg p-5 md:p-6 flex flex-col items-center text-center shadow-sm hover:scale-[1.02] transition-transform border border-slate-100">
                 <Headphones className="size-7 md:size-8 mb-3 text-slate-700" />
