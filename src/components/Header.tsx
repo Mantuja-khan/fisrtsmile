@@ -111,9 +111,11 @@ export function Header() {
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
           {/* Left: Logo */}
 
-          <Link to="/" className="flex items-center shrink-0">
-            <img src={logo} alt="Trivoxo Toys" className="h-10 md:h-12 w-auto object-contain" />
-          </Link>
+          <img
+            src={logo}
+            alt="Trivoxo Toys"
+            className="h-14 md:h-16 w-auto object-contain scale-150 origin-left"
+          />
 
           {/* Center: Search Bar (Desktop) */}
           <div className="hidden lg:flex flex-1 max-w-xl mx-auto relative group">
@@ -217,11 +219,26 @@ export function Header() {
           </div>
         </div>
       </header>
-
       {/* Second Navbar (Categories, Brands, etc.) */}
       <div className="bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40">
         <div className="container mx-auto flex items-center justify-center px-4 py-1">
           <nav className="flex items-center gap-1 mx-auto">
+            {/* Home Button */}
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
+            >
+              Home
+            </Link>
+
+            {/* All Products Button */}
+            <Link
+              to="/products"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
+            >
+              All Products
+            </Link>
+
             {/* Categories Button & Hover Dropdown */}
             <div
               ref={catRef}

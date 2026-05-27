@@ -48,7 +48,6 @@ import slider5 from "@/assets/slider/Marvel_570x.webp";
 import slider6 from "@/assets/slider/Mattel_Games_570x.webp";
 import slider7 from "@/assets/slider/disney-logo-square_570x.webp";
 import slider8 from "@/assets/slider/majorettelogo.avif";
-import { se } from "date-fns/locale";
 
 const AGE_RANGES = [
   { label: "0-18 month", value: "0-18 month", image: age0_2 },
@@ -209,8 +208,29 @@ function HomePage() {
     }
   };
 
+  const ageScrollRef = useRef<HTMLDivElement>(null);
+  const scrollAge = (direction: "left" | "right") => {
+    if (ageScrollRef.current) {
+      const scrollAmount = 200;
+      ageScrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const catScrollRef = useRef<HTMLDivElement>(null);
+  const scrollCat = (direction: "left" | "right") => {
+    if (catScrollRef.current) {
+      const scrollAmount = 240;
+      catScrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const [randomReviews, setRandomReviews] = useState<typeof ALL_TESTIMONIALS>([]);
-  const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
     // Select 3 random unique reviews on component mount
@@ -235,6 +255,28 @@ function HomePage() {
         .split(",")
         .some((b) => ["best seller", "best seller product", "bestseller"].includes(b.trim())),
   );
+  const newArrivals = (() => {
+    const tagged = products.filter(
+      (p) =>
+        p.badge &&
+        p.badge
+          .toLowerCase()
+          .split(",")
+          .some((b) => ["new arrival", "new arrivals", "new"].includes(b.trim())),
+    );
+    // Fallback: last 20 most recently added products (reverse insertion order)
+    return tagged.length > 0 ? tagged.slice(0, 20) : [...products].reverse().slice(0, 20);
+  })();
+
+  const newArrivalsRef = useRef<HTMLDivElement>(null);
+  const scrollNewArrivals = (direction: "left" | "right") => {
+    if (newArrivalsRef.current) {
+      newArrivalsRef.current.scrollBy({
+        left: direction === "left" ? -320 : 320,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const heroBanners = banners.filter((b) => b.position !== "promo");
   const promoBanners = banners.filter((b) => b.position === "promo").slice(0, 2);
@@ -274,12 +316,34 @@ function HomePage() {
     <div>
       {/* Brand Carousel */}
       <section className="bg-pink-50 py-1 border-b border-slate-100">
-        <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 1 }} className="w-full">
-          <CarouselContent className="items-center -ml-4">
-            {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
-              <CarouselItem key={i} className="pl-2 basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-[12.5%]">
-                <div className="flex items-center justify-center h-[40px] w-full">
-                  <img src={src} className="h-full w-full object-contain scale-[1.1] select-none" alt={`Brand ${i + 1}`} />
+        <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 2 }} className="w-full">
+          <CarouselContent className="items-center -ml-1">
+            {/* Local slider images */}
+            {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
+              <CarouselItem key={`local-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
+                <div className="flex items-center justify-center h-[38px] w-full px-1">
+                  <img src={src} className="h-full w-full object-contain select-none" alt={`Brand ${i + 1}`} />
+                </div>
+              </CarouselItem>
+            ))}
+            {/* Additional brands via URLs */}
+            {[
+              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
+              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
+              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
+              { name: "CENTY TOYS", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmq2WqHD1EhHrSe3iKKSTyWDbqhr6bQf68A&s" },
+              { name: "PANDA", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Ct-B-3ZCVQjjaVL91APYc6n2_yM7JzS34g&s" },
+              { name: "MATTEL", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mattel_%282019%29.svg/1280px-Mattel_%282019%29.svg.png" },
+              { name: "DASH STAR", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQVZK6aBU46A5kJjE5savdwbANyeHPzj5iMQ&s" },
+              { name: "EKTA", url: "https://toys-catalog.odoo.com/web/image/1747-9f780afd/IMG-20241017-WA0017.webp" },
+              /* duplicate loop for continuous effect */
+              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
+              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
+              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
+            ].map((brand, i) => (
+              <CarouselItem key={`url-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
+                <div className="flex items-center justify-center h-[38px] w-full px-1">
+                  <img src={brand.url} className="h-full w-full object-contain select-none" alt={brand.name} />
                 </div>
               </CarouselItem>
             ))}
@@ -447,77 +511,110 @@ function HomePage() {
               Explore our wide selection of premium toys
             </p>
           </div>
-          <div className={showAllCategories
-            ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center"
-            : "grid grid-cols-3 md:flex gap-4 md:gap-6 md:overflow-x-auto md:scrollbar-hide px-2 lg:px-0 pb-4 pt-1 md:snap-x md:snap-mandatory md:touch-pan-x"
-          }>
-            {(() => {
-              const displayedCats = showAllCategories ? rootCats : rootCats.slice(0, 6);
-              return displayedCats.map((c, idx) => {
-                return (
-                  <Link
-                    key={c.id}
-                    to="/products"
-                    search={{ category: c.slug } as never}
-                    className="group flex flex-col items-center w-full md:w-[180px] shrink-0 md:snap-start transition-transform hover:-translate-y-1"
-                  >
-                    <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
-                      {c.image ? (
-                        <img
-                          src={resolveImage(c.image)}
-                          alt={c.name}
-                          className="w-full h-full object-contain select-none"
-                        />
-                      ) : (
-                        <span className="text-6xl sm:text-7xl transition-transform duration-300">
-                          {c.icon ?? "🎁"}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                );
-              });
-            })()}
-          </div>
-          {!showAllCategories && rootCats.length > 6 && (
-            <div className="mt-6 flex justify-center">
-              <button
-                onClick={() => setShowAllCategories(true)}
-                className="bg-slate-900 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg hover:bg-slate-800 transition-all"
-              >
-                View More Categories
-              </button>
+          {/* Scrollable row with left/right buttons — shows 5 at a time */}
+          <div className="relative overflow-hidden">
+            {/* Left Arrow */}
+            <button
+              onClick={() => scrollCat("left")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-pink-200 shadow-md hover:bg-pink-50 hover:border-pink-300 transition-all text-pink-700"
+              aria-label="Scroll categories left"
+            >
+              <ChevronLeft className="size-4 md:size-5" />
+            </button>
+            {/* Right Arrow */}
+            <button
+              onClick={() => scrollCat("right")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-pink-200 shadow-md hover:bg-pink-50 hover:border-pink-300 transition-all text-pink-700"
+              aria-label="Scroll categories right"
+            >
+              <ChevronRight className="size-4 md:size-5" />
+            </button>
+            {/* Scroll container — show 5 per view */}
+            <div
+              ref={catScrollRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pt-1 snap-x snap-mandatory touch-pan-x px-4"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {rootCats.map((c) => (
+                <Link
+                  key={c.id}
+                  to="/products"
+                  search={{ category: c.slug } as never}
+                  className="group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-1"
+                  style={{ width: "calc((100% - 4 * 0.75rem) / 5)" }}
+                >
+                  <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
+                    {c.image ? (
+                      <img
+                        src={resolveImage(c.image)}
+                        alt={c.name}
+                        className="w-full h-full object-contain select-none"
+                      />
+                    ) : (
+                      <span className="text-5xl sm:text-6xl transition-transform duration-300">
+                        {c.icon ?? "🎁"}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
       {/* Shop by Age (New Section) */}
-      <section className="container mx-auto px-4 py-8 bg-slate-50/50 border-y border-slate-100">
-        <div className="text-center mb-8">
-          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Find perfect toys suited for every stage
-          </p>
-        </div>
-
-        <div className="grid grid-cols-4 md:grid-cols-7 gap-2 md:gap-4 px-2 lg:px-0">
-          {AGE_RANGES.map((age, i) => (
-            <Link
-              key={i}
-              to="/products"
-              search={{ age: age.value } as never}
-              className="group flex flex-col items-center w-full transition-transform hover:-translate-y-2"
+      <section className="py-8 bg-slate-50/50 border-y border-slate-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Find perfect toys suited for every stage
+            </p>
+          </div>
+          {/* Scrollable row with left/right buttons — shows 5 at a time */}
+          <div className="relative overflow-hidden">
+            {/* Left Arrow */}
+            <button
+              onClick={() => scrollAge("left")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-slate-200 shadow-md hover:bg-slate-50 hover:border-slate-300 transition-all text-slate-700"
+              aria-label="Scroll age left"
             >
-              <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
-                <img
-                  src={age.image}
-                  alt={age.label}
-                  className="w-full h-full object-cover select-none"
-                />
-              </div>
-            </Link>
-          ))}
+              <ChevronLeft className="size-4 md:size-5" />
+            </button>
+            {/* Right Arrow */}
+            <button
+              onClick={() => scrollAge("right")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-slate-200 shadow-md hover:bg-slate-50 hover:border-slate-300 transition-all text-slate-700"
+              aria-label="Scroll age right"
+            >
+              <ChevronRight className="size-4 md:size-5" />
+            </button>
+            {/* Scroll container — show 5 per view */}
+            <div
+              ref={ageScrollRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pt-1 snap-x snap-mandatory touch-pan-x px-4"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {AGE_RANGES.map((age, i) => (
+                <Link
+                  key={i}
+                  to="/products"
+                  search={{ age: age.value } as never}
+                  className="group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-2"
+                  style={{ width: "calc((100% - 4 * 0.75rem) / 5)" }}
+                >
+                  <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
+                    <img
+                      src={age.image}
+                      alt={age.label}
+                      className="w-full h-full object-cover select-none"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -589,6 +686,59 @@ function HomePage() {
                 />
               </Link>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* New Arrivals Section */}
+      {newArrivals.length > 0 && (
+        <section className="w-full bg-gradient-to-r from-emerald-50 to-teal-50 border-y border-emerald-100 py-8 relative overflow-hidden my-4">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-6 text-emerald-600 animate-pulse" />
+                <h2 className="font-display text-xl md:text-2xl lg:text-3xl text-emerald-950 drop-shadow-sm">
+                  New Arrivals
+                </h2>
+              </div>
+              <Link
+                to="/products"
+                search={{ sort: "newest" } as never}
+                className="text-xs md:text-sm font-semibold text-emerald-700 underline hover:opacity-80"
+              >
+                View more →
+              </Link>
+            </div>
+            {/* Scrollable row with L/R buttons */}
+            <div className="relative">
+              {/* Left Arrow */}
+              <button
+                onClick={() => scrollNewArrivals("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-emerald-200 shadow-md hover:bg-emerald-50 hover:border-emerald-300 transition-all text-emerald-700"
+                aria-label="Scroll new arrivals left"
+              >
+                <ChevronLeft className="size-4 md:size-5" />
+              </button>
+              {/* Right Arrow */}
+              <button
+                onClick={() => scrollNewArrivals("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-emerald-200 shadow-md hover:bg-emerald-50 hover:border-emerald-300 transition-all text-emerald-700"
+                aria-label="Scroll new arrivals right"
+              >
+                <ChevronRight className="size-4 md:size-5" />
+              </button>
+              <div
+                ref={newArrivalsRef}
+                className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x px-6 md:px-8"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {newArrivals.map((p) => (
+                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
+                    <ProductCard product={p} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}

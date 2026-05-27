@@ -17,7 +17,7 @@ export function DiscountPopup() {
     if (!phoneToUse) return null;
 
     // Check if already added for this phone to prevent duplication
-    const existing = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
+    const existing = JSON.parse(localStorage.getItem("Trivoxo Toys_coupons") || "[]");
     const alreadyHas = existing.find(
       (c: any) => c.phone === phoneToUse && c.code.startsWith("FS5OFF"),
     );
@@ -25,8 +25,8 @@ export function DiscountPopup() {
 
     const code = "FS5OFF-" + Math.floor(1000 + Math.random() * 9000);
     existing.push({ code, discount: 5, active: true, phone: phoneToUse });
-    localStorage.setItem("toyhaat_coupons", JSON.stringify(existing));
-    localStorage.setItem("toyhaat_discount_guest", "true");
+    localStorage.setItem("Trivoxo Toys_coupons", JSON.stringify(existing));
+    localStorage.setItem("Trivoxo Toys_discount_guest", "true");
     return code;
   };
 
@@ -108,7 +108,7 @@ export function DiscountPopup() {
 
         {/* Right side content */}
         <div className="w-full md:w-1/2 p-6 md:p-8 text-center flex flex-col justify-center items-center relative z-10 bg-white/40 md:bg-white backdrop-blur-sm md:backdrop-blur-none">
-          <img src={logoImg} alt="Trivoxo Toys" className="h-12 mb-4 object-contain" />
+          <img src={logoImg} alt="Toy Haat" className="h-12 mb-4 object-contain" />
           <h2 className="font-display text-4xl mb-2 text-gray-800 tracking-wide uppercase">
             Wait!
           </h2>

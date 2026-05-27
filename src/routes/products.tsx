@@ -8,6 +8,7 @@ import {
   SlidersHorizontal,
   X,
   ChevronDown,
+  ChevronLeft,
   Check,
   Star,
   RotateCcw,
@@ -32,7 +33,7 @@ type Search = {
   minPrice?: number;
   maxPrice?: number;
   rating?: number;
-  sort?: "popular" | "price_asc" | "price_desc" | "rating";
+  sort?: "popular" | "price_asc" | "price_desc" | "rating" | "newest";
 };
 
 export const Route = createFileRoute("/products")({
@@ -189,6 +190,10 @@ function ProductListPage() {
       case "rating":
         list.sort((a, b) => b.rating - a.rating);
         break;
+      case "newest":
+        // Reverse insertion order — most recently added first
+        list.reverse();
+        break;
       default:
         list.sort((a, b) => b.ratingCount - a.ratingCount);
     }
@@ -281,9 +286,9 @@ function ProductListPage() {
     const parentCategories = categories.filter((c) => !c.parent_id);
 
     return (
-      <div className={`space-y-6 ${className}`}>
+      <div className={`space-y-5 ${className}`}>
         {/* Active Header & Clear Filter */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-slate-200">
           <div className="flex items-center gap-1.5">
             <SlidersHorizontal className="size-3.5 text-slate-800 stroke-[2.5]" />
             <span className="text-xs font-black text-slate-800 uppercase tracking-widest">
@@ -301,19 +306,19 @@ function ProductListPage() {
         </div>
 
         {/* Search Input Filter */}
-        <div className="space-y-2 pb-4 border-b border-slate-100">
-          <div className="relative flex items-center bg-slate-50 rounded-xl border border-slate-200/50 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-white focus-within:border-indigo-400 transition-all p-1 shadow-xs">
+        <div className="space-y-2 pb-4 border-b border-slate-200">
+          <div className="relative flex items-center bg-slate-50 border border-slate-200 focus-within:bg-white focus-within:border-indigo-400 transition-all">
             <input
               type="text"
               placeholder="Search toys..."
               value={search.q || ""}
               onChange={(e) => update({ q: e.target.value || undefined })}
-              className="w-full bg-transparent px-2.5 py-1.5 outline-none text-xs text-slate-800 placeholder:text-slate-400"
+              className="w-full bg-transparent px-2.5 py-2 outline-none text-xs text-slate-800 placeholder:text-slate-400"
             />
             {search.q && (
               <button
                 onClick={() => update({ q: undefined })}
-                className="absolute right-2 top-2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center cursor-pointer"
+                className="pr-2 text-slate-400 hover:text-slate-600 flex items-center justify-center cursor-pointer"
               >
                 <X className="size-3" />
               </button>
@@ -326,13 +331,13 @@ function ProductListPage() {
           <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
             Collections
           </h4>
-          <div className="flex flex-col gap-1 pr-1">
+          <div className="flex flex-col gap-0.5 pr-1">
             <button
               onClick={() => {
                 update({ category: undefined });
                 onClose();
               }}
-              className={`text-left text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
                 !search.category
                   ? "bg-indigo-50 text-indigo-700 font-bold"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -355,7 +360,7 @@ function ProductListPage() {
               return (
                 <div key={parent.id} className="space-y-0.5">
                   <div
-                    className={`flex items-center justify-between rounded-lg transition-all ${
+                    className={`flex items-center justify-between transition-all ${
                       isParentActive ? "bg-indigo-50/50" : "hover:bg-slate-50"
                     }`}
                   >
@@ -379,7 +384,7 @@ function ProductListPage() {
                       }`}
                     >
                       <span
-                        className={`size-2 rounded-full border shrink-0 ${
+                        className={`size-2 border shrink-0 ${
                           isParentActive
                             ? "bg-indigo-600 border-indigo-600"
                             : isActive
@@ -398,7 +403,7 @@ function ProductListPage() {
                             [parent.id]: !prev[parent.id],
                           }));
                         }}
-                        className="p-1.5 text-slate-400 hover:text-slate-700 transition mr-1 rounded-md"
+                        className="p-1.5 text-slate-400 hover:text-slate-700 transition mr-1"
                       >
                         <ChevronDown
                           className={`size-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
@@ -408,7 +413,7 @@ function ProductListPage() {
                   </div>
 
                   {hasChildren && isExpanded && (
-                    <div className="pl-4 ml-3 border-l border-slate-100/90 flex flex-col gap-0.5 mt-0.5">
+                    <div className="pl-4 ml-3 border-l border-slate-200 flex flex-col gap-0.5 mt-0.5">
                       {children.map((child) => {
                         const isChildActive = search.category === child.slug;
                         return (
@@ -418,14 +423,14 @@ function ProductListPage() {
                               update({ category: child.slug });
                               onClose();
                             }}
-                            className={`text-left text-[11px] py-1 px-1.5 rounded-md transition-all cursor-pointer truncate flex items-center gap-1.5 ${
+                            className={`text-left text-[11px] py-1 px-1.5 transition-all cursor-pointer truncate flex items-center gap-1.5 ${
                               isChildActive
                                 ? "text-indigo-600 font-extrabold bg-indigo-50/30"
                                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
                             }`}
                           >
                             <span
-                              className={`size-1.5 rounded-full shrink-0 ${isChildActive ? "bg-indigo-600" : "bg-slate-300"}`}
+                              className={`size-1.5 shrink-0 ${isChildActive ? "bg-indigo-600" : "bg-slate-300"}`}
                             />
                             {child.name}
                           </button>
@@ -444,7 +449,7 @@ function ProductListPage() {
           <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
             Age Range
           </h4>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {AGE_RANGES.map((age) => {
               const isActive = search.age === age;
               return (
@@ -454,10 +459,10 @@ function ProductListPage() {
                     update({ age: isActive ? undefined : age });
                     onClose();
                   }}
-                  className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-all cursor-pointer shadow-2xs ${
+                  className={`px-2 py-1 text-[10px] font-bold border transition-all cursor-pointer ${
                     isActive
-                      ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                      : "bg-slate-50/50 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-400 hover:bg-white hover:text-slate-900"
                   }`}
                 >
                   {age}
@@ -482,7 +487,7 @@ function ProductListPage() {
                     update({ brand: isActive ? undefined : brand });
                     onClose();
                   }}
-                  className={`text-left text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
                     isActive
                       ? "bg-indigo-50 text-indigo-700 font-bold"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -519,7 +524,7 @@ function ProductListPage() {
                     }
                     onClose();
                   }}
-                  className={`text-left text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
                     isActive
                       ? "bg-indigo-50 text-indigo-700 font-bold"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
@@ -547,7 +552,7 @@ function ProductListPage() {
                 placeholder="Min"
                 value={minInput}
                 onChange={(e) => setMinInput(e.target.value)}
-                className="w-full bg-slate-50 text-xs pl-4.5 pr-1.5 py-1.5 border border-slate-200/80 focus:border-indigo-400 focus:bg-white focus:outline-none rounded-lg text-slate-800 placeholder:text-slate-400 font-medium transition-all"
+                className="w-full bg-slate-50 text-xs pl-4.5 pr-1.5 py-1.5 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:outline-none text-slate-800 placeholder:text-slate-400 font-medium transition-all"
               />
             </div>
             <span className="text-slate-400 text-[10px] font-bold">-</span>
@@ -560,12 +565,12 @@ function ProductListPage() {
                 placeholder="Max"
                 value={maxInput}
                 onChange={(e) => setMaxInput(e.target.value)}
-                className="w-full bg-slate-50 text-xs pl-4.5 pr-1.5 py-1.5 border border-slate-200/80 focus:border-indigo-400 focus:bg-white focus:outline-none rounded-lg text-slate-800 placeholder:text-slate-400 font-medium transition-all"
+                className="w-full bg-slate-50 text-xs pl-4.5 pr-1.5 py-1.5 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:outline-none text-slate-800 placeholder:text-slate-400 font-medium transition-all"
               />
             </div>
             <button
               onClick={applyCustomPrice}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all shadow-sm cursor-pointer shrink-0"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-3 py-1.5 transition-all cursor-pointer shrink-0"
             >
               Apply
             </button>
@@ -583,7 +588,7 @@ function ProductListPage() {
                 update({ sale: search.sale ? undefined : true });
                 onClose();
               }}
-              className={`text-left text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
                 search.sale
                   ? "bg-indigo-50 text-indigo-700 font-bold"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -606,7 +611,7 @@ function ProductListPage() {
                     update({ badge: isActive ? undefined : b });
                     onClose();
                   }}
-                  className={`text-left text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
                     isActive
                       ? "bg-indigo-50 text-indigo-700 font-bold"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
@@ -639,7 +644,7 @@ function ProductListPage() {
                     update({ rating: isActive ? undefined : r });
                     onClose();
                   }}
-                  className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg transition-all cursor-pointer ${
+                  className={`flex items-center gap-2 text-xs py-1.5 px-2 transition-all cursor-pointer ${
                     isActive
                       ? "bg-indigo-50 text-indigo-700 font-bold"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
@@ -671,22 +676,22 @@ function ProductListPage() {
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20">
       {/* Main 2-Column Grid */}
-      <section className="container mx-auto px-4 max-w-7xl mt-8">
-        <div className="flex gap-8 items-start">
-          {/* Desktop Left Persistent Sidebar */}
-          <aside className="hidden lg:block w-64 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-xs sticky top-[100px] h-[calc(100vh-140px)] overflow-y-auto custom-scrollbar shrink-0">
+      <section className="max-w-7xl mx-auto mt-4">
+        <div className="flex items-start">
+          {/* Desktop Left Persistent Sidebar - wide, flush left, no rounded corners */}
+          <aside className="hidden lg:block w-72 xl:w-80 bg-white border-r border-t border-b border-slate-200 p-4 sticky top-[100px] h-[calc(100vh-140px)] overflow-y-auto custom-scrollbar shrink-0">
             <FiltersSidebarContent />
           </aside>
 
           {/* Right Product Listings Column */}
-          <div className="flex-1 w-full space-y-4">
+          <div className="flex-1 w-full space-y-4 px-4">
             {/* Controls Bar (Sort Select and Mobile Filters Button) */}
-            <div className="flex items-center justify-between gap-3 bg-white border border-slate-100 rounded-2xl p-3 shadow-xs">
+            <div className="flex items-center justify-between gap-3 bg-white border border-slate-200 p-3">
               {/* Mobile filter trigger button */}
               <div className="lg:hidden">
                 <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                   <SheetTrigger asChild>
-                    <button className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[10px] uppercase tracking-widest rounded-xl shadow-md transition cursor-pointer">
+                    <button className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[10px] uppercase tracking-widest shadow-md transition cursor-pointer">
                       <SlidersHorizontal className="size-3.5" /> Filters
                       {activeChips.length > 0 && (
                         <span className="size-4.5 rounded-full bg-white text-slate-950 font-black text-[9px] flex items-center justify-center shadow-xs">
@@ -711,7 +716,7 @@ function ProductListPage() {
 
               {/* Display desktop active filter count */}
               <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-500">
-                <span className="bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded-lg text-xs font-bold">
+                <span className="bg-slate-100 text-slate-800 px-2.5 py-0.5 text-xs font-bold">
                   {filtered.length}
                 </span>{" "}
                 items
@@ -732,9 +737,10 @@ function ProductListPage() {
                   <select
                     value={search.sort}
                     onChange={(e) => update({ sort: e.target.value as Search["sort"] })}
-                    className="text-xs font-extrabold border border-slate-200 bg-white rounded-xl pl-3 pr-8 py-2 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none uppercase tracking-wider text-slate-700 cursor-pointer shadow-xs appearance-none"
+                    className="text-xs font-extrabold border border-slate-200 bg-white pl-3 pr-8 py-2 focus:outline-none uppercase tracking-wider text-slate-700 cursor-pointer appearance-none"
                   >
                     <option value="popular">🔥 Popular</option>
+                    <option value="newest">🆕 Newest First</option>
                     <option value="price_asc">📈 Price: Low to High</option>
                     <option value="price_desc">📉 Price: High to Low</option>
                     <option value="rating">⭐ Highly Rated</option>
@@ -746,7 +752,7 @@ function ProductListPage() {
 
             {/* Active Filters dismissal chips bar */}
             {activeChips.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2.5 bg-indigo-50/20 border border-indigo-100/50 rounded-2xl p-3 md:p-3.5 shadow-2xs">
+              <div className="flex flex-wrap items-center gap-2.5 bg-indigo-50/20 border border-indigo-100/50 p-3 md:p-3.5">
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
                   Active Filters:
                 </span>
@@ -755,7 +761,7 @@ function ProductListPage() {
                     <button
                       key={chip.key}
                       onClick={() => update({ [chip.key]: chip.value })}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-extrabold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 hover:border-indigo-300 rounded-full transition-all cursor-pointer uppercase tracking-wider shadow-3xs group"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-extrabold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 hover:border-indigo-300 transition-all cursor-pointer uppercase tracking-wider group"
                     >
                       {chip.label}
                       <X className="size-3 text-slate-400 group-hover:text-rose-500 stroke-[2.5] transition-colors" />
