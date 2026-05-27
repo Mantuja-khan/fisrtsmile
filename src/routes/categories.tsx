@@ -7,7 +7,7 @@ import { Search, ChevronRight } from "lucide-react";
 export const Route = createFileRoute("/categories")({
   head: () => ({
     meta: [
-      { title: "Browse Toy Categories — Toy Haat" },
+      { title: "Browse Toy Categories — Trivoxo Toys" },
       {
         name: "description",
         content: "Explore our premium selection of toy categories and find the perfect match.",

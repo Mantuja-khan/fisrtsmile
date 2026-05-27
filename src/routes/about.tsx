@@ -14,11 +14,11 @@ import {
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — Toy Haat" },
+      { title: "About Us — Trivoxo Toys" },
       {
         name: "description",
         content:
-          "Where Play Meets Purpose. Founded by Avinash Shah, Toy Haat selects toys that spark creativity and support learning.",
+          "Where Play Meets Purpose. Founded by Avinash Shah, Trivoxo Toys selects toys that spark creativity and support learning.",
       },
     ],
   }),
@@ -79,10 +79,10 @@ function AboutPage() {
               <Target className="size-3.5" /> Our Philosophy
             </div>
             <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
-              About Toy Haat
+              About Trivoxo Toys
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Founded in 2019, Toy Haat was created with one simple idea –{" "}
+              Founded in 2019, Trivoxo Toys was created with one simple idea –{" "}
               <strong className="text-slate-800 font-medium">
                 play should not just entertain… it should help a child grow.
               </strong>
@@ -199,13 +199,13 @@ function AboutPage() {
                 A Simple Idea That Started It All
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Toy Haat was founded by{" "}
+                Trivoxo Toys was founded by{" "}
                 <strong className="text-amber-300 font-medium">Avinash Shah</strong> with a clear
                 goal – to bring better play options for children.
               </p>
               <p className="text-slate-300 text-sm leading-relaxed">
                 He saw that many toys only keep kids busy, but don’t really help them learn or grow.
-                So he built Toy Haat to offer products that:
+                So he built Trivoxo Toys to offer products that:
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {["Have real value", "Thoughtfully designed", "Make both happy"].map((text, i) => (
@@ -231,7 +231,7 @@ function AboutPage() {
                   <div>
                     <p className="text-slate-300 font-medium text-base text-white">Avinash Shah</p>
                     <p className="text-[11px] text-slate-300 font-normal uppercase tracking-wider mt-0.5">
-                      Founder, Toy Haat
+                      Founder, Trivoxo Toys
                     </p>
                   </div>
                 </div>
@@ -262,10 +262,10 @@ function AboutPage() {
                   Email Support
                 </p>
                 <a
-                  href="mailto:support@toyhaat.com"
+                  href="mailto:support@trivoxotoys.com"
                   className="text-slate-800 font-medium hover:underline text-sm block mt-0.5"
                 >
-                  support@toyhaat.com
+                  support@trivoxotoys.com
                 </a>
               </div>
             </div>

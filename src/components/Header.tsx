@@ -110,9 +110,9 @@ export function Header() {
       <header className="bg-pink-100 border-b border-slate-100 sticky top-0 shadow-sm z-50 w-full">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
           {/* Left: Logo */}
-          
+
           <Link to="/" className="flex items-center shrink-0">
-            <img src={logo} alt="Toy Haat" className="h-10 md:h-12 w-auto object-contain" />
+            <img src={logo} alt="Trivoxo Toys" className="h-10 md:h-12 w-auto object-contain" />
           </Link>
 
           {/* Center: Search Bar (Desktop) */}
@@ -285,7 +285,6 @@ export function Header() {
                 </div>
               )}
             </div>
-
             {/* Brands Dropdown */}
             <div
               ref={brandRef}
@@ -393,6 +392,7 @@ export function Header() {
                         { label: "7-9 year", value: "7-9 year", image: age7_9 },
                         { label: "9-12 year", value: "9-12 year", image: age9_12 },
                         { label: "12 +years", value: "12 +years", image: age12Plus },
+
                       ].map((ageObj) => (
                         <Link
                           key={ageObj.value}

@@ -19,7 +19,7 @@ type OrderRow = {
 export const Route = createFileRoute("/track")({
   validateSearch: (s: Record<string, unknown>): { orderId?: string } =>
     typeof s.orderId === "string" ? { orderId: s.orderId } : {},
-  head: () => ({ meta: [{ title: "Track Order — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Track Order — Trivoxo Toys" }] }),
   component: TrackPage,
 });
 
@@ -226,8 +226,8 @@ function TrackPage() {
 
           <p className="mt-4 text-xs text-muted-foreground border-t border-border pt-3">
             Need help? Email{" "}
-            <a className="text-primary font-semibold" href="mailto:support@toyhaat.com">
-              support@toyhaat.com
+            <a className="text-primary font-semibold" href="mailto:support@trivoxotoys.com">
+              support@trivoxotoys.com
             </a>
             .
           </p>

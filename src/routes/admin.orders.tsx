@@ -93,8 +93,8 @@ function AdminOrders() {
     const intl = phone.length === 10 ? `91${phone}` : phone;
     const msg =
       status === "shipped"
-        ? `Hi ${o.customer_name}! 📦 Great news — your Toy Haat order ${o.order_number} has been *shipped* and is on its way. Track it anytime at https://toyhaat.com/track . Thank you for shopping with us!`
-        : `Hi ${o.customer_name}! 🎉 Your Toy Haat order ${o.order_number} has been *delivered successfully*. We hope your little one loves it! Please share a review — it means a lot to us. ❤️`;
+        ? `Hi ${o.customer_name}! 📦 Great news — your Trivoxo Toys order ${o.order_number} has been *shipped* and is on its way. Track it anytime at https://trivoxotoys.com/track . Thank you for shopping with us!`
+        : `Hi ${o.customer_name}! 🎉 Your Trivoxo Toys order ${o.order_number} has been *delivered successfully*. We hope your little one loves it! Please share a review — it means a lot to us. ❤️`;
     const url = `https://wa.me/${intl}?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -117,8 +117,8 @@ function AdminOrders() {
         const intl = phone.length === 10 ? `91${phone}` : phone;
         const msg =
           status === "shipped"
-            ? `Hi ${o.customer_name}! 📦 Great news — your Toy Haat order ${o.order_number} has been *shipped* and is on its way. Track it anytime at https://toyhaat.com/track . Thank you for shopping with us!`
-            : `Hi ${o.customer_name}! 🎉 Your Toy Haat order ${o.order_number} has been *delivered successfully*. We hope your little one loves it! Please share a review — it means a lot to us. ❤️`;
+            ? `Hi ${o.customer_name}! 📦 Great news — your Trivoxo Toys order ${o.order_number} has been *shipped* and is on its way. Track it anytime at https://trivoxotoys.com/track . Thank you for shopping with us!`
+            : `Hi ${o.customer_name}! 🎉 Your Trivoxo Toys order ${o.order_number} has been *delivered successfully*. We hope your little one loves it! Please share a review — it means a lot to us. ❤️`;
         newWin.location.href = `https://wa.me/${intl}?text=${encodeURIComponent(msg)}`;
       }
     } catch (error: any) {

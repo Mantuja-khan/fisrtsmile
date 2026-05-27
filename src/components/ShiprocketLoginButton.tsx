@@ -97,7 +97,7 @@ export default function ShiprocketLoginButton({
         token,
         {
           themecolor: "ff6600",
-          image: "https://toyhaat.com/logo.png",
+          image: "https://trivoxotoys.com/logo.png",
         },
         fastrrCallback,
       );

@@ -11,7 +11,7 @@ import { redirectToPayU } from "@/utils/payu";
 import ShiprocketLoginButton from "@/components/ShiprocketLoginButton";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Checkout — Trivoxo Toys" }] }),
   component: CheckoutPage,
 });
 

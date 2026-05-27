@@ -38,7 +38,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/account")({
   validateSearch: (search) => searchSchema.parse(search),
-  head: () => ({ meta: [{ title: "My Account — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "My Account — Trivoxo Toys" }] }),
   component: AccountPage,
 });
 
@@ -323,7 +323,7 @@ function AccountPage() {
           toast.error(error);
           return;
         }
-        toast.success("Account created! 🎉 Welcome to Toy Haat.");
+        toast.success("Account created! 🎉 Welcome to Trivoxo Toys.");
         localStorage.setItem("signup_phone", v.data.phone);
         localStorage.setItem("show_signup_discount_popup", "true");
         window.dispatchEvent(new Event("trigger-discount-popup"));
@@ -380,9 +380,16 @@ function AccountPage() {
       >
         {/* Side - Image for Desktop */}
         <div
-          className="hidden md:block md:w-1/2 relative bg-cover bg-top min-h-[500px]"
-          style={{ backgroundImage: `url(${mode === "signup" ? signupHereImg : loginHereImg})` }}
-        />
+          className="hidden md:flex md:w-1/2 relative overflow-hidden"
+          style={{ minHeight: "500px" }}
+        >
+          <img
+            src={mode === "signup" ? signupHereImg : loginHereImg}
+            alt={mode === "signup" ? "Sign Up" : "Login"}
+            className="w-full h-full object-cover object-center"
+            style={{ position: "absolute", inset: 0 }}
+          />
+        </div>
 
         {/* Side - Form */}
         <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/60 md:bg-white">
@@ -394,7 +401,7 @@ function AccountPage() {
                   ? "CREATE ACCOUNT"
                   : "RESET PASSWORD"}
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">Welcome to Toy Haat</p>
+            <p className="text-xs text-muted-foreground mt-1">Welcome to Trivoxo Toys</p>
           </div>
 
 

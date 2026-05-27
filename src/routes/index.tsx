@@ -54,8 +54,8 @@ const AGE_RANGES = [
   { label: "0-18 month", value: "0-18 month", image: age0_2 },
   { label: "18-36 month", value: "18-36 month", image: age18_36 },
   { label: "3-5 year", value: "3-5 year", image: age3_5 },
-  { label: "5-7 year", value: "5-7 year", image: age7_9 },
-  { label: "7-9 year", value: "7-9 year", image: age5_7 },
+  { label: "5-7 year", value: "5-7 year", image: age5_7 },
+  { label: "7-9 year", value: "7-9 year", image: age7_9 },
   { label: "9-12 year", value: "9-12 year", image: age9_12 },
   { label: "12 +years", value: "12 +years", image: age12Plus },
 ];
@@ -94,20 +94,20 @@ const INSTAGRAM_REELS = [
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
     instagramUrl: "https://www.instagram.com/toyhaat/",
-    caption: "SMART TOYS BY TOY HAAT 😊",
+    caption: "SMART TOYS BY Trivoxo Toys 😊",
   },
 ];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Toy Haat — Shop Toys Online | Dolls, Vehicles, Soft Toys & more" },
+      { title: "Trivoxo Toys — Shop Toys Online | Dolls, Vehicles, Soft Toys & more" },
       {
         name: "description",
         content:
-          "Discover thousands of toys at unbeatable prices. Free shipping on prepaid orders.",
+          "Discover thousands of toys at unbeatable prices. Free shipping on order above 999.00.",
       },
-      { property: "og:title", content: "Toy Haat — Shop Toys Online" },
+      { property: "og:title", content: "Trivoxo Toys — Shop Toys Online" },
       { property: "og:description", content: "Discover thousands of toys at unbeatable prices." },
     ],
   }),
@@ -175,7 +175,7 @@ const ALL_TESTIMONIALS = [
     n: "Rohit Varma",
     c: "Pune",
     r: 5,
-    t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work Toy Haat!",
+    t: "Top notch building blocks. No cheap plastics, completely safe for my toddler. Fantastic work Trivoxo Toys!",
     d: "1 week ago",
     i: "🧑",
   },
@@ -186,6 +186,17 @@ function HomePage() {
   const { data: categories = [] } = useCategories();
   const { data: banners = [] } = useBanners();
   const { isAdmin } = useAuth();
+
+  const trendingRef = useRef<HTMLDivElement>(null);
+  const scrollTrending = (direction: "left" | "right") => {
+    if (trendingRef.current) {
+      const scrollAmount = 300;
+      trendingRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollReels = (direction: "left" | "right") => {
@@ -262,13 +273,13 @@ function HomePage() {
   return (
     <div>
       {/* Brand Carousel */}
-      <section className="bg-pink-50 py-4 border-b border-slate-100">
+      <section className="bg-pink-50 py-1 border-b border-slate-100">
         <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 1 }} className="w-full">
           <CarouselContent className="items-center -ml-4">
             {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
               <CarouselItem key={i} className="pl-2 basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-[12.5%]">
-                <div className="flex items-center justify-center h-[76px] w-full">
-                  <img src={src} className="h-full w-full object-contain scale-[1.15] select-none" alt={`Brand ${i + 1}`} />
+                <div className="flex items-center justify-center h-[40px] w-full">
+                  <img src={src} className="h-full w-full object-contain scale-[1.1] select-none" alt={`Brand ${i + 1}`} />
                 </div>
               </CarouselItem>
             ))}
@@ -315,7 +326,7 @@ function HomePage() {
         ) : (
           <div className="container mx-auto px-4 py-8 md:py-14 text-center">
             <h1 className="font-display text-4xl md:text-6xl text-primary drop-shadow-md">
-              Welcome to Toy Haat
+              Welcome to Trivoxo Toys
             </h1>
             <p className="mt-3 text-sm md:text-lg text-muted-foreground max-w-md mx-auto">
               Premium toys, fast delivery across India.
@@ -329,7 +340,7 @@ function HomePage() {
         <div className="marquee-track py-2 text-sm font-semibold">
           {[...Array(2)].map((_, k) => (
             <div key={k} className="flex items-center gap-10 px-5 shrink-0">
-              <span>🚚 Free shipping on prepaid orders</span>
+              <span>🚚 Free shipping on order above 999.00</span>
               <span>·</span>
               <span>🎁 New arrivals every week</span>
               <span>·</span>
@@ -337,7 +348,7 @@ function HomePage() {
               <span>·</span>
               <span>⚡ Same-day dispatch</span>
               <span>·</span>
-              <span>🏆 Trusted by 50,000+ families</span>
+              <span>🏆 Trusted by 1000+ families</span>
               <span>·</span>
             </div>
           ))}
@@ -351,13 +362,11 @@ function HomePage() {
         <section className="w-full bg-gradient-to-r from-orange-50 to-amber-50 border-y border-orange-100 py-8 relative overflow-hidden my-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-5">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Rocket className="size-6 text-orange-600 animate-bounce" />
-                  <h2 className="font-[cursive] italic tracking-wide text-lg md:text-xl lg:text-2xl text-orange-950 drop-shadow-sm">
-                    Trending Products
-                  </h2>
-                </div>
+              <div className="flex items-center gap-2">
+                <Rocket className="size-6 text-orange-600 animate-bounce" />
+                <h2 className="font-[cursive] italic tracking-wide text-lg md:text-xl lg:text-2xl text-orange-950 drop-shadow-sm">
+                  Trending Products
+                </h2>
               </div>
               <Link
                 to="/products"
@@ -367,12 +376,31 @@ function HomePage() {
                 View more →
               </Link>
             </div>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x">
-              {trendingProducts.slice(0, 16).map((p) => (
-                <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
-                  <ProductCard product={p} />
-                </div>
-              ))}
+            {/* Carousel with side arrow buttons */}
+            <div className="relative">
+              {/* Left Arrow */}
+              <button
+                onClick={() => scrollTrending("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-orange-200 shadow-md hover:bg-orange-50 hover:border-orange-300 transition-all text-orange-700"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="size-4 md:size-5" />
+              </button>
+              {/* Right Arrow */}
+              <button
+                onClick={() => scrollTrending("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 size-8 md:size-9 flex items-center justify-center rounded-full bg-white border border-orange-200 shadow-md hover:bg-orange-50 hover:border-orange-300 transition-all text-orange-700"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="size-4 md:size-5" />
+              </button>
+              <div ref={trendingRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x px-6 md:px-8">
+                {trendingProducts.slice(0, 16).map((p) => (
+                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
+                    <ProductCard product={p} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -419,8 +447,8 @@ function HomePage() {
               Explore our wide selection of premium toys
             </p>
           </div>
-          <div className={showAllCategories 
-            ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center"
+          <div className={showAllCategories
+            ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-6 px-2 lg:px-0 justify-items-center"
             : "grid grid-cols-3 md:flex gap-4 md:gap-6 md:overflow-x-auto md:scrollbar-hide px-2 lg:px-0 pb-4 pt-1 md:snap-x md:snap-mandatory md:touch-pan-x"
           }>
             {(() => {

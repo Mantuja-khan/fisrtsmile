@@ -108,7 +108,7 @@ export function DiscountPopup() {
 
         {/* Right side content */}
         <div className="w-full md:w-1/2 p-6 md:p-8 text-center flex flex-col justify-center items-center relative z-10 bg-white/40 md:bg-white backdrop-blur-sm md:backdrop-blur-none">
-          <img src={logoImg} alt="Toy Haat" className="h-12 mb-4 object-contain" />
+          <img src={logoImg} alt="Trivoxo Toys" className="h-12 mb-4 object-contain" />
           <h2 className="font-display text-4xl mb-2 text-gray-800 tracking-wide uppercase">
             Wait!
           </h2>

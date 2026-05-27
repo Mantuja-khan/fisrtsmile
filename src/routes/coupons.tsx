@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/coupons")({
-  head: () => ({ meta: [{ title: "My Coupons — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "My Coupons — Trivoxo Toys" }] }),
   component: CouponsPage,
 });
 

@@ -32,7 +32,6 @@ app.use(
     credentials: true,
   })
 );
-
 // Default Route
 app.get("/", (req, res) => {
   res.send("API is running...");

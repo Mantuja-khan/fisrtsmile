@@ -54,7 +54,7 @@ export const Route = createFileRoute("/products")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop Premium Toys Online — Toy Haat" },
+      { title: "Shop Premium Toys Online — Trivoxo Toys" },
       {
         name: "description",
         content: "Explore our premium selection of toys, dolls, board games, and learning kits.",

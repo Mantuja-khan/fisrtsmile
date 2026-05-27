@@ -23,7 +23,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$id")({
   head: () => ({
-    meta: [{ title: "Product — Toy Haat" }],
+    meta: [{ title: "Product — Trivoxo Toys" }],
   }),
   component: ProductPage,
 });

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { resolveImage } from "@/data/products";
 
 export const Route = createFileRoute("/cart")({
-  head: () => ({ meta: [{ title: "Cart — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Cart — Trivoxo Toys" }] }),
   component: CartPage,
 });
 

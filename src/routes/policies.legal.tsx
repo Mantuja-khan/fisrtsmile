@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/policies/legal")({
-  head: () => ({ meta: [{ title: "Legal Notice — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Legal Notice — Trivoxo Toys" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-primary/10">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/policies/legal")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 m-0 font-medium">
-        This website is owned and operated by <strong>Toy Haat</strong>. <br />
+        This website is owned and operated by <strong>Trivoxo Toys</strong>. <br />
         By accessing this website, you agree to the terms, policies, and notices stated here.
       </p>
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/policies/legal")({
         <div className="space-y-1.5 text-sm text-muted-foreground">
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Business Name:</span>
-            <span>Toy Haat</span>
+            <span>Trivoxo Toys</span>
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Address:</span>
@@ -33,10 +33,10 @@ export const Route = createFileRoute("/policies/legal")({
           <p className="flex flex-wrap items-baseline gap-2">
             <span className="   text-foreground/80">Email:</span>
             <a
-              href="mailto:support@toyhaat.com"
+              href="mailto:support@trivoxotoys.com"
               className="text-primary hover:underline font-semibold"
             >
-              support@toyhaat.com
+              support@trivoxotoys.com
             </a>
           </p>
           <p className="flex flex-wrap items-baseline gap-2">
@@ -85,7 +85,7 @@ export const Route = createFileRoute("/policies/legal")({
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
           All content on this website, including text, images, logos, and design, is the property of{" "}
-          <strong>Toy Haat</strong>. It must not be copied, reproduced, or used without written
+          <strong>Trivoxo Toys</strong>. It must not be copied, reproduced, or used without written
           permission.
         </p>
       </div>
@@ -111,7 +111,7 @@ export const Route = createFileRoute("/policies/legal")({
           Limitation of Liability
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed m-0">
-          Toy Haat is not responsible for any indirect or incidental damages arising from the use of
+          Trivoxo Toys is not responsible for any indirect or incidental damages arising from the use of
           this website or products.
         </p>
       </div>
@@ -140,8 +140,8 @@ export const Route = createFileRoute("/policies/legal")({
         <div className="space-y-1 text-xs mt-1">
           <p>
             <span className="   opacity-80">Email:</span>{" "}
-            <a href="mailto:support@toyhaat.com" className="underline hover:text-black">
-              support@toyhaat.com
+            <a href="mailto:support@trivoxotoys.com" className="underline hover:text-black">
+              support@trivoxotoys.com
             </a>
           </p>
           <p>

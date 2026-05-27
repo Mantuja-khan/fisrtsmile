@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Truck } from "lucide-react";
 
 export const Route = createFileRoute("/policies/shipping")({
-  head: () => ({ meta: [{ title: "Shipping Policy — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Shipping Policy — Trivoxo Toys" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-primary/10">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -105,8 +105,8 @@ export const Route = createFileRoute("/policies/shipping")({
         <div className="space-y-1 text-xs text-foreground/90    shrink-0 sm:text-right">
           <p className="flex sm:justify-end items-center gap-1.5">
             <span className="text-muted-foreground font-medium">Email:</span>
-            <a href="mailto:support@toyhaat.com" className="text-primary hover:underline">
-              support@toyhaat.com
+            <a href="mailto:support@trivoxotoys.com" className="text-primary hover:underline">
+              support@trivoxotoys.com
             </a>
           </p>
           <p className="flex sm:justify-end items-center gap-1.5">

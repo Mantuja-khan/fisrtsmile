@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin Panel — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Admin Panel — Trivoxo Toys" }] }),
   component: AdminLayout,
 });
 

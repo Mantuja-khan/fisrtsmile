@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { RefreshCcw, Video, CheckCircle2, AlertTriangle, Clock, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/policies/returns")({
-  head: () => ({ meta: [{ title: "Refund & Cancellation Policy — Toy Haat" }] }),
+  head: () => ({ meta: [{ title: "Refund & Cancellation Policy — Trivoxo Toys" }] }),
   component: () => (
     <div className="space-y-6 selection:bg-rose-100">
       <div className="flex items-center gap-2.5 border-b pb-4 border-border/50">
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/policies/returns")({
       </div>
 
       <p className="text-base leading-relaxed text-foreground/80 font-medium">
-        We want you to have a smooth experience while shopping with <strong>Toy Haat</strong>.{" "}
+        We want you to have a smooth experience while shopping with <strong>Trivoxo Toys</strong>.{" "}
         <br />
         Please read the policy carefully before placing your order.
       </p>
@@ -149,10 +149,10 @@ export const Route = createFileRoute("/policies/returns")({
           <p>
             <span className="   opacity-70 text-xs">Email:</span>{" "}
             <a
-              href="mailto:support@toyhaat.com"
+              href="mailto:support@trivoxotoys.com"
               className="font-extrabold hover:underline text-rose-200"
             >
-              support@toyhaat.com
+              support@trivoxotoys.com
             </a>
           </p>
           <p>
