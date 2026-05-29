@@ -1,5 +1,5 @@
 import { Link, useSearch } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import { type Product, effectivePrice, resolveImage } from "@/data/products";
 import { useShop } from "@/store/shop";
 import { toast } from "sonner";
@@ -10,164 +10,131 @@ export function ProductCard({ product }: { product: Product }) {
   const wished = isInWishlist(product.id);
   const finalPrice = effectivePrice(product.price, product.offerPct);
 
-  // Safely retrieve the current active search context for term highlighting
   const activeSearch = useSearch({ strict: false }) as any;
   const highlightTerm = activeSearch?.q || "";
 
-  // Helper function to truncate title to 3-4 words on small screen viewports
-  const getTruncatedName = (name: string) => {
-    const words = name.split(" ");
-    if (words.length > 4) {
-      return words.slice(0, 4).join(" ") + " ....";
-    }
-    return name;
-  };
+  const discountPct = product.offerPct > 0
+    ? product.offerPct
+    : product.mrp > finalPrice
+    ? Math.round(((product.mrp - finalPrice) / product.mrp) * 100)
+    : 0;
+
 
   return (
-    <div className="product-card group relative bg-white border border-gray-100 rounded shadow-sm flex flex-col text-center h-full overflow-hidden hover:shadow-md transition-all duration-300">
-      {/* Badges */}
-      <div className="absolute top-2 sm:top-3 left-0 z-10 flex flex-col gap-1 items-start">
-        {product.isSale && (
-          <span className="text-[9px] sm:text-[10px] font-black uppercase bg-[#BFDDF0] text-slate-900 px-1.5 sm:px-2 py-0.5 shadow-xs animate-[pulse_1.2s_infinite] tracking-wider border border-slate-200/50">
-            ⚡ Flash Sale
-          </span>
-        )}
-        {product.offerPct > 0 && (
-          <span className="text-[9px] sm:text-[10px] font-black uppercase bg-[#BFDDF0] text-slate-900 px-1.5 sm:px-2 py-0.5 shadow-xs border border-slate-200/50">
-            Sale {product.offerPct}%
-          </span>
-        )}
-        {product.badge &&
-          String(product.badge)
-            .split(",")
-            .map((b) => b.trim())
-            .filter(
-              (b) =>
-                Boolean(b) &&
-                !["best seller", "best seller product", "bestseller", "trending", "trending product", "hot selling", "hot"].includes(b.toLowerCase()),
-            )
-            .map((b) => (
-              <span
-                key={b}
-                className="text-[9px] sm:text-[10px] font-  uppercase bg-amber-500 text-white px-1.5 sm:px-2 py-0.5 shadow-sm"
-              >
-                {b}
-              </span>
-            ))}
-        {!product.inStock && (
-          <span className="text-[9px] sm:text-[10px] font-  uppercase bg-slate-600 text-white px-1.5 sm:px-2 py-0.5 shadow-sm">
-            Sold Out
-          </span>
-        )}
+    <div className="product-card group relative bg-white rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.08)] flex flex-col overflow-hidden hover:shadow-[0_8px_32px_rgba(0,0,0,0.14)] transition-all duration-300 border border-slate-100 h-full">
+
+      {/* ─── Top Row: Sale badge | Wishlist ─── */}
+      <div className="flex items-start justify-between px-2 pt-2 gap-1">
+        {/* Sale % badge */}
+        <div className="shrink-0 min-w-[44px]">
+          {discountPct > 0 ? (
+            <span className="inline-block bg-[#BFDDF0] text-slate-900 text-[9px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 rounded-md shadow-sm tracking-wide whitespace-nowrap">
+              SALE {discountPct}%
+            </span>
+          ) : product.isSale ? (
+            <span className="inline-block bg-[#BFDDF0] text-slate-900 text-[9px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 rounded-md shadow-sm tracking-wide whitespace-nowrap">
+              ⚡ SALE
+            </span>
+          ) : (
+            <span className="invisible text-[9px]">—</span>
+          )}
+        </div>
+
+        {/* Wishlist */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            toggleWishlist(product.id);
+            toast(wished ? "Removed from wishlist" : "Added to wishlist ❤️");
+          }}
+          className="shrink-0 p-0.5 text-gray-300 hover:text-[#DC2626] transition-colors hover:scale-110"
+        >
+          <Heart className={`size-4 sm:size-5 ${wished ? "fill-[#DC2626] text-[#DC2626]" : ""}`} />
+        </button>
       </div>
 
-      {/* Wishlist Button */}
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          toggleWishlist(product.id);
-          toast(wished ? "Removed from wishlist" : "Added to wishlist ❤️");
-        }}
-        className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 p-1 text-gray-400 hover:text-[#DC2626] transition-colors hover:scale-110"
-      >
-        <Heart className={`size-4 sm:size-5 ${wished ? "fill-[#DC2626] text-[#DC2626]" : ""}`} />
-      </button>
-
-      {/* Image Container - Optimized square aspect */}
-      <Link to="/product/$id" params={{ id: product.id }} className="block">
-        <div className="aspect-square bg-white p-1 sm:p-2 flex items-center justify-center overflow-hidden border-b border-gray-50 relative">
+      {/* ─── Product Image ─── */}
+      <Link to="/product/$id" params={{ id: product.id }} className="block px-2 pt-1 pb-1">
+        <div className="aspect-square bg-white flex items-center justify-center overflow-hidden rounded-xl relative">
           <img
             src={resolveImage(product.image)}
             alt={product.name}
             loading="lazy"
-            className={`w-full h-full object-contain ${product.images && product.images.length > 1 ? "group-hover:hidden" : ""}`}
+            className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ${
+              product.images && product.images.length > 1 ? "group-hover:hidden" : ""
+            }`}
           />
           {product.images && product.images.length > 1 && (
             <img
               src={resolveImage(product.images[1])}
               alt={product.name}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-contain hidden group-hover:block p-1 sm:p-2 bg-white"
+              className="absolute inset-0 w-full h-full object-contain hidden group-hover:block bg-white"
             />
+          )}
+          {!product.inStock && (
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-xl">
+              <span className="bg-slate-700 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full tracking-widest shadow">
+                Sold Out
+              </span>
+            </div>
           )}
         </div>
       </Link>
 
-      {/* Content Body */}
-      <div className="p-0 sm:p-0.5 flex flex-col flex-1 justify-between">
-        {/* Responsive Centered Name with Dynamic Highlight */}
+      {/* ─── Product Name ─── */}
+      <div className="px-2 pb-0.5 text-center">
         <Link
           to="/product/$id"
           params={{ id: product.id }}
-          className="text-[11px] sm:text-[13px] font-  text-gray-700 hover:text-slate-950 hover:underline decoration-[#BFDDF0] decoration-2 line-clamp-2 leading-tight mb-0.5 transition-all min-h-[1.25rem] sm:min-h-[1.5rem] flex items-center justify-center px-0.5"
+          className="text-[10px] sm:text-[12px] font-semibold text-gray-700 hover:text-slate-950 hover:underline decoration-[#BFDDF0] decoration-2 line-clamp-2 leading-snug transition-all"
         >
-          {/* Truncated view for mobile screens */}
-          <span className="sm:hidden block">
-            <HighlightText text={getTruncatedName(product.name)} highlight={highlightTerm} />
-          </span>
-          {/* Full detail view for desktop screens */}
-          <span className="hidden sm:block">
-            <HighlightText text={product.name} highlight={highlightTerm} />
-          </span>
+          <HighlightText text={product.name} highlight={highlightTerm} />
         </Link>
+      </div>
 
-        {/* Age Ranges */}
-        {product.age_range && (
-          <div className="flex flex-wrap items-center justify-center gap-0.5 mb-1">
-            {String(product.age_range)
-              .split(",")
-              .filter(Boolean)
-              .map((age) => (
-                <span
-                  key={age}
-                  className="text-[9px] font-extra  bg-[#BFDDF0]/30 text-slate-800 px-1.5 py-0.5 rounded border border-[#BFDDF0]/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] uppercase tracking-wider"
-                >
-                  {age.trim()}
-                </span>
-              ))}
-          </div>
-        )}
 
-        {/* Spacer push downward layout components */}
-        <div className="mt-auto flex flex-col gap-0 sm:gap-0.5">
-          {/* Price Section */}
-          <div className="flex flex-col lg:flex-row items-center lg:items-baseline lg:justify-center lg:gap-2">
-            <div className="text-slate-900 font-black text-xs sm:text-base tracking-wide">
+
+      {/* ─── Price + Add to Cart ─── */}
+      <div className="mt-auto px-2 pb-2 flex flex-col gap-1">
+        {/* Price row */}
+        <div className="flex items-baseline justify-center gap-1.5">
+          <span className="text-slate-900 font-black text-sm sm:text-base tracking-wide">
+            Rs.{" "}
+            {finalPrice.toLocaleString("en-IN", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+          {product.mrp > finalPrice && (
+            <span className="text-[9px] sm:text-[11px] text-gray-400 line-through">
               Rs.{" "}
-              {finalPrice.toLocaleString("en-IN", {
+              {product.mrp.toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-            </div>
-            <div className="text-[9px] sm:text-[11px] text-gray-500 font-semi  lg:mt-0 mt-0.5">
-              <span className="line-through ml-0.5">
-                Rs.{" "}
-                {product.mrp.toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-          </div>
-
-          {/* Outlined Action Button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              if (product.inStock) {
-                addToCart(product.id);
-                toast.success("Added to cart 🛒");
-              }
-            }}
-            className={`w-full py-0.5 sm:py-1 text-[9px] sm:text-[11px] font-extra  uppercase tracking-widest transition-all duration-300 border rounded-full ${
-              product.inStock
-                ? "border-slate-300 text-slate-700 bg-white hover:bg-[#FEFD99] hover:border-[#FEFD99] hover:text-slate-900"
-                : "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
-            }`}
-          >
-            {product.inStock ? "ADD TO CART" : "NOTIFY ME"}
-          </button>
+            </span>
+          )}
         </div>
+
+        {/* Add to Cart button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (product.inStock) {
+              addToCart(product.id);
+              toast.success("Added to cart 🛒");
+            }
+          }}
+          className={`w-full flex items-center justify-center gap-1 py-1 sm:py-1.5 text-[9px] sm:text-[11px] font-extrabold uppercase tracking-widest rounded-xl transition-all duration-300 ${
+            product.inStock
+              ? "bg-[#1c4f82] text-white hover:bg-[#163d65] active:scale-95 shadow-sm hover:shadow-md"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          <ShoppingCart className="size-3 sm:size-3.5" />
+          {product.inStock ? "Add to Cart" : "Notify Me"}
+        </button>
       </div>
     </div>
   );

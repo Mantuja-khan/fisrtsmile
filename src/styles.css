@@ -294,4 +294,43 @@
   .animate-loader-bar {
     animation: loader-bar 1.1s ease-in-out infinite;
   }
+
+  /* Section heading button with left-to-right underline animation */
+  .section-heading-btn {
+    position: relative;
+    display: inline-block;
+    background: transparent;
+    border: none;
+    cursor: default;
+    padding: 0;
+  }
+
+  .section-heading-line {
+    display: block;
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: currentColor;
+    border-radius: 9999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-heading-btn:hover .section-heading-line {
+    width: 100%;
+  }
+
+  /* Category / Age cards: 3 per row on small, 5 per row on large */
+  .cat-card-item,
+  .age-card-item {
+    width: calc((100% - 2 * 0.75rem) / 3);
+  }
+
+  @media (min-width: 1024px) {
+    .cat-card-item,
+    .age-card-item {
+      width: calc((100% - 4 * 0.75rem) / 5);
+    }
+  }
 }

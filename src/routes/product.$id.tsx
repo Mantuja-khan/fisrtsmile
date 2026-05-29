@@ -284,7 +284,7 @@ function ProductPage() {
         </div>
       </div>
 
-      <div className="md:hidden fixed bottom-14 inset-x-0 z-30 bg-surface border-t border-border p-2 flex gap-2">
+      <div className="md:hidden fixed bottom-[56px] inset-x-0 z-30 bg-white border-t border-slate-200 shadow-lg p-2 flex gap-2">
         <button
           onClick={() => {
             addToCart(product.id, qty);

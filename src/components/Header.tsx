@@ -88,6 +88,16 @@ export function Header() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  // Scroll-aware navbar: hide top bar on scroll, show on return to top
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 60);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Live search results
   const searchResults = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -106,8 +116,14 @@ export function Header() {
 
   return (
     <>
-      {/* First Navbar */}
-      <header className="bg-pink-100 border-b border-slate-100 sticky top-0 shadow-sm z-50 w-full">
+      {/* First Navbar — hides when scrolled down */}
+      <header
+        className={`bg-pink-100 border-b border-slate-100 w-full shadow-sm z-50 transition-all duration-300 ${
+          scrolled
+            ? "fixed top-0 -translate-y-full opacity-0 pointer-events-none"
+            : "sticky top-0 translate-y-0 opacity-100"
+        }`}
+      >
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
           {/* Left: Logo */}
 
@@ -219,8 +235,10 @@ export function Header() {
           </div>
         </div>
       </header>
-      {/* Second Navbar (Categories, Brands, etc.) */}
-      <div className="bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40">
+      {/* Second Navbar (Categories, Brands, etc.) — sticks to top when first navbar is hidden */}
+      <div className={`bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40 transition-all duration-300 ${
+        scrolled ? "sticky top-0" : ""
+      }`}>
         <div className="container mx-auto flex items-center justify-center px-4 py-1">
           <nav className="flex items-center gap-1 mx-auto">
             {/* Home Button */}

@@ -315,13 +315,13 @@ function HomePage() {
   return (
     <div>
       {/* Brand Carousel */}
-      <section className="bg-pink-50 py-1 border-b border-slate-100">
+      <section className="bg-pink-50 py-2 border-b border-slate-100">
         <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 2 }} className="w-full">
           <CarouselContent className="items-center -ml-1">
             {/* Local slider images */}
             {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
               <CarouselItem key={`local-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
-                <div className="flex items-center justify-center h-[38px] w-full px-1">
+                <div className="flex items-center justify-center h-[52px] w-full px-1">
                   <img src={src} className="h-full w-full object-contain select-none" alt={`Brand ${i + 1}`} />
                 </div>
               </CarouselItem>
@@ -342,7 +342,7 @@ function HomePage() {
               { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
             ].map((brand, i) => (
               <CarouselItem key={`url-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
-                <div className="flex items-center justify-center h-[38px] w-full px-1">
+                <div className="flex items-center justify-center h-[52px] w-full px-1">
                   <img src={brand.url} className="h-full w-full object-contain select-none" alt={brand.name} />
                 </div>
               </CarouselItem>
@@ -460,7 +460,7 @@ function HomePage() {
               </button>
               <div ref={trendingRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x px-6 md:px-8">
                 {trendingProducts.slice(0, 16).map((p) => (
-                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
+                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] lg:w-[calc((100%-4*1rem)/5)] shrink-0 snap-start">
                     <ProductCard product={p} />
                   </div>
                 ))}
@@ -494,7 +494,7 @@ function HomePage() {
             </div>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-1 snap-x snap-mandatory touch-pan-x relative z-10">
               {bestSellers.slice(0, 16).map((p) => (
-                <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
+                <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] lg:w-[calc((100%-4*1rem)/5)] shrink-0 snap-start">
                   <ProductCard product={p} />
                 </div>
               ))}
@@ -506,12 +506,19 @@ function HomePage() {
       <section className="w-full bg-pink-100 py-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Category</h2>
+            {/* Animated underline link heading */}
+            <Link
+              to="/products"
+              className="section-heading-btn font-display text-3xl md:text-4xl text-foreground inline-block"
+            >
+              Shop by Category
+              <span className="section-heading-line" />
+            </Link>
             <p className="text-sm text-muted-foreground mt-1">
               Explore our wide selection of premium toys
             </p>
           </div>
-          {/* Scrollable row with left/right buttons — shows 5 at a time */}
+          {/* Scrollable row with left/right buttons — shows 3 on small, 5 on large */}
           <div className="relative overflow-hidden">
             {/* Left Arrow */}
             <button
@@ -529,7 +536,7 @@ function HomePage() {
             >
               <ChevronRight className="size-4 md:size-5" />
             </button>
-            {/* Scroll container — show 5 per view */}
+            {/* Scroll container — 3 cards on small screens, 5 on large */}
             <div
               ref={catScrollRef}
               className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pt-1 snap-x snap-mandatory touch-pan-x px-4"
@@ -540,10 +547,11 @@ function HomePage() {
                   key={c.id}
                   to="/products"
                   search={{ category: c.slug } as never}
-                  className="group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-1"
-                  style={{ width: "calc((100% - 4 * 0.75rem) / 5)" }}
+                  className="cat-card-item group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-1"
                 >
-                  <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">
+                  <div
+                    className="w-full aspect-square flex items-center justify-center relative transition-all duration-300"
+                  >
                     {c.image ? (
                       <img
                         src={resolveImage(c.image)}
@@ -567,12 +575,19 @@ function HomePage() {
       <section className="py-8 bg-slate-50/50 border-y border-slate-100">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Age</h2>
+            {/* Animated underline link heading */}
+            <Link
+              to="/products"
+              className="section-heading-btn font-display text-3xl md:text-4xl text-foreground inline-block"
+            >
+              Shop by Age
+              <span className="section-heading-line" />
+            </Link>
             <p className="text-sm text-muted-foreground mt-1">
               Find perfect toys suited for every stage
             </p>
           </div>
-          {/* Scrollable row with left/right buttons — shows 5 at a time */}
+          {/* Scrollable row with left/right buttons — 3 on small, 5 on large */}
           <div className="relative overflow-hidden">
             {/* Left Arrow */}
             <button
@@ -590,7 +605,7 @@ function HomePage() {
             >
               <ChevronRight className="size-4 md:size-5" />
             </button>
-            {/* Scroll container — show 5 per view */}
+            {/* Scroll container — 3 cards on small, 5 on large */}
             <div
               ref={ageScrollRef}
               className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pt-1 snap-x snap-mandatory touch-pan-x px-4"
@@ -601,8 +616,7 @@ function HomePage() {
                   key={i}
                   to="/products"
                   search={{ age: age.value } as never}
-                  className="group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-2"
-                  style={{ width: "calc((100% - 4 * 0.75rem) / 5)" }}
+                  className="age-card-item group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-2"
                 >
                   <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
                     <img
@@ -621,7 +635,14 @@ function HomePage() {
       {/* Shop by Price */}
       <section className="container mx-auto px-4 py-4 mb-8">
         <div className="text-center mb-6">
-          <h2 className="font-display text-3xl md:text-4xl text-foreground">Shop by Price</h2>
+          {/* Animated underline link heading */}
+          <Link
+            to="/products"
+            className="section-heading-btn font-display text-3xl md:text-4xl text-foreground inline-block"
+          >
+            Shop by Price
+            <span className="section-heading-line" />
+          </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
@@ -733,7 +754,7 @@ function HomePage() {
                 style={{ scrollbarWidth: "none" }}
               >
                 {newArrivals.map((p) => (
-                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] shrink-0 snap-start">
+                  <div key={p.id} className="w-[140px] sm:w-[180px] md:w-[200px] lg:w-[calc((100%-4*1rem)/5)] shrink-0 snap-start">
                     <ProductCard product={p} />
                   </div>
                 ))}
@@ -745,18 +766,17 @@ function HomePage() {
 
       {/* Shop Our Reels Section */}
       <section className="container mx-auto px-4 py-8 relative">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl font-black text-slate-800 tracking-wide uppercase">
-              Shop Our Reels
-            </h2>
-          </div>
+        <div className="text-center mb-6">
+          <span className="section-heading-btn font-display text-2xl md:text-3xl font-black text-slate-800 tracking-wide uppercase inline-block">
+            Shop Our Reels
+            <span className="section-heading-line" />
+          </span>
         </div>
 
-        {/* Scroll Container */}
+        {/* Scroll Container — 5 items in a row on large screens */}
         <div
           ref={scrollContainerRef}
-          className="flex md:grid gap-3 md:gap-4 overflow-x-auto md:overflow-visible scrollbar-hide md:grid-cols-5 pb-4 md:pb-0 snap-x snap-mandatory touch-pan-x"
+          className="flex lg:grid gap-3 lg:gap-4 overflow-x-auto lg:overflow-visible scrollbar-hide lg:grid-cols-5 pb-4 lg:pb-0 snap-x snap-mandatory touch-pan-x"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {INSTAGRAM_REELS.map((reel) => (
@@ -765,7 +785,8 @@ function HomePage() {
               href={reel.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-[150px] sm:w-[180px] md:w-full shrink-0 block relative aspect-[9/16] overflow-hidden group snap-start bg-slate-100 border-r border-b border-slate-950"
+              className="w-[150px] sm:w-[180px] lg:w-full shrink-0 block relative overflow-hidden group snap-start bg-slate-100 border-r border-b border-slate-950"
+              style={{ aspectRatio: "9/16" }}
             >
               {/* Floating Instagram Shopping Bag Icon */}
               <div className="absolute top-3 right-3 size-8 rounded-full bg-black/45 backdrop-blur-xs flex items-center justify-center text-white z-10 group-hover:scale-105 transition duration-300">
