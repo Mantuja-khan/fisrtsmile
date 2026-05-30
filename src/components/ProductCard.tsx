@@ -1,4 +1,4 @@
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Heart, ShoppingCart } from "lucide-react";
 import { type Product, effectivePrice, resolveImage } from "@/data/products";
 import { useShop } from "@/store/shop";
@@ -10,8 +10,17 @@ export function ProductCard({ product }: { product: Product }) {
   const wished = isInWishlist(product.id);
   const finalPrice = effectivePrice(product.price, product.offerPct);
 
-  const activeSearch = useSearch({ strict: false }) as any;
-  const highlightTerm = activeSearch?.q || "";
+  // Use useRouterState to safely read search params without throwing on routes
+  // that don't define validateSearch (e.g. /product/$id).
+  // location.search may be a raw string ("?q=toy") or a parsed object.
+  const locationSearch = useRouterState({ select: (s) => s.location.search });
+  const highlightTerm = (() => {
+    if (!locationSearch) return "";
+    if (typeof locationSearch === "string") {
+      return new URLSearchParams(locationSearch).get("q") || "";
+    }
+    return (locationSearch as any)?.q || "";
+  })();
 
   const discountPct = product.offerPct > 0
     ? product.offerPct

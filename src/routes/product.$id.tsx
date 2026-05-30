@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Clock } from "lucide-react";
 import { useProduct, useProducts } from "@/hooks/useCatalog";
 import { discountPct, effectivePrice, type Product, resolveImage } from "@/data/products";
@@ -18,6 +18,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,10 +35,39 @@ function ProductPage() {
   const { data: products = [] } = useProducts();
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
   const navigate = useNavigate();
+
+  // ── All hooks must be called unconditionally at the top (Rules of Hooks) ──
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+  const recentScrollRef = useRef<HTMLDivElement>(null);
 
+  const STORAGE_KEY = "rv_products";
+  const MAX_RECENT = 8;
+
+  // Save current product to localStorage on every product id change
+  useEffect(() => {
+    if (!product?.id) return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const prev: string[] = raw ? JSON.parse(raw) : [];
+      // Remove current product if already present, prepend it, cap at MAX_RECENT
+      const updated = [product.id, ...prev.filter((x) => x !== product.id)].slice(0, MAX_RECENT);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      // For display we show all EXCEPT the current product
+      setRecentIds(updated.filter((x) => x !== product.id));
+    } catch {
+      // localStorage unavailable — silent fail
+    }
+  }, [product?.id]);
+
+  // Reset image index when navigating to a different product
+  useEffect(() => {
+    setActiveImg(0);
+  }, [id]);
+
+  // ── Conditional early returns AFTER all hooks ──
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">
@@ -57,11 +87,19 @@ function ProductPage() {
   }
 
   const wished = isInWishlist(product.id);
-  const finalPrice = product.price; // Use admin-defined selling price directly
+  const finalPrice = product.price;
   const off = discountPct(product.price, product.mrp);
   const related = products
     .filter((p: Product) => p.category_id === product.category_id && p.id !== product.id)
-    .slice(0, 4);
+    .slice(0, 6);
+
+  const recentProducts = products
+    .filter((p) => recentIds.includes(p.id))
+    .sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
+
+  const scrollRecent = (dir: "left" | "right") => {
+    recentScrollRef.current?.scrollBy({ left: dir === "left" ? -300 : 300, behavior: "smooth" });
+  };
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-6">
@@ -317,9 +355,65 @@ function ProductPage() {
             </h2>
           </div>
           <div className="p-4 md:p-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {related.map((p: Product) => (
                 <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Recently Viewed ── */}
+      {recentProducts.length > 0 && (
+        <div className="mt-10 overflow-hidden">
+          {/* Section Header */}
+          <div className="flex items-center justify-between py-5 border-b border-slate-100 mb-2">
+            <div className="flex items-center gap-2">
+              <Eye className="size-5 text-indigo-500" />
+              <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
+                Recently Viewed
+              </h2>
+            </div>
+            <Link
+              to="/products"
+              className="text-xs font-semibold text-indigo-600 hover:underline"
+            >
+              View All →
+            </Link>
+          </div>
+
+          {/* Scrollable row */}
+          <div className="relative">
+            {/* Left Arrow */}
+            <button
+              onClick={() => scrollRecent("left")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 size-8 flex items-center justify-center rounded-full bg-white border border-indigo-200 shadow-md hover:bg-indigo-50 transition-all text-indigo-600"
+              aria-label="Scroll recently viewed left"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            {/* Right Arrow */}
+            <button
+              onClick={() => scrollRecent("right")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 size-8 flex items-center justify-center rounded-full bg-white border border-indigo-200 shadow-md hover:bg-indigo-50 transition-all text-indigo-600"
+              aria-label="Scroll recently viewed right"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+
+            <div
+              ref={recentScrollRef}
+              className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pt-2 px-6 snap-x snap-mandatory touch-pan-x"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {recentProducts.map((p) => (
+                <div
+                  key={p.id}
+                  className="w-[150px] sm:w-[180px] md:w-[200px] lg:w-[calc((100%-4*1rem)/5)] shrink-0 snap-start"
+                >
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           </div>
