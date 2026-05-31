@@ -108,7 +108,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       wishlist,
       cartItems,
       subtotal,
-      cartCount: cart.reduce((s, i) => s + i.qty, 0),
+      cartCount: cart.length,
       addToCart: (id, qty = 1) =>
         setCart((c) => {
           const ex = c.find((i) => i.id === id);

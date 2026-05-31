@@ -113,9 +113,40 @@ export function Header() {
 
   const name = user?.full_name || user?.email?.split("@")[0] || "User";
 
+  const announcements = [
+    "🚚 Free shipping on order above 888.00",
+    "✨ Get 5% off on first order",
+    "🎁 New arrivals every week"
+  ];
+  const [announcementIdx, setAnnouncementIdx] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setAnnouncementIdx((prev) => (prev + 1) % announcements.length);
+    }, 3000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <>
+      {/* Top Announcement Bar */}
+      <div className="bg-[#BFDDF0] text-slate-900 overflow-hidden h-9 relative z-[60] flex items-center justify-center font-bold text-xs sm:text-sm tracking-wide">
+        {announcements.map((text, i) => (
+          <div
+            key={i}
+            className={`absolute w-full h-9 flex items-center justify-center transition-all duration-500 ${
+              i === announcementIdx 
+                ? "translate-y-0 opacity-100 z-10" 
+                : i === (announcementIdx + 1) % announcements.length || (announcementIdx === announcements.length - 1 && i === 0)
+                  ? "-translate-y-full opacity-0 z-0"
+                  : "translate-y-full opacity-0 z-0"
+            }`}
+          >
+            <span>{text}</span>
+          </div>
+        ))}
+      </div>
+
       {/* First Navbar — hides when scrolled down */}
       <header
         className={`bg-pink-100 border-b border-slate-100 w-full shadow-sm z-50 transition-all duration-300 ${

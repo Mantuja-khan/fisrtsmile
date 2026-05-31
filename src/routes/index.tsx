@@ -230,6 +230,9 @@ function HomePage() {
     }
   };
 
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllAges, setShowAllAges] = useState(false);
+
   const [randomReviews, setRandomReviews] = useState<typeof ALL_TESTIMONIALS>([]);
 
   useEffect(() => {
@@ -314,43 +317,6 @@ function HomePage() {
 
   return (
     <div>
-      {/* Brand Carousel */}
-      <section className="bg-pink-50 py-2 border-b border-slate-100">
-        <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 2 }} className="w-full">
-          <CarouselContent className="items-center -ml-1">
-            {/* Local slider images */}
-            {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
-              <CarouselItem key={`local-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
-                <div className="flex items-center justify-center h-[52px] w-full px-1">
-                  <img src={src} className="h-full w-full object-contain select-none" alt={`Brand ${i + 1}`} />
-                </div>
-              </CarouselItem>
-            ))}
-            {/* Additional brands via URLs */}
-            {[
-              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
-              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
-              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
-              { name: "CENTY TOYS", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmq2WqHD1EhHrSe3iKKSTyWDbqhr6bQf68A&s" },
-              { name: "PANDA", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Ct-B-3ZCVQjjaVL91APYc6n2_yM7JzS34g&s" },
-              { name: "MATTEL", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mattel_%282019%29.svg/1280px-Mattel_%282019%29.svg.png" },
-              { name: "DASH STAR", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQVZK6aBU46A5kJjE5savdwbANyeHPzj5iMQ&s" },
-              { name: "EKTA", url: "https://toys-catalog.odoo.com/web/image/1747-9f780afd/IMG-20241017-WA0017.webp" },
-              /* duplicate loop for continuous effect */
-              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
-              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
-              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
-            ].map((brand, i) => (
-              <CarouselItem key={`url-${i}`} className="pl-1 basis-1/4 sm:basis-1/5 md:basis-1/7 lg:basis-[10%]">
-                <div className="flex items-center justify-center h-[52px] w-full px-1">
-                  <img src={brand.url} className="h-full w-full object-contain select-none" alt={brand.name} />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </section>
-
 
       {/* Hero Banners */}
       <section className="bg-surface relative overflow-hidden">
@@ -399,25 +365,7 @@ function HomePage() {
         )}
       </section>
 
-      {/* Marquee announcement */}
-      <div className="bg-secondary text-secondary-foreground overflow-hidden border-y border-secondary-foreground/10">
-        <div className="marquee-track py-2 text-sm font-semibold">
-          {[...Array(2)].map((_, k) => (
-            <div key={k} className="flex items-center gap-10 px-5 shrink-0">
-              <span>🚚 Free shipping on order above 999.00</span>
-              <span>·</span>
-              <span>🎁 New arrivals every week</span>
-              <span>·</span>
-              <span>💯 100% genuine brands</span>
-              <span>·</span>
-              <span>⚡ Same-day dispatch</span>
-              <span>·</span>
-              <span>🏆 Trusted by 1000+ families</span>
-              <span>·</span>
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* Trust strip */}
 
@@ -568,6 +516,42 @@ function HomePage() {
               ))}
             </div>
           </div>
+          {showAllCategories && (
+            <div className="flex flex-wrap gap-3 mt-4 px-4">
+              {rootCats.map((c, idx) => (
+                <Link
+                  key={c.id}
+                  to="/products"
+                  search={{ category: c.slug } as never}
+                  className={`cat-card-item group flex-col items-center transition-transform hover:-translate-y-1 ${idx < 3 ? 'hidden' : 'flex'} ${idx >= 3 && idx < 5 ? 'lg:hidden' : ''}`}
+                >
+                  <div
+                    className="w-full aspect-square flex items-center justify-center relative transition-all duration-300"
+                  >
+                    {c.image ? (
+                      <img
+                        src={resolveImage(c.image)}
+                        alt={c.name}
+                        className="w-full h-full object-contain select-none"
+                      />
+                    ) : (
+                      <span className="text-5xl sm:text-6xl transition-transform duration-300">
+                        {c.icon ?? "🎁"}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setShowAllCategories(!showAllCategories)}
+              className="px-6 py-2 rounded-full border border-pink-300 text-pink-700 font-semibold hover:bg-pink-200 transition-colors"
+            >
+              {showAllCategories ? "View Less" : "View More"}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -628,6 +612,34 @@ function HomePage() {
                 </Link>
               ))}
             </div>
+          </div>
+          {showAllAges && (
+            <div className="flex flex-wrap gap-3 mt-4 px-4">
+              {AGE_RANGES.map((age, idx) => (
+                <Link
+                  key={idx}
+                  to="/products"
+                  search={{ age: age.value } as never}
+                  className={`age-card-item group flex-col items-center transition-transform hover:-translate-y-2 ${idx < 3 ? 'hidden' : 'flex'} ${idx >= 3 && idx < 5 ? 'lg:hidden' : ''}`}
+                >
+                  <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
+                    <img
+                      src={age.image}
+                      alt={age.label}
+                      className="w-full h-full object-cover select-none"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setShowAllAges(!showAllAges)}
+              className="px-6 py-2 rounded-full border border-slate-300 text-slate-700 font-semibold hover:bg-slate-200 transition-colors"
+            >
+              {showAllAges ? "View Less" : "View More"}
+            </button>
           </div>
         </div>
       </section>
@@ -763,6 +775,43 @@ function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Brand Carousel (Moved from top) */}
+      <section className="bg-pink-50 py-4 my-8 border-y border-pink-100">
+        <Carousel setApi={setBrandApi} opts={{ align: "start", loop: true, slidesToScroll: 2 }} className="w-full">
+          <CarouselContent className="items-center -ml-1">
+            {/* Local slider images */}
+            {[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8].map((src, i) => (
+              <CarouselItem key={`local-${i}`} className="pl-1 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                <div className="flex items-center justify-center h-[80px] md:h-[100px] w-full px-2">
+                  <img src={src} className="h-full w-full object-contain select-none hover:scale-105 transition-transform" alt={`Brand ${i + 1}`} />
+                </div>
+              </CarouselItem>
+            ))}
+            {/* Additional brands via URLs */}
+            {[
+              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
+              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
+              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
+              { name: "CENTY TOYS", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmq2WqHD1EhHrSe3iKKSTyWDbqhr6bQf68A&s" },
+              { name: "PANDA", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Ct-B-3ZCVQjjaVL91APYc6n2_yM7JzS34g&s" },
+              { name: "MATTEL", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mattel_%282019%29.svg/1280px-Mattel_%282019%29.svg.png" },
+              { name: "DASH STAR", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQVZK6aBU46A5kJjE5savdwbANyeHPzj5iMQ&s" },
+              { name: "EKTA", url: "https://toys-catalog.odoo.com/web/image/1747-9f780afd/IMG-20241017-WA0017.webp" },
+              /* duplicate loop for continuous effect */
+              { name: "AAYUSHI", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL-mra-NA6W6S-c8NeUbzWXPvtFYijrlhTIA&s" },
+              { name: "MEE MEE", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxqIkjDeVbqYoX0EXlPnj7WHYNRXDHSdk29Q&s" },
+              { name: "COSCO", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuKa15LPPVeUklPuP-0gxqKjWR-O2nYMbLxQ&s" },
+            ].map((brand, i) => (
+              <CarouselItem key={`url-${i}`} className="pl-1 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                <div className="flex items-center justify-center h-[80px] md:h-[100px] w-full px-2">
+                  <img src={brand.url} className="h-full w-full object-contain select-none hover:scale-105 transition-transform" alt={brand.name} />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </section>
 
       {/* Shop Our Reels Section */}
       <section className="container mx-auto px-4 py-8 relative">

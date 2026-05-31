@@ -83,7 +83,7 @@ function CheckoutPage() {
   const newSubtotal = subtotal - discountAmount;
 
   const codCharge = pay === "cod" ? 60 : 0;
-  const shipping = pay === "cod" ? 49 : 0;
+  const shipping = pay === "cod" ? 49 : (newSubtotal >= 888 ? 0 : 49);
   const total = newSubtotal + codCharge + shipping;
 
   const loadRazorpay = () => {
@@ -350,7 +350,7 @@ function CheckoutPage() {
               ))}
             </div>
             <p className="text-xs text-discount mt-3 font-semibold">
-              ✓ Free shipping on prepaid orders (PayOnline)
+              ✓ Free shipping on prepaid orders or above ₹888
             </p>
           </section>
         </div>

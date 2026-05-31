@@ -29,7 +29,7 @@ function CartPage() {
     }
   };
 
-  const shipping = subtotal > 0 && subtotal < 999 ? 49 : 0;
+  const shipping = subtotal > 0 && subtotal < 888 ? 49 : 0;
   const total = Math.max(0, subtotal - discount) + shipping;
 
   if (cartItems.length === 0) {
@@ -151,7 +151,7 @@ function CartPage() {
             Place Order
           </Link>
           <p className="text-xs text-discount font-semibold text-center">
-            Free shipping on orders above ₹999
+            Free shipping on orders above ₹888
           </p>
         </aside>
       </div>
