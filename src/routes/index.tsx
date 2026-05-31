@@ -467,7 +467,9 @@ function HomePage() {
             </p>
           </div>
           {/* Scrollable row with left/right buttons — shows 3 on small, 5 on large */}
-          <div className="relative overflow-hidden">
+          {/* Scrollable row with left/right buttons — 3 on small screens, 5 on large */}
+          {!showAllCategories && (
+            <div className="relative overflow-hidden">
             {/* Left Arrow */}
             <button
               onClick={() => scrollCat("left")}
@@ -516,6 +518,7 @@ function HomePage() {
               ))}
             </div>
           </div>
+          )}
           {showAllCategories && (
             <div className="flex flex-wrap gap-3 mt-4 px-4">
               {rootCats.map((c, idx) => (
@@ -523,7 +526,7 @@ function HomePage() {
                   key={c.id}
                   to="/products"
                   search={{ category: c.slug } as never}
-                  className={`cat-card-item group flex-col items-center transition-transform hover:-translate-y-1 ${idx < 3 ? 'hidden' : 'flex'} ${idx >= 3 && idx < 5 ? 'lg:hidden' : ''}`}
+                  className="cat-card-item group flex-col items-center transition-transform hover:-translate-y-1 flex"
                 >
                   <div
                     className="w-full aspect-square flex items-center justify-center relative transition-all duration-300"
@@ -572,7 +575,8 @@ function HomePage() {
             </p>
           </div>
           {/* Scrollable row with left/right buttons — 3 on small, 5 on large */}
-          <div className="relative overflow-hidden">
+          {!showAllAges && (
+            <div className="relative overflow-hidden">
             {/* Left Arrow */}
             <button
               onClick={() => scrollAge("left")}
@@ -613,6 +617,7 @@ function HomePage() {
               ))}
             </div>
           </div>
+          )}
           {showAllAges && (
             <div className="flex flex-wrap gap-3 mt-4 px-4">
               {AGE_RANGES.map((age, idx) => (
@@ -620,7 +625,7 @@ function HomePage() {
                   key={idx}
                   to="/products"
                   search={{ age: age.value } as never}
-                  className={`age-card-item group flex-col items-center transition-transform hover:-translate-y-2 ${idx < 3 ? 'hidden' : 'flex'} ${idx >= 3 && idx < 5 ? 'lg:hidden' : ''}`}
+                  className="age-card-item group flex-col items-center transition-transform hover:-translate-y-2 flex"
                 >
                   <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
                     <img
