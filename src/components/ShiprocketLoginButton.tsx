@@ -27,7 +27,11 @@ export default function ShiprocketLoginButton({
       // 1. Fetch secure access token from Express backend
       const { data } = await api.get("/auth/shiprocket-token");
 
-      const token = data.token || data.access_token || data.data?.token;
+      const token =
+        data.token ||
+        data.access_token ||
+        data.data?.token ||
+        data.result?.token;
       if (!token) {
         throw new Error("Shiprocket access token not found in server response.");
       }
@@ -97,7 +101,7 @@ export default function ShiprocketLoginButton({
         token,
         {
           themecolor: "ff6600",
-          image: "https://Trivoxo Toys.com/logo.png",
+          image: "https://trivoxotoys.com/logo.png",
         },
         fastrrCallback,
       );

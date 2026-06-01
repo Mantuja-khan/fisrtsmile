@@ -46,6 +46,8 @@ export type Product = {
   length?: number;
   breadth?: number;
   height?: number;
+  shiprocketVariantId?: string;
+  _id?: string;
 };
 
 export type Category = {

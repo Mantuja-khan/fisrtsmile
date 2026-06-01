@@ -38,6 +38,7 @@ app.get("/", (req, res) => {
 });
 
 import collectionRoutes from "./routes/collectionRoutes.js";
+import shiprocketRoutes from "./routes/shiprocketRoutes.js";
 
 // API Routes
 app.use("/api/auth", authRoutes);
@@ -47,6 +48,7 @@ app.use("/api/collections", collectionRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/shiprocket", shiprocketRoutes);
 
 import { fileURLToPath } from "url";
 

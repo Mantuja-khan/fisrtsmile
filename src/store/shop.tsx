@@ -83,6 +83,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
               badge: r.badge,
               ageRange: r.age_range ?? "All",
               offerPct: r.offer_pct ?? 0,
+              shiprocketVariantId: r.shiprocketVariantId,
+              _id: r._id,
             };
           });
         setProductMap(map);

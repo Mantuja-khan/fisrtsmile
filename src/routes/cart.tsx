@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useShop } from "@/store/shop";
+import api from "@/services/api";
 import { Trash2, Tag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,59 @@ function CartPage() {
   const { cartItems, setQty, removeFromCart, subtotal } = useShop();
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
+
+  const checkout = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    try {
+      setLoadingCheckout(true);
+      const payload = {
+        cart_data: {
+          items: cartItems.map((item) => ({
+            variant_id:
+              item.product.shiprocketVariantId ||
+              item.product._id, // Assuming item.id or product.id maps to variant_id
+            quantity: item.qty,
+          })),
+        },
+        redirect_url: "https://trivoxotoys.com/order-success",
+        timestamp: new Date().toISOString(),
+      };
+
+      const res = await api.post("/shiprocket/checkout-token", payload);
+
+      console.log("================================");
+      console.log("SHIPROCKET RESPONSE:", res.data);
+
+      const token =
+        res.data?.token ||
+        res.data?.result?.token;
+
+      console.log("TOKEN:", token);
+
+      const headless = (window as any).HeadlessCheckout;
+
+      console.log("HEADLESS:", headless);
+      console.log("================================");
+
+      if (!token) {
+        throw new Error("No token returned from server");
+      }
+
+      if (headless) {
+        headless.addToCart(event.nativeEvent, token, {
+          fallbackUrl: "https://trivoxotoys.com/cart",
+        });
+      } else {
+        toast.error("Checkout script not loaded");
+      }
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      toast.error(err.response?.data?.message || "Failed to initiate checkout");
+    } finally {
+      setLoadingCheckout(false);
+    }
+  };
 
   const applyCoupon = () => {
     const code = coupon.trim().toUpperCase();
@@ -144,12 +198,13 @@ function CartPage() {
             </div>
           </div>
 
-          <Link
-            to="/checkout"
-            className="block text-center bg-warning text-warning-foreground font-semibold py-2.5 rounded-md hover:brightness-105 transition"
+          <button
+            onClick={checkout}
+            disabled={loadingCheckout}
+            className="w-full block text-center bg-warning text-warning-foreground font-semibold py-2.5 rounded-md hover:brightness-105 transition disabled:opacity-50"
           >
-            Place Order
-          </Link>
+            {loadingCheckout ? "Processing..." : "Place Order"}
+          </button>
           <p className="text-xs text-discount font-semibold text-center">
             Free shipping on orders above ₹888
           </p>
