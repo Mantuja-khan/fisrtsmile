@@ -38,10 +38,17 @@ export default function ShiprocketLoginButton({
 
       // 2. Access the global HeadlessCheckout library loaded via index.html
       const headless = (window as any).HeadlessCheckout;
+
+      console.log("TOKEN:", token);
+      console.log("HEADLESS:", headless);
+
+      if (headless) {
+        console.log("HEADLESS METHODS:", Object.keys(headless));
+      }
+
       if (!headless) {
         throw new Error("Shiprocket Fastrr login script failed to load. Please refresh the page.");
       }
-
       // 3. Define callback to handle successful OTP verification
       const fastrrCallback = async (response: any) => {
         console.log("🚀 Shiprocket Fastrr Callback triggered with response:", response);
@@ -96,6 +103,8 @@ export default function ShiprocketLoginButton({
       };
 
       // 4. Trigger the checkout OTP popup
+      console.log("Launching OTP popup...");
+
       headless.buyNow(
         e.nativeEvent,
         token,
