@@ -114,7 +114,7 @@ export function Header() {
   const name = user?.full_name || user?.email?.split("@")[0] || "User";
 
   const announcements = [
-    "🚚 Free shipping on order above 888.00",
+    "🚚 Free shipping on order above 999.00",
     "✨ Get 5% off on first order",
     "🎁 New arrivals every week"
   ];
@@ -134,13 +134,12 @@ export function Header() {
         {announcements.map((text, i) => (
           <div
             key={i}
-            className={`absolute w-full h-9 flex items-center justify-center transition-all duration-500 ${
-              i === announcementIdx 
-                ? "translate-y-0 opacity-100 z-10" 
-                : i === (announcementIdx + 1) % announcements.length || (announcementIdx === announcements.length - 1 && i === 0)
-                  ? "-translate-y-full opacity-0 z-0"
-                  : "translate-y-full opacity-0 z-0"
-            }`}
+            className={`absolute w-full h-9 flex items-center justify-center transition-all duration-500 ${i === announcementIdx
+              ? "translate-y-0 opacity-100 z-10"
+              : i === (announcementIdx + 1) % announcements.length || (announcementIdx === announcements.length - 1 && i === 0)
+                ? "-translate-y-full opacity-0 z-0"
+                : "translate-y-full opacity-0 z-0"
+              }`}
           >
             <span>{text}</span>
           </div>
@@ -149,11 +148,10 @@ export function Header() {
 
       {/* First Navbar — hides when scrolled down */}
       <header
-        className={`bg-pink-100 border-b border-slate-100 w-full shadow-sm z-50 transition-all duration-300 ${
-          scrolled
-            ? "fixed top-0 -translate-y-full opacity-0 pointer-events-none"
-            : "sticky top-0 translate-y-0 opacity-100"
-        }`}
+        className={`bg-pink-100 border-b border-slate-100 w-full shadow-sm z-50 transition-all duration-300 ${scrolled
+          ? "fixed top-0 -translate-y-full opacity-0 pointer-events-none"
+          : "sticky top-0 translate-y-0 opacity-100"
+          }`}
       >
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2 md:py-3">
           {/* Left: Logo */}
@@ -267,9 +265,8 @@ export function Header() {
         </div>
       </header>
       {/* Second Navbar (Categories, Brands, etc.) — sticks to top when first navbar is hidden */}
-      <div className={`bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40 transition-all duration-300 ${
-        scrolled ? "sticky top-0" : ""
-      }`}>
+      <div className={`bg-[#BFDDF0] text-slate-900 relative shadow-sm hidden lg:block z-40 transition-all duration-300 ${scrolled ? "sticky top-0" : ""
+        }`}>
         <div className="container mx-auto flex items-center justify-center px-4 py-1">
           <nav className="flex items-center gap-1 mx-auto">
             {/* Home Button */}

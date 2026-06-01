@@ -336,29 +336,55 @@ export const verifyOTP = async (req, res) => {
 // @access  Public
 export const getShiprocketToken = async (req, res) => {
   try {
-    console.log("SHIPROCKET_EMAIL:", process.env.SHIPROCKET_EMAIL ? "Exists" : "Undefined");
-    console.log("SHIPROCKET_PASSWORD:", process.env.SHIPROCKET_PASSWORD ? "Exists" : "Undefined");
+    const payload = {
+      address: true,
+      timestamp: new Date().toISOString(),
+    };
+
+    const apiKey =
+      process.env.SHIPROCKET_FASTARR_API_KEY;
+
+    const secretKey =
+      process.env.SHIPROCKET_FASTARR_SECRET_KEY;
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message:
+          "Shiprocket Fastarr credentials missing",
+      });
+    }
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(JSON.stringify(payload))
+      .digest("base64");
+
     const response = await axios.post(
-      "https://apiv2.shiprocket.in/v1/external/auth/login",
-      {
-        email: process.env.SHIPROCKET_EMAIL,
-        password: process.env.SHIPROCKET_PASSWORD,
-      },
+      "https://checkout-api.shiprocket.com/api/v1/access-token/login",
+      payload,
       {
         headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
           "Content-Type": "application/json",
         },
       }
     );
 
-    res.json({
-      token: response.data.token,
-    });
+    res.json(response.data);
   } catch (error) {
-    console.log(error.response?.data || error.message);
+    console.log("========== SHIPROCKET DEBUG ==========");
+    console.log("STATUS:", error.response?.status);
+    console.log("DATA:", error.response?.data);
+    console.log("MESSAGE:", error.message);
+    console.log("API KEY EXISTS:", !!process.env.SHIPROCKET_FASTARR_API_KEY);
+    console.log("SECRET EXISTS:", !!process.env.SHIPROCKET_FASTARR_SECRET_KEY);
+    console.log("=====================================");
 
-    res.status(500).json({
-      error: "Failed to generate Shiprocket token",
+    return res.status(500).json({
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
     });
   }
 };
