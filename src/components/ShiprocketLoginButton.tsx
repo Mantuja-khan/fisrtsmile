@@ -105,7 +105,7 @@ export default function ShiprocketLoginButton({
       // 4. Trigger the checkout OTP popup
       console.log("Launching OTP popup...");
 
-      headless.buyNow(
+      headless.login(
         e.nativeEvent,
         token,
         {
@@ -120,7 +120,6 @@ export default function ShiprocketLoginButton({
       setLoading(false);
     }
   };
-
   return (
     <button
       onClick={handleLogin}
