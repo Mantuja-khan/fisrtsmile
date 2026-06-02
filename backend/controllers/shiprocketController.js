@@ -52,36 +52,146 @@ export const getShiprocketCollections = async (req, res) => {
   }
 };
 
-// @desc    Get products by collection ID for Shiprocket
+// @desc    Get products by collection ID
 // @route   GET /api/shiprocket/collection-products/:id
 // @access  Public
 export const getShiprocketCollectionProducts = async (req, res) => {
   try {
-    const products = await Product.find({ category: req.params.id });
+    const products = await Product.find({
+      category: req.params.id,
+    });
+
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Generate checkout token for Shiprocket
-// @route   POST /api/shiprocket/checkout-token
-// @access  Public
+// Helper Function
+const getShiprocketCredentials = () => {
+  const secretKey =
+    process.env.SHIPROCKET_FASTARR_SECRET_KEY ||
+    process.env.Secret_key ||
+    process.env.SHIPROCKET_SECRET_KEY;
+
+  const apiKey =
+    process.env.SHIPROCKET_FASTARR_API_KEY ||
+    process.env.API_key ||
+    process.env.SHIPROCKET_API_KEY;
+
+  return { apiKey, secretKey };
+};
+
+// ====================================================
+// LOGIN TOKEN API
+// POST /api/shiprocket/login-token
+// ====================================================
+export const loginToken = async (req, res) => {
+  try {
+    const { apiKey, secretKey } =
+      getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message:
+          "Shiprocket credentials missing in .env",
+      });
+    }
+
+    const payload = {
+      address: true,
+      timestamp: new Date().toISOString(),
+    };
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(JSON.stringify(payload))
+      .digest("base64");
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/access-token/login",
+      payload,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error(
+      "Shiprocket login-token error:",
+      err.response?.data || err.message
+    );
+
+    res.status(500).json(
+      err.response?.data || {
+        message: "Login token generation failed",
+      }
+    );
+  }
+};
+
+// ====================================================
+// CUSTOMER DATA API
+// POST /api/shiprocket/customer-data
+// ====================================================
+export const customerData = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        message: "Customer token is required",
+      });
+    }
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/customer-data/",
+      {
+        token,
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error(
+      "Shiprocket customer-data error:",
+      err.response?.data || err.message
+    );
+
+    res.status(500).json(
+      err.response?.data || {
+        message: "Customer data fetch failed",
+      }
+    );
+  }
+};
+
+// ====================================================
+// CHECKOUT TOKEN API
+// POST /api/shiprocket/checkout-token
+// ====================================================
 export const checkoutToken = async (req, res) => {
   try {
-
     console.log(
       "CHECKOUT PAYLOAD:",
       JSON.stringify(req.body, null, 2)
     );
 
     const payload = req.body;
-    // The env variable names provided in your snippet might differ, we'll use API_key / Secret_key if SHIPROCKET_SECRET_KEY is not set
-    const secretKey = process.env.SHIPROCKET_FASTARR_SECRET_KEY || process.env.Secret_key || process.env.SHIPROCKET_SECRET_KEY;
-    const apiKey = process.env.SHIPROCKET_FASTARR_API_KEY || process.env.API_key || process.env.SHIPROCKET_API_KEY;
 
-    if (!secretKey || !apiKey) {
-      return res.status(500).json({ message: "Shiprocket API credentials missing from environment variables." });
+    const { apiKey, secretKey } =
+      getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message:
+          "Shiprocket credentials missing in .env",
+      });
     }
 
     const hmac = crypto
@@ -96,27 +206,45 @@ export const checkoutToken = async (req, res) => {
         headers: {
           "X-Api-Key": apiKey,
           "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
         },
       }
     );
 
     res.json(response.data);
   } catch (err) {
-    console.error("Shiprocket checkout-token error:", err.response?.data || err.message);
-    res.status(500).json(err.response?.data || { message: "Internal server error" });
+    console.error(
+      "Shiprocket checkout-token error:",
+      err.response?.data || err.message
+    );
+
+    res.status(500).json(
+      err.response?.data || {
+        message: "Checkout token generation failed",
+      }
+    );
   }
 };
 
-// @desc    Handle Shiprocket order webhook
-// @route   POST /api/shiprocket/order-webhook
-// @access  Public
+// ====================================================
+// ORDER WEBHOOK
+// POST /api/shiprocket/order-webhook
+// ====================================================
 export const orderWebhook = async (req, res) => {
   try {
     const order = req.body;
+
     await Order.create(order);
+
     res.sendStatus(200);
   } catch (error) {
-    console.error("Order webhook error:", error);
-    res.status(500).send("Internal Server Error");
+    console.error(
+      "Order webhook error:",
+      error
+    );
+
+    res.status(500).send(
+      "Internal Server Error"
+    );
   }
 };

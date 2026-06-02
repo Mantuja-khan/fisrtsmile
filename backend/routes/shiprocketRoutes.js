@@ -1,18 +1,27 @@
-import express from 'express';
+import express from "express";
 import {
   getShiprocketProducts,
   getShiprocketCollections,
   getShiprocketCollectionProducts,
   checkoutToken,
-  orderWebhook
-} from '../controllers/shiprocketController.js';
+  orderWebhook,
+  loginToken,
+  customerData,
+} from "../controllers/shiprocketController.js";
 
 const router = express.Router();
 
-router.route('/products').get(getShiprocketProducts);
-router.route('/collections').get(getShiprocketCollections);
-router.route('/collection-products/:id').get(getShiprocketCollectionProducts);
-router.route('/checkout-token').post(checkoutToken);
-router.route('/order-webhook').post(orderWebhook);
+router.get("/products", getShiprocketProducts);
+router.get("/collections", getShiprocketCollections);
+router.get(
+  "/collection-products/:id",
+  getShiprocketCollectionProducts
+);
+
+router.post("/login-token", loginToken);
+router.post("/customer-data", customerData);
+
+router.post("/checkout-token", checkoutToken);
+router.post("/order-webhook", orderWebhook);
 
 export default router;

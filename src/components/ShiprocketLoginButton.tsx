@@ -25,8 +25,7 @@ export default function ShiprocketLoginButton({
     setLoading(true);
     try {
       // 1. Fetch secure access token from Express backend
-      const { data } = await api.get("/auth/shiprocket-token");
-
+      const { data } = await api.post("/shiprocket/login-token");
       const token =
         data.token ||
         data.access_token ||
@@ -36,8 +35,8 @@ export default function ShiprocketLoginButton({
         throw new Error("Shiprocket access token not found in server response.");
       }
 
-      // 2. Access the global HeadlessCheckout library loaded via index.html
-      const headless = (window as any).HeadlessCheckout;
+      // 2. Access the global ShiprocketLogin library loaded via index.html
+      const headless = (window as any).ShiprocketLogin || (window as any).HeadlessCheckout;
 
       console.log("TOKEN:", token);
       console.log("HEADLESS:", headless);
@@ -46,8 +45,8 @@ export default function ShiprocketLoginButton({
         console.log("HEADLESS METHODS:", Object.keys(headless));
       }
 
-      if (!headless) {
-        throw new Error("Shiprocket Fastrr login script failed to load. Please refresh the page.");
+      if (!headless || typeof headless.login !== 'function') {
+        throw new Error("Shiprocket Fastrr login script failed to load or is missing the login method. Please refresh the page.");
       }
       // 3. Define callback to handle successful OTP verification
       const fastrrCallback = async (response: any) => {
