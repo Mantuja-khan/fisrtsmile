@@ -43,17 +43,23 @@ function CartPage() {
         res.data?.token ||
         res.data?.result?.token;
 
-      console.log("TOKEN:", token);
+      const redirectUrl = 
+        res.data?.redirect_url || 
+        res.data?.result?.redirect_url;
 
-      const headless = (window as any).HeadlessCheckout;
-
-      console.log("HEADLESS:", headless);
+      console.log("TOKEN:", token, "REDIRECT_URL:", redirectUrl);
       console.log("================================");
 
-      if (!token) {
-        throw new Error("No token returned from server");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
       }
 
+      if (!token) {
+        throw new Error("No checkout URL or token returned from server");
+      }
+
+      const headless = (window as any).HeadlessCheckout;
       if (headless) {
         headless.addToCart(event.nativeEvent, token, {
           fallbackUrl: "https://trivoxotoys.com/cart",
@@ -83,7 +89,7 @@ function CartPage() {
     }
   };
 
-  const shipping = subtotal > 0 && subtotal < 888 ? 49 : 0;
+  const shipping = subtotal > 0 && subtotal < 999 ? 49 : 0;
   const total = Math.max(0, subtotal - discount) + shipping;
 
   if (cartItems.length === 0) {
@@ -206,7 +212,7 @@ function CartPage() {
             {loadingCheckout ? "Processing..." : "Place Order"}
           </button>
           <p className="text-xs text-discount font-semibold text-center">
-            Free shipping on orders above ₹888
+            Free shipping on orders above ₹999
           </p>
         </aside>
       </div>

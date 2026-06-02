@@ -268,7 +268,7 @@ export const initPayUPayment = async (req, res) => {
     txnid: order._id.toString(),
     amount: order.total.toFixed(2),
     productinfo: "Toys Collection Purchase",
-    firstname: order.shipping_address.fullName.split(" ")[0],
+    firstname: order.customer_name ? order.customer_name.split(" ")[0] : "Customer",
     email: order.customer_email || req.user?.email || "no-email@dummy.com",
     udf1: order.order_number,
   };

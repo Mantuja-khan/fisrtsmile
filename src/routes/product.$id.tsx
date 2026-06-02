@@ -156,9 +156,37 @@ function ProductPage() {
               <ShoppingCart className="size-4" /> Add to Cart
             </button>
             <button
-              onClick={() => {
+              onClick={async (e) => {
                 addToCart(product.id, qty);
-                navigate({ to: "/checkout" });
+                e.preventDefault();
+                try {
+                  const toastId = toast.loading("Initiating checkout...");
+                  const { default: api } = await import("@/services/api");
+                  const payload = {
+                    cart_data: {
+                      items: [{
+                        variant_id: product.shiprocketVariantId || product.id,
+                        quantity: qty,
+                      }],
+                    },
+                    redirect_url: "https://trivoxotoys.com/order-success",
+                    timestamp: new Date().toISOString(),
+                  };
+                  const res = await api.post("/shiprocket/checkout-token", payload);
+                  const redirectUrl = res.data?.redirect_url || res.data?.result?.redirect_url;
+                  toast.dismiss(toastId);
+                  if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                    return;
+                  }
+                  const token = res.data?.token || res.data?.result?.token;
+                  if (!token) throw new Error("No token returned");
+                  const headless = (window as any).HeadlessCheckout;
+                  if (headless) headless.addToCart(e.nativeEvent, token, { fallbackUrl: "https://trivoxotoys.com/cart" });
+                } catch (err) {
+                  toast.dismiss();
+                  toast.error("Failed to initiate checkout");
+                }
               }}
               disabled={!product.inStock}
               className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-md bg-warning text-warning-foreground font-semibold hover:brightness-105 disabled:opacity-50"
@@ -334,9 +362,37 @@ function ProductPage() {
           <ShoppingCart className="size-4" /> Add
         </button>
         <button
-          onClick={() => {
+          onClick={async (e) => {
             addToCart(product.id, qty);
-            navigate({ to: "/checkout" });
+            e.preventDefault();
+            try {
+              const toastId = toast.loading("Initiating checkout...");
+              const { default: api } = await import("@/services/api");
+              const payload = {
+                cart_data: {
+                  items: [{
+                    variant_id: product.shiprocketVariantId || product.id,
+                    quantity: qty,
+                  }],
+                },
+                redirect_url: "https://trivoxotoys.com/order-success",
+                timestamp: new Date().toISOString(),
+              };
+              const res = await api.post("/shiprocket/checkout-token", payload);
+              const redirectUrl = res.data?.redirect_url || res.data?.result?.redirect_url;
+              toast.dismiss(toastId);
+              if (redirectUrl) {
+                window.location.href = redirectUrl;
+                return;
+              }
+              const token = res.data?.token || res.data?.result?.token;
+              if (!token) throw new Error("No token returned");
+              const headless = (window as any).HeadlessCheckout;
+              if (headless) headless.addToCart(e.nativeEvent, token, { fallbackUrl: "https://trivoxotoys.com/cart" });
+            } catch (err) {
+              toast.dismiss();
+              toast.error("Failed to initiate checkout");
+            }
           }}
           disabled={!product.inStock}
           className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-md bg-warning text-warning-foreground font-semibold disabled:opacity-50"
