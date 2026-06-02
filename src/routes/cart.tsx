@@ -22,18 +22,17 @@ function CartPage() {
     try {
       setLoadingCheckout(true);
       const payload = {
-        cart_data: {
+        cartData: {
           items: cartItems.map((item) => ({
             variant_id:
               item.product.shiprocketVariantId ||
-              item.product._id, // Assuming item.id or product.id maps to variant_id
+              item.product._id,
             quantity: item.qty,
           })),
         },
-        redirect_url: "https://trivoxotoys.com/order-success",
+        redirectUrl: "https://trivoxotoys.com/order-success",
         timestamp: new Date().toISOString(),
       };
-
       const res = await api.post("/shiprocket/checkout-token", payload);
 
       console.log("================================");
@@ -43,8 +42,8 @@ function CartPage() {
         res.data?.token ||
         res.data?.result?.token;
 
-      const redirectUrl = 
-        res.data?.redirect_url || 
+      const redirectUrl =
+        res.data?.redirect_url ||
         res.data?.result?.redirect_url;
 
       console.log("TOKEN:", token, "REDIRECT_URL:", redirectUrl);

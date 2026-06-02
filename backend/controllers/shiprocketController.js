@@ -69,8 +69,13 @@ export const getShiprocketCollectionProducts = async (req, res) => {
 // @access  Public
 export const checkoutToken = async (req, res) => {
   try {
-    const payload = req.body;
 
+    console.log(
+      "CHECKOUT PAYLOAD:",
+      JSON.stringify(req.body, null, 2)
+    );
+
+    const payload = req.body;
     // The env variable names provided in your snippet might differ, we'll use API_key / Secret_key if SHIPROCKET_SECRET_KEY is not set
     const secretKey = process.env.SHIPROCKET_FASTARR_SECRET_KEY || process.env.Secret_key || process.env.SHIPROCKET_SECRET_KEY;
     const apiKey = process.env.SHIPROCKET_FASTARR_API_KEY || process.env.API_key || process.env.SHIPROCKET_API_KEY;

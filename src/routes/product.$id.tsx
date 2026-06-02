@@ -163,17 +163,17 @@ function ProductPage() {
                   const toastId = toast.loading("Initiating checkout...");
                   const { default: api } = await import("@/services/api");
                   const payload = {
-                    cart_data: {
+                    cartData: {
                       items: [{
                         variant_id: product.shiprocketVariantId || product.id,
                         quantity: qty,
                       }],
                     },
-                    redirect_url: "https://trivoxotoys.com/order-success",
+                    redirectUrl: "https://trivoxotoys.com/order-success",
                     timestamp: new Date().toISOString(),
                   };
                   const res = await api.post("/shiprocket/checkout-token", payload);
-                  const redirectUrl = res.data?.redirect_url || res.data?.result?.redirect_url;
+                  const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl;
                   toast.dismiss(toastId);
                   if (redirectUrl) {
                     window.location.href = redirectUrl;
@@ -369,17 +369,17 @@ function ProductPage() {
               const toastId = toast.loading("Initiating checkout...");
               const { default: api } = await import("@/services/api");
               const payload = {
-                cart_data: {
+                cartData: {
                   items: [{
                     variant_id: product.shiprocketVariantId || product.id,
                     quantity: qty,
                   }],
                 },
-                redirect_url: "https://trivoxotoys.com/order-success",
+                redirectUrl: "https://trivoxotoys.com/order-success",
                 timestamp: new Date().toISOString(),
               };
               const res = await api.post("/shiprocket/checkout-token", payload);
-              const redirectUrl = res.data?.redirect_url || res.data?.result?.redirect_url;
+              const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl;
               toast.dismiss(toastId);
               if (redirectUrl) {
                 window.location.href = redirectUrl;
