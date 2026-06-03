@@ -9,7 +9,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Reach Trivoxo Toys support via email, WhatsApp, or visit our store at Genesis Mall, Bhiwadi. We're here to help!",
+          "Reach Trivoxo Toys support via email, WhatsApp, or visit our store at Shop No. UGF-03, Genesis Mall, Alwar Bypass Road, Bhiwadi. We're here to help!",
       },
     ],
   }),
@@ -98,9 +98,9 @@ function ContactPage() {
               <h3 className="font-bold text-lg text-foreground mb-2">Business Address</h3>
               <div className="text-foreground/80 font-medium leading-relaxed text-sm md:text-base space-y-0.5">
                 <p className="font-bold text-foreground">Trivoxo Toys</p>
-                <p>Genesis Mall</p>
-                <p>Bhiwadi – 301019</p>
-                <p>Rajasthan, India</p>
+                <p>Shop No. UGF-03, Genesis Mall</p>
+                <p>Alwar Bypass Road</p>
+                <p>Bhiwadi - 301019</p>
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@ function ContactPage() {
             <MapPin className="size-6 text-primary" /> Find Us Here
           </h2>
           <p className="text-muted-foreground text-sm md:text-base mt-2">
-            Locate our business at Genesis Mall, Bhiwadi. Feel free to visit us during operating
+            Locate our business at Shop No. UGF-03, Genesis Mall, Alwar Bypass Road, Bhiwadi. Feel free to visit us during operating
             hours.
           </p>
         </div>
