@@ -14,6 +14,10 @@ const router = express.Router();
 router.get("/products", getShiprocketProducts);
 router.get("/collections", getShiprocketCollections);
 router.get(
+  "/collection-products",
+  getShiprocketCollectionProducts
+);
+router.get(
   "/collection-products/:id",
   getShiprocketCollectionProducts
 );

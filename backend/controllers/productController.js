@@ -14,15 +14,86 @@ export const getProducts = async (req, res) => {
 // @access  Public
 export const getProductsByCollection = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
     const Category = (await import("../models/Category.js")).default;
-    const category = await Category.findOne({ slug: req.params.slug });
+    
+    // Support either slug from params or collection_id from query
+    const identifier = req.params.slug !== "undefined" ? req.params.slug : req.query.collection_id;
+    
+    let category;
+    if (identifier && identifier.match(/^[0-9a-fA-F]{24}$/)) {
+      category = await Category.findById(identifier);
+    }
+    if (!category) {
+      category = await Category.findOne({ slug: identifier });
+    }
     
     if (!category) {
       return res.status(404).json({ message: "Collection not found" });
     }
 
-    const products = await Product.find({ category: category._id }).populate("category");
-    res.json(products);
+    const total = await Product.countDocuments({ category: category._id });
+    const products = await Product.find({ category: category._id })
+      .populate("category")
+      .skip(skip)
+      .limit(limit);
+
+    // Map to Shiprocket/Shopify format
+    const formattedProducts = products.map(product => {
+      return {
+        id: product._id,
+        title: product.name,
+        body_html: `<p>${product.description || ""}</p>`,
+        vendor: product.brand || "Default Vendor",
+        product_type: product.category ? product.category.name : "",
+        created_at: product.createdAt,
+        updated_at: product.updatedAt,
+        handle: product.name ? product.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : product._id.toString(),
+        tags: product.badge || "",
+        status: product.in_stock ? "active" : "draft",
+        variants: [
+          {
+            id: product.shiprocketVariantId || product._id,
+            title: "Default",
+            price: product.price ? product.price.toString() : "0.00",
+            compare_at_price: product.mrp ? product.mrp.toString() : null,
+            sku: product._id.toString(),
+            created_at: product.createdAt,
+            updated_at: product.updatedAt,
+            taxable: true,
+            quantity: product.in_stock ? 100 : 0,
+            grams: (product.weight || 0.5) * 1000,
+            image: {
+              src: product.image || ""
+            },
+            option_values: {
+              "Title": "Default"
+            },
+            weight: product.weight || 0.5,
+            weight_unit: "kg"
+          }
+        ],
+        options: [
+          {
+            name: "Title",
+            values: ["Default"]
+          }
+        ],
+        image: {
+          src: product.image || ""
+        }
+      };
+    });
+
+    res.json({
+      data: {
+        total,
+        products: formattedProducts
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
