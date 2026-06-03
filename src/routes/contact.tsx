@@ -5,11 +5,11 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact & Support — Trivoxo Toys" },
+      { title: "Contact & Support — First Smile" },
       {
         name: "description",
         content:
-          "Reach Trivoxo Toys support via email, WhatsApp, or visit our store at Shop No. UGF-03, Genesis Mall, Alwar Bypass Road, Bhiwadi. We're here to help!",
+          "Reach First Smile support via email, WhatsApp, or visit our store at Shop No. UGF-03, Genesis Mall, Alwar Bypass Road, Bhiwadi. We're here to help!",
       },
     ],
   }),
@@ -52,10 +52,10 @@ function ContactPage() {
             <div className="space-y-1">
               <h3 className="font-bold text-lg text-foreground">Email Support</h3>
               <a
-                href="mailto:support@trivoxotoys.com"
+                href="mailto:support@firstsmile.com"
                 className="text-primary hover:underline font-semibold block text-base md:text-lg"
               >
-                support@trivoxotoys.com
+                support@firstsmile.com
               </a>
               <p className="text-sm text-muted-foreground">
                 Response time: Within 24 working hours
@@ -97,7 +97,7 @@ function ContactPage() {
             <div>
               <h3 className="font-bold text-lg text-foreground mb-2">Business Address</h3>
               <div className="text-foreground/80 font-medium leading-relaxed text-sm md:text-base space-y-0.5">
-                <p className="font-bold text-foreground">Trivoxo Toys</p>
+                <p className="font-bold text-foreground">First Smile</p>
                 <p>Shop No. UGF-03, Genesis Mall</p>
                 <p>Alwar Bypass Road</p>
                 <p>Bhiwadi - 301019</p>
@@ -257,7 +257,7 @@ function ContactPage() {
         </div>
         <div className="rounded-2xl overflow-hidden shadow-card border border-border/50 bg-surface aspect-[16/9] md:aspect-[21/9] w-full min-h-[350px]">
           <iframe
-            title="Trivoxo Toys Location - Genesis Mall"
+            title="First Smile Location - Genesis Mall"
             src="https://maps.google.com/maps?q=Genesis%20Mall,%20Bhiwadi,%20Rajasthan%20301019&t=&z=15&ie=UTF8&iwloc=&output=embed"
             className="w-full h-full border-0"
             allowFullScreen
