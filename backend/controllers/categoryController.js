@@ -214,7 +214,24 @@ export const getCategories = async (req, res) => {
     categories = await Category.find({}).populate("parent").sort({ sort_order: 1 });
   }
 
-  res.json(categories);
+  const formattedCollections = categories.map(cat => ({
+    id: cat._id,
+    updated_at: cat.updatedAt,
+    body_html: `<p>${cat.name}</p>`,
+    handle: cat.slug,
+    image: {
+      src: cat.image || ""
+    },
+    title: cat.name,
+    created_at: cat.createdAt
+  }));
+
+  res.json({
+    data: {
+      total: formattedCollections.length,
+      collections: formattedCollections
+    }
+  });
 };
 
 // @desc    Create a category

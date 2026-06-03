@@ -10,61 +10,57 @@ export type Banner = {
 };
 
 type DbRow = {
-  _id: string;
-  name: string;
-  description: string | null;
-  category: any;
-  price: number;
-  mrp: number;
-  image: string | null;
-  images?: string[];
-  rating: number;
-  rating_count: number;
-  in_stock: boolean;
-  badge: string | null;
-  age_range: string | null;
-  offer_pct: number;
-  brand: string | null;
-  offer_starts_at?: string | null;
-  offer_expires_at?: string | null;
-  show_in_popup?: boolean;
-  is_sale?: boolean;
-  weight?: number;
-  length?: number;
-  breadth?: number;
-  height?: number;
+  id: string;
+  title: string;
+  body_html: string;
+  vendor: string;
+  product_type: string;
+  created_at: string;
+  updated_at: string;
+  handle: string;
+  tags: string;
+  status: string;
+  variants: {
+    id: string;
+    price: string;
+    compare_at_price: string;
+    quantity: number;
+    weight: number;
+    image?: { src: string };
+  }[];
+  image?: { src: string };
+  images?: { src: string }[];
 };
 
 const mapRow = (r: DbRow): Product => {
-  const img = resolveImage(r.image);
+  const variant = r.variants?.[0];
+  const price = variant?.price ? Number(variant.price) : 0;
+  const mrp = variant?.compare_at_price ? Number(variant.compare_at_price) : price;
+  const imgUrl = r.image?.src || "";
+  const img = resolveImage(imgUrl);
+  
   return {
-    id: r._id,
-    name: r.name,
-    description: r.description ?? "",
-    category_id: r.category?._id || r.category,
-    category_slug: r.category?.slug,
-    category_name: r.category?.name,
-    price: Number(r.price),
-    mrp: Number(r.mrp),
+    id: r.id,
+    name: r.title,
+    description: r.body_html?.replace(/<[^>]*>?/gm, '') || "",
+    category_id: r.product_type, // Using type as category name fallback
+    category_slug: r.product_type?.toLowerCase().replace(/\s+/g, '-'),
+    category_name: r.product_type,
+    price: price,
+    mrp: mrp,
     image: img,
-    images:
-      r.images && r.images.length > 0 ? r.images.map((pImg: string) => resolveImage(pImg)) : [img],
-    rating: Number(r.rating),
-    ratingCount: r.rating_count,
-    inStock: r.in_stock,
-    badge: r.badge,
-    ageRange: r.age_range ?? "All",
-    offerPct:
-      r.offer_expires_at && new Date(r.offer_expires_at) < new Date() ? 0 : (r.offer_pct ?? 0),
-    brand: r.brand,
-    offerStartsAt: r.offer_starts_at,
-    offerExpiresAt: r.offer_expires_at,
-    showInPopup: r.show_in_popup,
-    isSale: r.is_sale,
-    weight: r.weight ?? 0.5,
-    length: r.length ?? 10,
-    breadth: r.breadth ?? 10,
-    height: r.height ?? 10,
+    images: r.images && r.images.length > 0 ? r.images.map((i: any) => resolveImage(i.src)) : [img],
+    rating: 0,
+    ratingCount: 0,
+    inStock: r.status === "active",
+    badge: r.tags,
+    ageRange: "All",
+    offerPct: mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0,
+    brand: r.vendor,
+    weight: variant?.weight || 0.5,
+    length: 10,
+    breadth: 10,
+    height: 10,
   };
 };
 
@@ -73,14 +69,15 @@ export function useCategories() {
     queryKey: ["categories"],
     queryFn: async (): Promise<Category[]> => {
       const { data } = await api.get("/categories");
-      return (data as any[]).map((c) => ({
-        id: c._id,
-        name: c.name,
-        slug: c.slug,
-        icon: c.icon,
-        image: c.image,
-        parent_id: c.parent?._id || c.parent,
-        sort_order: c.sort_order,
+      const collections = data.data?.collections || [];
+      return collections.map((c: any) => ({
+        id: c.id,
+        name: c.title,
+        slug: c.handle,
+        icon: null,
+        image: c.image?.src || null,
+        parent_id: null,
+        sort_order: 0,
       }));
     },
   });
@@ -101,7 +98,7 @@ export function useProducts() {
     queryKey: ["products"],
     queryFn: async (): Promise<Product[]> => {
       const { data } = await api.get("/products");
-      return (data as DbRow[]).map(mapRow);
+      return (data.data?.products as DbRow[] || []).map(mapRow);
     },
   });
 }

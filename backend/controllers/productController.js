@@ -1,12 +1,128 @@
 import Product from "../models/Product.js";
 import Review from "../models/Review.js";
 
+// Helper function to deterministically convert any string ID to a safe 32-bit positive integer
+const convertToNumericId = (idStr, suffix = "") => {
+  if (!idStr) return 0;
+  const cleanStr = idStr.toString();
+  // If it's already a valid number/numeric string, parse it directly
+  if (/^\d+$/.test(cleanStr)) {
+    return Number(cleanStr);
+  }
+  let hash = 0;
+  const strToHash = cleanStr + suffix;
+  for (let i = 0; i < strToHash.length; i++) {
+    const char = strToHash.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+};
+
+// Helper function to find a product by either its original ObjectId or its deterministic numeric ID
+const findProductById = async (id, populateCategory = false) => {
+  if (!id) return null;
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+  if (isObjectId) {
+    let query = Product.findById(id);
+    if (populateCategory) {
+      query = query.populate("category");
+    }
+    return await query;
+  } else {
+    const numericIdToFind = Number(id);
+    let query = Product.find({});
+    if (populateCategory) {
+      query = query.populate("category");
+    }
+    const allProducts = await query;
+    return allProducts.find(p => convertToNumericId(p._id) === numericIdToFind) || null;
+  }
+};
+
+// Helper function to format a product to match the required user/Shopify format
+const formatProduct = (product) => {
+  const numericId = convertToNumericId(product._id);
+  const variantId = convertToNumericId(product.shiprocketVariantId || product._id, "-variant");
+
+  return {
+    id: numericId,
+    title: product.name,
+    body_html: `<p>${product.description || ""}</p>`,
+    vendor: product.brand || "Default Vendor",
+    product_type: product.category ? (product.category.name || product.category.toString()) : "",
+    created_at: product.createdAt,
+    handle: product.name
+      ? product.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+      : product._id.toString(),
+    updated_at: product.updatedAt,
+    tags: product.badge || "",
+    status: product.in_stock ? "active" : "draft",
+    variants: [
+      {
+        id: variantId,
+        title: product.badge || "Default",
+        price: product.price ? product.price.toFixed(2) : "0.00",
+        compare_at_price: product.mrp ? product.mrp.toFixed(2) : null,
+        sku: product._id.toString(),
+        quantity: product.in_stock ? 100 : 0,
+        created_at: product.createdAt,
+        updated_at: product.updatedAt,
+        taxable: true,
+        option_values: {
+          Color: product.badge || "Default",
+          Size: "Default"
+        },
+        grams: Math.round((product.weight || 0.5) * 1000),
+        image: {
+          src: product.image || ""
+        },
+        weight: product.weight || 0.5,
+        weight_unit: "kg"
+      }
+    ],
+    image: {
+      src: product.image || ""
+    },
+    options: [
+      {
+        name: "Color",
+        values: [product.badge || "Default"]
+      },
+      {
+        name: "Size",
+        values: ["Default"]
+      }
+    ]
+  };
+};
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
 export const getProducts = async (req, res) => {
-  const products = await Product.find({}).populate("category");
-  res.json(products);
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
+    const total = await Product.countDocuments({});
+    const products = await Product.find({})
+      .populate("category")
+      .skip(skip)
+      .limit(limit);
+
+    const formattedProducts = products.map(product => formatProduct(product));
+
+    res.json({
+      data: {
+        total,
+        products: formattedProducts
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
 };
 
 // @desc    Fetch products by collection slug
@@ -41,52 +157,7 @@ export const getProductsByCollection = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    // Map to Shiprocket/Shopify format
-    const formattedProducts = products.map(product => {
-      return {
-        id: product._id,
-        title: product.name,
-        body_html: `<p>${product.description || ""}</p>`,
-        vendor: product.brand || "Default Vendor",
-        product_type: product.category ? product.category.name : "",
-        created_at: product.createdAt,
-        updated_at: product.updatedAt,
-        handle: product.name ? product.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : product._id.toString(),
-        tags: product.badge || "",
-        status: product.in_stock ? "active" : "draft",
-        variants: [
-          {
-            id: product.shiprocketVariantId || product._id,
-            title: "Default",
-            price: product.price ? product.price.toString() : "0.00",
-            compare_at_price: product.mrp ? product.mrp.toString() : null,
-            sku: product._id.toString(),
-            created_at: product.createdAt,
-            updated_at: product.updatedAt,
-            taxable: true,
-            quantity: product.in_stock ? 100 : 0,
-            grams: (product.weight || 0.5) * 1000,
-            image: {
-              src: product.image || ""
-            },
-            option_values: {
-              "Title": "Default"
-            },
-            weight: product.weight || 0.5,
-            weight_unit: "kg"
-          }
-        ],
-        options: [
-          {
-            name: "Title",
-            values: ["Default"]
-          }
-        ],
-        image: {
-          src: product.image || ""
-        }
-      };
-    });
+    const formattedProducts = products.map(product => formatProduct(product));
 
     res.json({
       data: {
@@ -103,12 +174,17 @@ export const getProductsByCollection = async (req, res) => {
 // @route   GET /api/products/:id
 // @access  Public
 export const getProductById = async (req, res) => {
-  const product = await Product.findById(req.params.id).populate("category");
+  try {
+    const product = await findProductById(req.params.id, true);
 
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ message: "Product not found" });
+    if (product) {
+      const formattedProduct = formatProduct(product);
+      res.json(formattedProduct);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -180,70 +256,74 @@ export const createProduct = async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 export const updateProduct = async (req, res) => {
-  const {
-    name,
-    description,
-    price,
-    mrp,
-    image,
-    images,
-    badge,
-    category,
-    brand,
-    age_range,
-    in_stock,
-    show_in_hero,
-    show_in_popup,
-    is_sale,
-    offer_starts_at,
-    offer_expires_at,
-    weight,
-    length,
-    breadth,
-    height,
-  } = req.body;
+  try {
+    const {
+      name,
+      description,
+      price,
+      mrp,
+      image,
+      images,
+      badge,
+      category,
+      brand,
+      age_range,
+      in_stock,
+      show_in_hero,
+      show_in_popup,
+      is_sale,
+      offer_starts_at,
+      offer_expires_at,
+      weight,
+      length,
+      breadth,
+      height,
+    } = req.body;
 
-  const product = await Product.findById(req.params.id);
+    const product = await findProductById(req.params.id);
 
-  if (product) {
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.price = price !== undefined ? price : product.price;
+    if (product) {
+      product.name = name || product.name;
+      product.description = description || product.description;
+      product.price = price !== undefined ? price : product.price;
 
-    const finalMrp = mrp !== undefined ? (mrp ? Number(mrp) : product.price) : product.mrp;
-    product.mrp = finalMrp;
+      const finalMrp = mrp !== undefined ? (mrp ? Number(mrp) : product.price) : product.mrp;
+      product.mrp = finalMrp;
 
-    // Recalculate offer_pct automatically
-    product.offer_pct =
-      req.body.offer_pct !== undefined
-        ? req.body.offer_pct
-        : product.mrp > product.price
-          ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
-          : 0;
+      // Recalculate offer_pct automatically
+      product.offer_pct =
+        req.body.offer_pct !== undefined
+          ? req.body.offer_pct
+          : product.mrp > product.price
+            ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+            : 0;
 
-    product.image = image || product.image;
-    product.images = images || product.images;
-    product.badge = badge || product.badge;
-    product.category = category || product.category;
-    product.brand = brand !== undefined ? brand : product.brand;
-    product.age_range = age_range !== undefined ? age_range : product.age_range;
-    product.in_stock = in_stock !== undefined ? in_stock : product.in_stock;
-    product.show_in_hero = show_in_hero !== undefined ? show_in_hero : product.show_in_hero;
-    product.show_in_popup = show_in_popup !== undefined ? show_in_popup : product.show_in_popup;
-    product.is_sale = is_sale !== undefined ? is_sale : product.is_sale;
-    product.offer_starts_at =
-      offer_starts_at !== undefined ? offer_starts_at : product.offer_starts_at;
-    product.offer_expires_at =
-      offer_expires_at !== undefined ? offer_expires_at : product.offer_expires_at;
-    product.weight = weight ? Number(weight) : weight === "" ? undefined : product.weight;
-    product.length = length ? Number(length) : length === "" ? undefined : product.length;
-    product.breadth = breadth ? Number(breadth) : breadth === "" ? undefined : product.breadth;
-    product.height = height ? Number(height) : height === "" ? undefined : product.height;
+      product.image = image || product.image;
+      product.images = images || product.images;
+      product.badge = badge || product.badge;
+      product.category = category || product.category;
+      product.brand = brand !== undefined ? brand : product.brand;
+      product.age_range = age_range !== undefined ? age_range : product.age_range;
+      product.in_stock = in_stock !== undefined ? in_stock : product.in_stock;
+      product.show_in_hero = show_in_hero !== undefined ? show_in_hero : product.show_in_hero;
+      product.show_in_popup = show_in_popup !== undefined ? show_in_popup : product.show_in_popup;
+      product.is_sale = is_sale !== undefined ? is_sale : product.is_sale;
+      product.offer_starts_at =
+        offer_starts_at !== undefined ? offer_starts_at : product.offer_starts_at;
+      product.offer_expires_at =
+        offer_expires_at !== undefined ? offer_expires_at : product.offer_expires_at;
+      product.weight = weight ? Number(weight) : weight === "" ? undefined : product.weight;
+      product.length = length ? Number(length) : length === "" ? undefined : product.length;
+      product.breadth = breadth ? Number(breadth) : breadth === "" ? undefined : product.breadth;
+      product.height = height ? Number(height) : height === "" ? undefined : product.height;
 
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
-  } else {
-    res.status(404).json({ message: "Product not found" });
+      const updatedProduct = await product.save();
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -251,13 +331,17 @@ export const updateProduct = async (req, res) => {
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
 export const deleteProduct = async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  try {
+    const product = await findProductById(req.params.id);
 
-  if (product) {
-    await product.deleteOne();
-    res.json({ message: "Product removed" });
-  } else {
-    res.status(404).json({ message: "Product not found" });
+    if (product) {
+      await product.deleteOne();
+      res.json({ message: "Product removed" });
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -265,38 +349,42 @@ export const deleteProduct = async (req, res) => {
 // @route   POST /api/products/:id/reviews
 // @access  Private
 export const createProductReview = async (req, res) => {
-  const { rating, title, comment } = req.body;
+  try {
+    const { rating, title, comment } = req.body;
 
-  const product = await Product.findById(req.params.id);
+    const product = await findProductById(req.params.id);
 
-  if (product) {
-    const alreadyReviewed = await Review.findOne({ product: req.params.id, user: req.user._id });
+    if (product) {
+      const alreadyReviewed = await Review.findOne({ product: product._id, user: req.user._id });
 
-    if (alreadyReviewed) {
-      alreadyReviewed.rating = Number(rating);
-      alreadyReviewed.title = title;
-      alreadyReviewed.comment = comment;
-      await alreadyReviewed.save();
+      if (alreadyReviewed) {
+        alreadyReviewed.rating = Number(rating);
+        alreadyReviewed.title = title;
+        alreadyReviewed.comment = comment;
+        await alreadyReviewed.save();
+      } else {
+        const review = new Review({
+          product: product._id,
+          user: req.user._id,
+          user_name: req.user.full_name,
+          rating: Number(rating),
+          title,
+          comment,
+        });
+        await review.save();
+      }
+
+      const reviews = await Review.find({ product: product._id });
+      product.rating_count = reviews.length;
+      product.rating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
+
+      await product.save();
+      res.status(201).json({ message: "Review added" });
     } else {
-      const review = new Review({
-        product: req.params.id,
-        user: req.user._id,
-        user_name: req.user.full_name,
-        rating: Number(rating),
-        title,
-        comment,
-      });
-      await review.save();
+      res.status(404).json({ message: "Product not found" });
     }
-
-    const reviews = await Review.find({ product: req.params.id });
-    product.rating_count = reviews.length;
-    product.rating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
-
-    await product.save();
-    res.status(201).json({ message: "Review added" });
-  } else {
-    res.status(404).json({ message: "Product not found" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -304,40 +392,52 @@ export const createProductReview = async (req, res) => {
 // @route   GET /api/products/:id/reviews
 // @access  Public
 export const getProductReviews = async (req, res) => {
-  const reviews = await Review.find({ product: req.params.id }).sort({ createdAt: -1 });
-  res.json(reviews);
+  try {
+    const product = await findProductById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    const reviews = await Review.find({ product: product._id }).sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
 };
 
 // @desc    Delete review
 // @route   DELETE /api/products/:id/reviews/:reviewId
 // @access  Private
 export const deleteProductReview = async (req, res) => {
-  const review = await Review.findById(req.params.reviewId);
+  try {
+    const review = await Review.findById(req.params.reviewId);
 
-  if (review) {
-    if (review.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
-      res.status(401).json({ message: "Not authorized" });
-      return;
-    }
-
-    await review.deleteOne();
-
-    // Update product rating
-    const reviews = await Review.find({ product: req.params.id });
-    const product = await Product.findById(req.params.id);
-    if (product) {
-      if (reviews.length === 0) {
-        product.rating_count = 0;
-        product.rating = 0;
-      } else {
-        product.rating_count = reviews.length;
-        product.rating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
+    if (review) {
+      if (review.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        res.status(401).json({ message: "Not authorized" });
+        return;
       }
-      await product.save();
-    }
 
-    res.json({ message: "Review removed" });
-  } else {
-    res.status(404).json({ message: "Review not found" });
+      await review.deleteOne();
+
+      // Update product rating
+      const product = await findProductById(req.params.id);
+      if (product) {
+        const reviews = await Review.find({ product: product._id });
+        if (reviews.length === 0) {
+          product.rating_count = 0;
+          product.rating = 0;
+        } else {
+          product.rating_count = reviews.length;
+          product.rating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
+        }
+        await product.save();
+      }
+
+      res.json({ message: "Review removed" });
+    } else {
+      res.status(404).json({ message: "Review not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
