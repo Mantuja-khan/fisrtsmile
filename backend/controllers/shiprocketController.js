@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import Order from '../models/Order.js';
+import User from '../models/User.js';
 import axios from 'axios';
 import crypto from 'crypto';
 
@@ -422,18 +423,82 @@ export const checkoutToken = async (req, res) => {
 export const orderWebhook = async (req, res) => {
   try {
     const order = req.body;
+    console.log("========== SHIPROCKET ORDER WEBHOOK START ==========");
+    console.log("PAYLOAD RECEIVED:", JSON.stringify(order, null, 2));
 
-    await Order.create(order);
+    const phone = order.customer_phone || (order.shipping_address && order.shipping_address.phone) || order.phone;
+    const email = order.customer_email || order.email;
+    const name = order.customer_name || (order.shipping_address && order.shipping_address.fullName) || order.name;
+
+    let user = null;
+
+    if (phone) {
+      let formattedPhone = String(phone).trim();
+      if (formattedPhone.startsWith("+91")) {
+        formattedPhone = formattedPhone.slice(3);
+      } else if (formattedPhone.startsWith("91") && formattedPhone.length === 12) {
+        formattedPhone = formattedPhone.slice(2);
+      }
+
+      user = await User.findOne({ phone: formattedPhone });
+
+      if (!user && email) {
+        user = await User.findOne({ email: email.toLowerCase().trim() });
+      }
+
+      if (!user) {
+        console.log(`User not found for phone ${formattedPhone}. Creating a new user automatically.`);
+        const secureRandomPassword = crypto.randomBytes(16).toString("hex");
+        let finalEmail = email ? email.toLowerCase().trim() : `${formattedPhone}@toyhaat.fastrr.com`;
+
+        // Ensure email uniqueness
+        const emailExists = await User.findOne({ email: finalEmail });
+        if (emailExists) {
+          finalEmail = `${formattedPhone}-${Date.now()}@toyhaat.fastrr.com`;
+        }
+
+        user = await User.create({
+          full_name: name || "Customer",
+          email: finalEmail,
+          phone: formattedPhone,
+          password: secureRandomPassword,
+          address: order.shipping_address?.address || "",
+          city: order.shipping_address?.city || "",
+          state: order.shipping_address?.state || "",
+          pincode: order.shipping_address?.pincode || "",
+        });
+      }
+    } else if (email) {
+      const finalEmail = email.toLowerCase().trim();
+      user = await User.findOne({ email: finalEmail });
+
+      if (!user) {
+        console.log(`User not found for email ${finalEmail}. Creating a new user automatically.`);
+        const secureRandomPassword = crypto.randomBytes(16).toString("hex");
+        user = await User.create({
+          full_name: name || "Customer",
+          email: finalEmail,
+          password: secureRandomPassword,
+          address: order.shipping_address?.address || "",
+          city: order.shipping_address?.city || "",
+          state: order.shipping_address?.state || "",
+          pincode: order.shipping_address?.pincode || "",
+        });
+      }
+    }
+
+    if (user) {
+      console.log(`Associating order with user ID: ${user._id}`);
+      order.user = user._id;
+    }
+
+    const createdOrder = await Order.create(order);
+    console.log("Created order successfully in database:", createdOrder._id);
+    console.log("========== SHIPROCKET ORDER WEBHOOK END ==========");
 
     res.sendStatus(200);
   } catch (error) {
-    console.error(
-      "Order webhook error:",
-      error
-    );
-
-    res.status(500).send(
-      "Internal Server Error"
-    );
+    console.error("Order webhook error:", error);
+    res.status(500).send("Internal Server Error");
   }
 };

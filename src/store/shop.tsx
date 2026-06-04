@@ -46,7 +46,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   // Resolve cart/wishlist products from DB
   const ids = useMemo(
-    () => Array.from(new Set([...cart.map((c) => c.id), ...wishlist])),
+    () => Array.from(new Set([...cart.map((c) => String(c.id)), ...wishlist.map((w) => String(w))])),
     [cart, wishlist],
   );
   useEffect(() => {
@@ -99,7 +99,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ShopState>(() => {
     const cartItems: CartProduct[] = cart
       .map((c) => {
-        const product = productMap[c.id];
+        const product = productMap[String(c.id)];
         return product ? { ...c, product } : null;
       })
       .filter((x): x is CartProduct => !!x);
@@ -114,7 +114,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       wishlist,
       cartItems,
       subtotal,
-      cartCount: cart.length,
+      cartCount: cart.reduce((acc, i) => acc + i.qty, 0),
       addToCart: (id, qty = 1) =>
         setCart((c) => {
           const ex = c.find((i) => i.id === id);

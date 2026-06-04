@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema(
     pincode: { type: String },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     isBlocked: { type: Boolean, default: false },
+    cart: [
+      {
+        id: { type: String },
+        qty: { type: Number }
+      }
+    ],
   },
   { timestamps: true },
 );
