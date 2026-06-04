@@ -340,31 +340,48 @@ export const customerData = async (req, res) => {
 // ====================================================
 export const checkoutToken = async (req, res) => {
   try {
-    console.log(
-      "CHECKOUT PAYLOAD:",
-      JSON.stringify(req.body, null, 2)
-    );
+    console.log("========== SHIPROCKET CHECKOUT DEBUG START ==========");
+    console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
-    const payload = req.body;
+    // Construct checkout payload explicitly at root level to prevent extra keys (like timestamp) or wrappers
+    const payload = {
+      cartData: req.body.cartData,
+      redirectUrl: req.body.redirectUrl,
+    };
 
-    const { apiKey, secretKey } =
-      getShiprocketCredentials();
-
-    if (!apiKey || !secretKey) {
-      return res.status(500).json({
-        message:
-          "Shiprocket credentials missing in .env",
+    if (!payload.cartData || !payload.redirectUrl) {
+      console.error("Validation error: cartData or redirectUrl is missing in req.body");
+      return res.status(400).json({
+        message: "cartData and redirectUrl are required at the root level of the request body.",
       });
     }
 
+    const { apiKey, secretKey } = getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      console.error("Credentials error: Shiprocket credentials missing in .env");
+      return res.status(500).json({
+        message: "Shiprocket credentials missing in .env",
+      });
+    }
+
+    // Stringify once so the HMAC hash and the Axios request body are guaranteed to be identical strings
+    const rawBody = JSON.stringify(payload);
+
     const hmac = crypto
       .createHmac("sha256", secretKey)
-      .update(JSON.stringify(payload))
+      .update(rawBody)
       .digest("base64");
+
+    console.log("OUTGOING REQUEST DETAILS:");
+    console.log("URL: https://checkout-api.shiprocket.com/api/v1/access-token/checkout");
+    console.log("X-Api-Key:", apiKey);
+    console.log("X-Api-HMAC-SHA256:", hmac);
+    console.log("RAW BODY SENT:", rawBody);
 
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      payload,
+      rawBody,
       {
         headers: {
           "X-Api-Key": apiKey,
@@ -374,12 +391,16 @@ export const checkoutToken = async (req, res) => {
       }
     );
 
+    console.log("SHIPROCKET SUCCESS RESPONSE STATUS:", response.status);
+    console.log("SHIPROCKET SUCCESS RESPONSE DATA:", JSON.stringify(response.data, null, 2));
+    console.log("========== SHIPROCKET CHECKOUT DEBUG END ==========");
+
     res.json(response.data);
   } catch (err) {
-    console.error(
-      "Shiprocket checkout-token error:",
-      err.response?.data || err.message
-    );
+    console.error("========== SHIPROCKET CHECKOUT ERROR ==========");
+    console.error("STATUS:", err.response?.status);
+    console.error("ERROR DATA:", JSON.stringify(err.response?.data || err.message, null, 2));
+    console.error("==============================================");
 
     res.status(500).json(
       err.response?.data || {
