@@ -60,12 +60,19 @@ export type Category = {
   sort_order: number;
 };
 
-export const resolveImage = (img: string | null | undefined): string => {
+export const resolveImage = (img: any): string => {
   if (!img) return teddy;
-  if (imageMap[img]) return imageMap[img];
+  let src = typeof img === "object" ? img.src || img.url || "" : img;
+  if (typeof src === "object" && src !== null) {
+    src = src.src || src.url || "";
+  }
+  if (!src) return teddy;
+  
+  const srcStr = String(src);
+  if (imageMap[srcStr]) return imageMap[srcStr];
 
   // Handle legacy localhost URLs stored in DB
-  let normalized = img;
+  let normalized = srcStr;
   const apiHost = import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api";
   const baseUrl = apiHost.replace(/\/api\/?$/, ""); // get base domain without trailing slash or /api
 

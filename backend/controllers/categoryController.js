@@ -254,7 +254,15 @@ export const getCategories = async (req, res) => {
       src: cat.image || ""
     },
     title: cat.name,
-    created_at: cat.createdAt
+    created_at: cat.createdAt,
+    
+    // Legacy Admin Compatibility Fields
+    _id: cat._id.toString(),
+    name: cat.name,
+    slug: cat.slug,
+    icon: cat.icon || null,
+    parent: cat.parent,
+    sort_order: cat.sort_order || 0
   }));
 
   res.json({

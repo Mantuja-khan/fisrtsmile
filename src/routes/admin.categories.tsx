@@ -72,7 +72,14 @@ function AdminCategories() {
     queryKey: ["admin-categories"],
     queryFn: async () => {
       const { data } = await api.get("/categories");
-      return data as Category[];
+      const collections = data.data?.collections || [];
+      return collections.map((cat: any) => ({
+        ...cat,
+        _id: cat._id || (cat.id ? String(cat.id) : ""),
+        name: cat.name || cat.title || "",
+        slug: cat.slug || cat.handle || "",
+        image: cat.image && typeof cat.image === "object" ? cat.image.src || cat.image.url || "" : cat.image || "",
+      })) as Category[];
     },
   });
 

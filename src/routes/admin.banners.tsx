@@ -39,15 +39,22 @@ function AdminBanners() {
     queryKey: ["admin-categories"],
     queryFn: async () => {
       const { data } = await api.get("/categories");
-      return data as { _id: string; name: string; parent?: any; slug: string }[];
+      const collections = data.data?.collections || [];
+      return collections.map((cat: any) => ({
+        ...cat,
+        _id: cat._id || (cat.id ? String(cat.id) : ""),
+        name: cat.name || cat.title || "",
+        slug: cat.slug || cat.handle || "",
+        image: cat.image && typeof cat.image === "object" ? cat.image.src || cat.image.url || "" : cat.image || "",
+      })) as { _id: string; name: string; parent?: any; slug: string }[];
     },
   });
 
   const sortedCategories = [...categories].sort((a, b) => {
-    const pA = a.parent ? (typeof a.parent === "object" ? a.parent.name : "Sub") : "";
-    const pB = b.parent ? (typeof b.parent === "object" ? b.parent.name : "Sub") : "";
-    const labelA = pA ? `${pA} > ${a.name}` : a.name;
-    const labelB = pB ? `${pB} > ${b.name}` : b.name;
+    const pA = a.parent ? (typeof a.parent === "object" ? a.parent.name || a.parent.title || "Sub" : "Sub") : "";
+    const pB = b.parent ? (typeof b.parent === "object" ? b.parent.name || b.parent.title || "Sub" : "Sub") : "";
+    const labelA = pA ? `${pA} > ${(a.name || "")}` : (a.name || "");
+    const labelB = pB ? `${pB} > ${(b.name || "")}` : (b.name || "");
     return labelA.localeCompare(labelB);
   });
 

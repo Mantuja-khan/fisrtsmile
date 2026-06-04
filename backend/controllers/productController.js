@@ -84,6 +84,7 @@ const formatProduct = (product) => {
     image: {
       src: product.image || ""
     },
+    images: (product.images || []).map(img => (typeof img === 'object' ? img : { src: img })),
     options: [
       {
         name: "Color",
@@ -93,7 +94,29 @@ const formatProduct = (product) => {
         name: "Size",
         values: ["Default"]
       }
-    ]
+    ],
+
+    // Admin Compatibility Fields
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description || "",
+    price: product.price,
+    mrp: product.mrp,
+    category: product.category,
+    brand: product.brand || "",
+    badge: product.badge || "",
+    age_range: product.age_range || "",
+    in_stock: product.in_stock,
+    show_in_hero: product.show_in_hero,
+    is_sale: product.is_sale,
+    offer_pct: product.offer_pct,
+    offer_starts_at: product.offer_starts_at,
+    offer_expires_at: product.offer_expires_at,
+    weight: product.weight,
+    length: product.length,
+    breadth: product.breadth,
+    height: product.height,
+    shiprocketVariantId: product.shiprocketVariantId || ""
   };
 };
 

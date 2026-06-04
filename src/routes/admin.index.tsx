@@ -33,9 +33,9 @@ function AdminDashboardScreen() {
         api.get("/auth/users"),
       ]);
 
-      const products = productsRes.status === "fulfilled" ? (productsRes.value.data ?? []) : [];
+      const products = productsRes.status === "fulfilled" ? (productsRes.value.data?.data?.products ?? []) : [];
       const categories =
-        categoriesRes.status === "fulfilled" ? (categoriesRes.value.data ?? []) : [];
+        categoriesRes.status === "fulfilled" ? (categoriesRes.value.data?.data?.collections ?? []) : [];
       let orders = ordersRes.status === "fulfilled" ? (ordersRes.value.data ?? []) : [];
       const users = usersRes.status === "fulfilled" ? (usersRes.value.data ?? []) : [];
 

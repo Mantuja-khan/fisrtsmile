@@ -598,7 +598,14 @@ function AdminProducts() {
     queryKey: ["admin-products"],
     queryFn: async () => {
       const { data } = await api.get("/products");
-      return data as ProductRow[];
+      const rawProducts = data.data?.products || [];
+      return rawProducts.map((p: any) => ({
+        ...p,
+        image: p.image && typeof p.image === "object" ? p.image.src || p.image.url || "" : p.image || "",
+        images: Array.isArray(p.images)
+          ? p.images.map((img: any) => (img && typeof img === "object" ? img.src || img.url || "" : img || ""))
+          : [],
+      })) as ProductRow[];
     },
   });
 
@@ -606,7 +613,13 @@ function AdminProducts() {
     queryKey: ["admin-categories"],
     queryFn: async () => {
       const { data } = await api.get("/categories");
-      return data as { _id: string; name: string; parent?: any }[];
+      const collections = data.data?.collections || [];
+      return collections.map((cat: any) => ({
+        ...cat,
+        _id: cat._id || (cat.id ? String(cat.id) : ""),
+        name: cat.name || cat.title || "",
+        image: cat.image && typeof cat.image === "object" ? cat.image.src || cat.image.url || "" : cat.image || "",
+      })) as { _id: string; name: string; parent?: any }[];
     },
   });
 
