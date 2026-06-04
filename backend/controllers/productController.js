@@ -77,8 +77,8 @@ const formatProduct = (product) => {
         image: {
           src: product.image || ""
         },
-        weight: product.weight || 0.5,
-        weight_unit: "kg"
+        weight: Number(((product.weight || 0.5) * 2.20462).toFixed(2)),
+        weight_unit: "lb"
       }
     ],
     image: {

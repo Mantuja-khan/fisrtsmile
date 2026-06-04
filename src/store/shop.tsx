@@ -59,32 +59,36 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       .get("/products")
       .then(({ data }) => {
         if (!data) return;
-        const products = data as any[];
+        const productsList = (data.data?.products || []) as any[];
         const map: Record<string, Product> = {};
-        products
-          .filter((p) => ids.includes(p._id))
+        productsList
+          .filter((p) => ids.includes(String(p.id)))
           .forEach((r) => {
-            const img = resolveImage(r.image);
-            map[r._id] = {
-              id: r._id,
-              name: r.name,
-              description: r.description ?? "",
-              category_id: r.category?._id || r.category,
-              price: Number(r.price),
-              mrp: Number(r.mrp),
+            const variant = r.variants?.[0];
+            const price = variant?.price ? Number(variant.price) : 0;
+            const mrp = variant?.compare_at_price ? Number(variant.compare_at_price) : price;
+            const img = resolveImage(r.image?.src);
+            map[String(r.id)] = {
+              id: String(r.id),
+              name: r.title,
+              description: r.body_html?.replace(/<[^>]*>?/gm, "") || "",
+              category_id: r.product_type,
+              price: price,
+              mrp: mrp,
               image: img,
               images:
                 r.images && r.images.length > 0
-                  ? r.images.map((pImg: string) => resolveImage(pImg))
+                  ? r.images.map((pImg: any) => resolveImage(pImg?.src || pImg))
                   : [img],
-              rating: Number(r.rating),
-              ratingCount: r.rating_count,
-              inStock: r.in_stock,
-              badge: r.badge,
-              ageRange: r.age_range ?? "All",
-              offerPct: r.offer_pct ?? 0,
-              shiprocketVariantId: r.shiprocketVariantId,
-              _id: r._id,
+              rating: 0,
+              ratingCount: 0,
+              inStock: r.status === "active",
+              badge: r.tags,
+              ageRange: "All",
+              offerPct: mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0,
+              shiprocketVariantId: variant?.id ? String(variant.id) : undefined,
+              _id: String(r.id),
+              brand: r.vendor,
             };
           });
         setProductMap(map);

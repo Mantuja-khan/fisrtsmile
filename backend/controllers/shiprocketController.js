@@ -4,6 +4,81 @@ import Order from '../models/Order.js';
 import axios from 'axios';
 import crypto from 'crypto';
 
+// Helper function to deterministically convert any string ID to a safe 32-bit positive integer
+const convertToNumericId = (idStr, suffix = "") => {
+  if (!idStr) return 0;
+  const cleanStr = idStr.toString();
+  // If it's already a valid number/numeric string, parse it directly
+  if (/^\d+$/.test(cleanStr)) {
+    return Number(cleanStr);
+  }
+  let hash = 0;
+  const strToHash = cleanStr + suffix;
+  for (let i = 0; i < strToHash.length; i++) {
+    const char = strToHash.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+};
+
+// Helper function to format a product to match the required user/Shopify format
+const formatProduct = (product) => {
+  const numericId = convertToNumericId(product._id);
+  const variantId = convertToNumericId(product.shiprocketVariantId || product._id, "-variant");
+
+  return {
+    id: numericId,
+    title: product.name,
+    body_html: `<p>${product.description || ""}</p>`,
+    vendor: product.brand || "Default Vendor",
+    product_type: product.category ? (product.category.name || product.category.toString()) : "",
+    created_at: product.createdAt,
+    handle: product.name
+      ? product.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+      : product._id.toString(),
+    updated_at: product.updatedAt,
+    tags: product.badge || "",
+    status: product.in_stock ? "active" : "draft",
+    variants: [
+      {
+        id: variantId,
+        title: product.badge || "Default",
+        price: product.price ? product.price.toFixed(2) : "0.00",
+        compare_at_price: product.mrp ? product.mrp.toFixed(2) : null,
+        sku: product._id.toString(),
+        quantity: product.in_stock ? 100 : 0,
+        created_at: product.createdAt,
+        updated_at: product.updatedAt,
+        taxable: true,
+        option_values: {
+          Color: product.badge || "Default",
+          Size: "Default"
+        },
+        grams: Math.round((product.weight || 0.5) * 1000),
+        image: {
+          src: product.image || ""
+        },
+        weight: Number(((product.weight || 0.5) * 2.20462).toFixed(2)),
+        weight_unit: "lb"
+      }
+    ],
+    image: {
+      src: product.image || ""
+    },
+    options: [
+      {
+        name: "Color",
+        values: [product.badge || "Default"]
+      },
+      {
+        name: "Size",
+        values: ["Default"]
+      }
+    ]
+  };
+};
+
 // @desc    Get all products for Shiprocket
 // @route   GET /api/shiprocket/products
 // @access  Public
@@ -19,7 +94,7 @@ export const getShiprocketProducts = async (req, res) => {
     if (req.query.collection_id) {
       const categories = await Category.find();
       const targetCategory = categories.find(
-        (c) => parseInt(c._id.toString().slice(-12), 16).toString() === req.query.collection_id
+        (c) => convertToNumericId(c._id).toString() === req.query.collection_id
       );
 
       if (targetCategory) {
@@ -35,62 +110,7 @@ export const getShiprocketProducts = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    // Helper to generate a unique long ID from MongoDB ObjectId
-    const getNumericId = (idStr, isVariant = false) => {
-      const num = parseInt(idStr.slice(-12), 16);
-      return isVariant ? num + 1000000000000000 : num;
-    };
-
-    const result = products.map((product) => {
-      const productId = getNumericId(product._id.toString());
-      const variantId = getNumericId(product._id.toString(), true);
-      const createdAt = product.createdAt ? new Date(product.createdAt).toISOString() : new Date().toISOString();
-      const updatedAt = product.updatedAt ? new Date(product.updatedAt).toISOString() : new Date().toISOString();
-
-      return {
-        id: productId,
-        title: product.name,
-        body_html: product.description || "",
-        vendor: product.brand || "Default Vendor",
-        product_type: product.category?.name || "General",
-        created_at: createdAt,
-        handle: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-        updated_at: updatedAt,
-        tags: product.category?.name || "",
-        status: "active",
-        variants: [
-          {
-            id: variantId,
-            title: product.name,
-            price: product.price ? product.price.toString() : "0.00",
-            compare_at_price: product.mrp ? product.mrp.toString() : product.price?.toString() || "0.00",
-            sku: product._id.toString(),
-            created_at: createdAt,
-            updated_at: updatedAt,
-            taxable: true,
-            quantity: product.in_stock ? 100 : 0,
-            grams: (product.weight || 0.5) * 1000,
-            image: {
-              src: product.image || ""
-            },
-            option_values: {
-              "Default": "Default"
-            },
-            weight: product.weight || 0.5,
-            weight_unit: "kg"
-          }
-        ],
-        options: [
-          {
-            name: "Default",
-            values: ["Default"]
-          }
-        ],
-        image: {
-          src: product.image || ""
-        }
-      };
-    });
+    const result = products.map((product) => formatProduct(product));
 
     res.json({
       data: {
@@ -117,15 +137,12 @@ export const getShiprocketCollections = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    // Helper to generate a unique long ID from MongoDB ObjectId
-    const getNumericId = (idStr) => parseInt(idStr.slice(-12), 16);
-
     const result = categories.map((category) => {
       const createdAt = category.createdAt ? new Date(category.createdAt).toISOString() : new Date().toISOString();
       const updatedAt = category.updatedAt ? new Date(category.updatedAt).toISOString() : new Date().toISOString();
 
       return {
-        id: getNumericId(category._id.toString()),
+        id: convertToNumericId(category._id),
         updated_at: updatedAt,
         body_html: "",
         handle: category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
@@ -161,7 +178,7 @@ export const getShiprocketCollectionProducts = async (req, res) => {
       // Shiprocket sends numeric IDs for collections.
       const categories = await Category.find();
       const targetCategory = categories.find(
-        (c) => parseInt(c._id.toString().slice(-12), 16).toString() === req.params.id || c._id.toString() === req.params.id
+        (c) => convertToNumericId(c._id).toString() === req.params.id || c._id.toString() === req.params.id
       );
 
       if (targetCategory) {
@@ -177,60 +194,7 @@ export const getShiprocketCollectionProducts = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    const getNumericId = (idStr, isVariant = false) => {
-      const num = parseInt(idStr.slice(-12), 16);
-      return isVariant ? num + 1000000000000000 : num;
-    };
-
-    const result = products.map((product) => {
-      const productId = getNumericId(product._id.toString());
-      const variantId = getNumericId(product._id.toString(), true);
-      const createdAt = product.createdAt ? new Date(product.createdAt).toISOString() : new Date().toISOString();
-      const updatedAt = product.updatedAt ? new Date(product.updatedAt).toISOString() : new Date().toISOString();
-      return {
-        id: productId,
-        title: product.name,
-        body_html: product.description || "",
-        vendor: product.brand || "Default Vendor",
-        product_type: product.category?.name || "General",
-        created_at: createdAt,
-        handle: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-        updated_at: updatedAt,
-        tags: product.category?.name || "",
-        status: "active",
-        variants: [
-          {
-            id: variantId,
-            title: product.name,
-            price: product.price ? product.price.toString() : "0.00",
-            compare_at_price: product.mrp ? product.mrp.toString() : product.price?.toString() || "0.00",
-            sku: product._id.toString(),
-            created_at: createdAt,
-            updated_at: updatedAt,
-            taxable: true,
-            quantity: product.in_stock ? 100 : 0,
-            grams: (product.weight || 0.5) * 1000,
-            image: {
-              src: product.image || ""
-            },
-            option_values: {
-              "Default": "Default"
-            },
-            weight: product.weight || 0.5,
-            weight_unit: "kg"
-          }
-        ],
-        options: [
-          {
-            name: "Default",
-            values: ["Default"]
-          }
-        ],
-        image: {
-          src: product.image || ""
-        }
-      };
-    });
+    const result = products.map((product) => formatProduct(product));
 
     res.json({
       data: {
