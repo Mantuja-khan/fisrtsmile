@@ -71,10 +71,9 @@ const loginSchema = z.object({
 });
 
 function AccountPage() {
-  const { user, isAdmin, signIn, signUp, signOut, loading } = useAuth();
+  const { user, isAdmin, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { view: searchView } = Route.useSearch();
-  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [view, setView] = useState<
     "profile" | "orders" | "addresses" | "password" | "notifications"
   >(searchView || "profile");
@@ -84,19 +83,6 @@ function AccountPage() {
       setView(searchView as any);
     }
   }, [searchView]);
-
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [otpBusy, setOtpBusy] = useState(false);
 
   if (loading) {
     return (
@@ -262,111 +248,6 @@ function AccountPage() {
     );
   }
 
-  const sendOtpRequest = async () => {
-    if (!email) {
-      toast.error("Please enter your email first");
-      return;
-    }
-    if (mode === "signup" && (!fullName || !phone || !password)) {
-      toast.error("Please fill all details first");
-      return;
-    }
-    setOtpBusy(true);
-    try {
-      await api.post("/auth/send-otp", { email, type: mode === "forgot" ? "forgot" : "signup" });
-      setOtpSent(true);
-      toast.success("OTP sent to your email! 📧");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setOtpBusy(false);
-    }
-  };
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((mode === "signup" || mode === "forgot") && !otpSent) {
-      await sendOtpRequest();
-      return;
-    }
-
-    if (mode === "forgot" && otpSent && !otpVerified) {
-      setOtpBusy(true);
-      try {
-        await api.post("/auth/verify-otp", { email, otp });
-        setOtpVerified(true);
-        toast.success("OTP verified. Please set your new password.");
-      } catch (error: any) {
-        toast.error(error.response?.data?.message || "Invalid OTP");
-      } finally {
-        setOtpBusy(false);
-      }
-      return;
-    }
-
-    setBusy(true);
-    try {
-      if (mode === "signup") {
-        const v = signupSchema.safeParse({ fullName, email, password, phone, otp });
-        if (!v.success) {
-          toast.error(v.error.issues[0].message);
-          return;
-        }
-        const { error } = await signUp(
-          v.data.email,
-          v.data.password,
-          v.data.fullName,
-          v.data.phone,
-          v.data.otp,
-        );
-        if (error) {
-          toast.error(error);
-          return;
-        }
-        toast.success("Account created! 🎉 Welcome to Trivoxo Toys.");
-        localStorage.setItem("signup_phone", v.data.phone);
-        localStorage.setItem("show_signup_discount_popup", "true");
-        window.dispatchEvent(new Event("trigger-discount-popup"));
-        setMode("login");
-      } else if (mode === "forgot") {
-        if (password !== confirmPassword) {
-          toast.error("Passwords do not match");
-          setBusy(false);
-          return;
-        }
-        const v = resetPasswordSchema.safeParse({ email, otp, newPassword: password });
-        if (!v.success) {
-          toast.error(v.error.issues[0].message);
-          return;
-        }
-        await api.post("/auth/reset-password", v.data);
-        toast.success("Password reset successful! You can now log in.");
-        setMode("login");
-        setOtpSent(false);
-        setOtpVerified(false);
-        setOtp("");
-        setPassword("");
-        setConfirmPassword("");
-      } else {
-        const v = loginSchema.safeParse({ email, password });
-        if (!v.success) {
-          toast.error(v.error.issues[0].message);
-          return;
-        }
-        const { error } = await signIn(v.data.email, v.data.password);
-        if (error) {
-          toast.error(error);
-          return;
-        }
-        toast.success("Logged in successfully!");
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <div
       className="min-h-[calc(100vh-140px)] w-full bg-cover bg-center bg-no-repeat relative flex items-center justify-center p-4 md:p-8"
@@ -374,216 +255,24 @@ function AccountPage() {
     >
       <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
 
-      <div
-        className={`relative z-10 w-full max-w-[800px] rounded-3xl shadow-2xl flex flex-col ${mode === "login" || mode === "forgot" ? "md:flex-row-reverse" : "md:flex-row"} overflow-hidden bg-white/90 md:bg-white backdrop-blur-md transition-all duration-500`}
-        key={mode}
-      >
-        {/* Side - Image for Desktop */}
-        <div
-          className="hidden md:flex md:w-1/2 relative overflow-hidden"
-          style={{ minHeight: "500px" }}
-        >
-          <img
-            src={mode === "signup" ? signupHereImg : loginHereImg}
-            alt={mode === "signup" ? "Sign Up" : "Login"}
-            className="w-full h-full object-cover object-center"
-            style={{ position: "absolute", inset: 0 }}
-          />
+      <div className="relative z-10 w-full max-w-[450px] rounded-3xl shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md border border-slate-100 p-8 md:p-10 flex flex-col items-center text-center">
+        <div className="w-16 h-16 rounded-full bg-[#802a8f]/10 text-[#802a8f] flex items-center justify-center mb-6 shadow-inner">
+          <LogIn className="w-8 h-8 stroke-[2.5]" />
         </div>
 
-        {/* Side - Form */}
-        <div className="md:w-1/2 p-8 md:p-10 relative z-10 flex flex-col justify-center bg-white/60 md:bg-white">
-          <div className="text-center mb-8">
-            <h3 className="text-[#802a8f] font-bold text-xl uppercase tracking-wider">
-              {mode === "login"
-                ? "USER LOGIN"
-                : mode === "signup"
-                  ? "CREATE ACCOUNT"
-                  : "RESET PASSWORD"}
-            </h3>
-            <p className="text-xs text-muted-foreground mt-1">Welcome to Trivoxo Toys</p>
-          </div>
+        <h3 className="text-[#802a8f] font-black text-2xl tracking-tight mb-2 uppercase">
+          Welcome to Trivoxo Toys
+        </h3>
+        
+        <p className="text-sm text-slate-500 mb-8 max-w-xs leading-relaxed">
+          Login instantly using your mobile number via OTP. No email, registration, or password required!
+        </p>
 
-
-          <form onSubmit={submit} className="space-y-4 max-w-sm mx-auto w-full">
-            {mode === "signup" && (
-              <div className="space-y-4">
-                <div className="relative flex items-center">
-                  <User className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
-                  <input
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                    placeholder="Full Name"
-                  />
-                </div>
-                <div className="relative flex items-center">
-                  <Phone className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
-                  <input
-                    required
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                    placeholder="Mobile Number"
-                  />
-                </div>
-              </div>
-            )}
-
-            {(!otpSent || mode !== "forgot") && (
-              <div className="relative flex items-center">
-                <Mail className="absolute left-4 w-4 h-4 text-[#802a8f]/60" />
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                  placeholder="Email Address"
-                />
-              </div>
-            )}
-
-            {(mode !== "forgot" || otpVerified) && (
-              <div className="mt-4 flex flex-col">
-                <div className="relative flex items-center">
-                  <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60 pointer-events-none" />
-                  <input
-                    required
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                    placeholder={mode === "forgot" ? "New Password" : "Password"}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 w-5 h-5 flex items-center justify-center text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {mode === "forgot" && otpVerified && (
-              <div className="relative flex items-center mt-4">
-                <Lock className="absolute left-4 w-4 h-4 text-[#802a8f]/60 pointer-events-none" />
-                <input
-                  required
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 text-sm bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition placeholder:text-[#802a8f]/60 text-[#802a8f] font-medium"
-                  placeholder="Confirm New Password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 w-5 h-5 flex items-center justify-center text-[#802a8f]/60 hover:text-[#802a8f] focus:outline-none transition"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            )}
-
-            {otpSent && (!otpVerified || mode === "signup") && (
-              <div className="space-y-2 mt-4">
-                <div className="flex justify-between px-2">
-                  <label className="text-[11px] font-bold text-[#802a8f] uppercase">
-                    Enter 6-Digit OTP
-                  </label>
-                  <button
-                    type="button"
-                    onClick={sendOtpRequest}
-                    className="text-[10px] text-[#802a8f] hover:underline"
-                  >
-                    Resend?
-                  </button>
-                </div>
-                <input
-                  required
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full px-4 py-3 text-center text-lg font-bold tracking-[0.5em] bg-[#802a8f]/10 rounded-full outline-none focus:ring-2 focus:ring-[#802a8f]/30 transition text-[#802a8f]"
-                  placeholder="000000"
-                />
-              </div>
-            )}
-
-            {mode === "login" && (
-              <div className="flex justify-between items-center px-2 text-[11px] font-medium text-muted-foreground mt-2">
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" className="accent-[#802a8f]" /> Remember
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("forgot");
-                    setOtpSent(false);
-                    setOtpVerified(false);
-                  }}
-                  className="hover:text-[#802a8f] transition"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            <button
-              disabled={busy || otpBusy}
-              className="w-full bg-[#802a8f] text-white font-bold py-3 rounded-full shadow-sm hover:brightness-110 transition disabled:opacity-60 text-xs tracking-wider uppercase mt-6"
-            >
-              {busy || otpBusy
-                ? "Please wait..."
-                : mode === "login"
-                  ? "Login"
-                  : mode === "forgot"
-                    ? otpVerified
-                      ? "Set Password"
-                      : otpSent
-                        ? "Verify OTP"
-                        : "Send OTP"
-                    : otpSent
-                      ? "Confirm & Register"
-                      : "Send OTP"}
-            </button>
-
-            <div className="text-center mt-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode(mode === "login" ? "signup" : "login");
-                  setOtpSent(false);
-                }}
-                className="text-xs text-muted-foreground hover:text-[#802a8f] transition"
-              >
-                {mode === "login" ? "Create Account" : "Back to Login"}
-              </button>
-            </div>
-
-            {(mode === "login" || mode === "signup") && (
-              <div className="mt-6 flex flex-col gap-4">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-muted-foreground/20" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
-                  </div>
-                </div>
-                <ShiprocketLoginButton />
-              </div>
-            )}
-          </form>
+        <div className="w-full">
+          <ShiprocketLoginButton
+            className="w-full py-3.5 text-xs font-black tracking-widest uppercase rounded-full shadow-md bg-[#802a8f] hover:bg-[#802a8f]/90 text-white transition-all transform hover:scale-[1.02] cursor-pointer"
+            buttonText="Login with Phone Number"
+          />
         </div>
       </div>
     </div>

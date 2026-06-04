@@ -44,7 +44,9 @@ function CartPage() {
 
       const redirectUrl =
         res.data?.redirect_url ||
-        res.data?.result?.redirect_url;
+        res.data?.result?.redirect_url ||
+        res.data?.redirectUrl ||
+        res.data?.result?.redirectUrl;
 
       console.log("TOKEN:", token, "REDIRECT_URL:", redirectUrl);
       console.log("================================");

@@ -61,6 +61,8 @@ const mapRow = (r: DbRow): Product => {
     length: 10,
     breadth: 10,
     height: 10,
+    shiprocketVariantId: variant?.id ? String(variant.id) : undefined,
+    _id: r.id,
   };
 };
 

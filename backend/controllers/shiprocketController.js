@@ -343,10 +343,11 @@ export const checkoutToken = async (req, res) => {
     console.log("========== SHIPROCKET CHECKOUT DEBUG START ==========");
     console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
-    // Construct checkout payload explicitly at root level to prevent extra keys (like timestamp) or wrappers
+    // Construct checkout payload explicitly at root level to prevent extra keys or wrappers
     const payload = {
       cartData: req.body.cartData,
       redirectUrl: req.body.redirectUrl,
+      timestamp: req.body.timestamp || new Date().toISOString(),
     };
 
     if (!payload.cartData || !payload.redirectUrl) {
@@ -365,8 +366,14 @@ export const checkoutToken = async (req, res) => {
       });
     }
 
+
     // Stringify once so the HMAC hash and the Axios request body are guaranteed to be identical strings
     const rawBody = JSON.stringify(payload);
+
+    console.log("PAYLOAD TYPE:", typeof payload);
+    console.log("PAYLOAD OBJECT:", payload);
+    console.log("RAW BODY:", rawBody);
+    console.log("RAW BODY LENGTH:", rawBody.length);
 
     const hmac = crypto
       .createHmac("sha256", secretKey)
@@ -397,16 +404,14 @@ export const checkoutToken = async (req, res) => {
 
     res.json(response.data);
   } catch (err) {
-    console.error("========== SHIPROCKET CHECKOUT ERROR ==========");
     console.error("STATUS:", err.response?.status);
-    console.error("ERROR DATA:", JSON.stringify(err.response?.data || err.message, null, 2));
-    console.error("==============================================");
-
-    res.status(500).json(
-      err.response?.data || {
-        message: "Checkout token generation failed",
-      }
+    console.error("HEADERS:", err.response?.headers);
+    console.error(
+      "ERROR DATA:",
+      JSON.stringify(err.response?.data, null, 2)
     );
+
+    return res.status(500).json(err.response?.data);
   }
 };
 

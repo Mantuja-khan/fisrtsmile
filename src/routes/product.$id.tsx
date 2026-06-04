@@ -173,7 +173,7 @@ function ProductPage() {
                     timestamp: new Date().toISOString(),
                   };
                   const res = await api.post("/shiprocket/checkout-token", payload);
-                  const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl;
+                  const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl || res.data?.redirect_url || res.data?.result?.redirect_url;
                   toast.dismiss(toastId);
                   if (redirectUrl) {
                     window.location.href = redirectUrl;
@@ -379,7 +379,7 @@ function ProductPage() {
                 timestamp: new Date().toISOString(),
               };
               const res = await api.post("/shiprocket/checkout-token", payload);
-              const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl;
+              const redirectUrl = res.data?.redirectUrl || res.data?.result?.redirectUrl || res.data?.redirect_url || res.data?.result?.redirect_url;
               toast.dismiss(toastId);
               if (redirectUrl) {
                 window.location.href = redirectUrl;

@@ -116,7 +116,7 @@ function CheckoutPage() {
               Secure Checkout
             </h1>
             <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto leading-relaxed">
-              Login or register in seconds using Fastrr Mobile OTP checkout or your email.
+              Login in seconds using Shiprocket mobile OTP checkout.
             </p>
           </div>
 
@@ -126,22 +126,6 @@ function CheckoutPage() {
               buttonText="Express Checkout via OTP"
               className="w-full py-4 text-sm"
             />
-
-            <div className="relative flex py-2 items-center">
-              <div className="flex-grow border-t border-slate-100"></div>
-              <span className="flex-shrink mx-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                or
-              </span>
-              <div className="flex-grow border-t border-slate-100"></div>
-            </div>
-
-            {/* Standard Login */}
-            <Link
-              to="/account"
-              className="w-full inline-flex items-center justify-center gap-2 py-3.5 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 font-extrabold text-xs uppercase tracking-widest rounded-xl border border-slate-200/60 transition duration-300 active:scale-[0.98]"
-            >
-              Email & Password Login
-            </Link>
           </div>
 
           <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
