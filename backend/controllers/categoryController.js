@@ -1,5 +1,36 @@
 import Category from "../models/Category.js";
 
+// Helper function to deterministically convert any string ID to a safe 32-bit positive integer
+const convertToNumericId = (idStr, suffix = "") => {
+  if (!idStr) return 0;
+  const cleanStr = idStr.toString();
+  // If it's already a valid number/numeric string, parse it directly
+  if (/^\d+$/.test(cleanStr)) {
+    return Number(cleanStr);
+  }
+  let hash = 0;
+  const strToHash = cleanStr + suffix;
+  for (let i = 0; i < strToHash.length; i++) {
+    const char = strToHash.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+};
+
+// Helper function to find a category by either its original ObjectId or its deterministic numeric ID
+const findCategoryById = async (id) => {
+  if (!id) return null;
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+  if (isObjectId) {
+    return await Category.findById(id);
+  } else {
+    const numericIdToFind = Number(id);
+    const allCategories = await Category.find({});
+    return allCategories.find(c => convertToNumericId(c._id) === numericIdToFind) || null;
+  }
+};
+
 function slugify(text, parentSlug = "") {
   const base = text
     .toString()
@@ -215,7 +246,7 @@ export const getCategories = async (req, res) => {
   }
 
   const formattedCollections = categories.map(cat => ({
-    id: cat._id,
+    id: convertToNumericId(cat._id),
     updated_at: cat.updatedAt,
     body_html: `<p>${cat.name}</p>`,
     handle: cat.slug,
@@ -259,7 +290,7 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   const { name, slug, icon, image, sort_order, parent } = req.body;
 
-  const category = await Category.findById(req.params.id);
+  const category = await findCategoryById(req.params.id);
 
   if (category) {
     category.name = name || category.name;
@@ -280,7 +311,7 @@ export const updateCategory = async (req, res) => {
 // @route   DELETE /api/categories/:id
 // @access  Private/Admin
 export const deleteCategory = async (req, res) => {
-  const category = await Category.findById(req.params.id);
+  const category = await findCategoryById(req.params.id);
 
   if (category) {
     await category.deleteOne();
