@@ -13,6 +13,8 @@ import {
   verifyOTP,
   getShiprocketToken,
   shiprocketLogin,
+  getCart,
+  saveCart,
 } from "../controllers/authController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -24,6 +26,7 @@ router.post("/reset-password", resetPassword);
 router.get("/shiprocket-token", getShiprocketToken);
 router.post("/shiprocket-login", shiprocketLogin);
 router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
+router.route("/cart").get(protect, getCart).post(protect, saveCart);
 
 router.route("/users").get(protect, admin, getUsers);
 router.route("/users/:id/block").put(protect, admin, blockUser);

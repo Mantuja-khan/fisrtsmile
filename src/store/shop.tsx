@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import api from "@/services/api";
 import { resolveImage, effectivePrice, type Product } from "@/data/products";
+import { useAuth } from "@/store/auth";
 
 type CartItem = { id: string; qty: number };
 
@@ -62,13 +63,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         const productsList = (data.data?.products || []) as any[];
         const map: Record<string, Product> = {};
         productsList
-          .filter((p) => ids.includes(String(p.id)))
+          .filter((p) => ids.includes(String(p.id)) || ids.includes(String(p._id)))
           .forEach((r) => {
             const variant = r.variants?.[0];
             const price = variant?.price ? Number(variant.price) : 0;
             const mrp = variant?.compare_at_price ? Number(variant.compare_at_price) : price;
             const img = resolveImage(r.image?.src);
-            map[String(r.id)] = {
+            const resolvedProduct = {
               id: String(r.id),
               name: r.title,
               description: r.body_html?.replace(/<[^>]*>?/gm, "") || "",
@@ -87,14 +88,75 @@ export function ShopProvider({ children }: { children: ReactNode }) {
               ageRange: "All",
               offerPct: mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0,
               shiprocketVariantId: variant?.id ? String(variant.id) : undefined,
-              _id: String(r.id),
+              _id: String(r._id || r.id),
               brand: r.vendor,
             };
+            map[String(r.id)] = resolvedProduct;
+            if (r._id) {
+              map[String(r._id)] = resolvedProduct;
+            }
           });
         setProductMap(map);
       })
       .catch((err) => console.error("Error fetching products:", err));
   }, [ids.join(",")]);
+
+  const { user } = useAuth();
+  const [isSynced, setIsSynced] = useState(false);
+  const [prevUser, setPrevUser] = useState<any>(null);
+
+  // Sync state and handle logout transition
+  useEffect(() => {
+    if (prevUser && !user) {
+      // User logged out
+      setCart([]);
+      setIsSynced(false);
+    }
+    setPrevUser(user);
+  }, [user, prevUser]);
+
+  // Load and merge user cart on login
+  useEffect(() => {
+    if (!user) return;
+
+    api
+      .get("/auth/cart")
+      .then(({ data }) => {
+        const dbCart = (data.cart || []) as CartItem[];
+        setCart((currentLocalCart) => {
+          const mergedMap = new Map<string, number>();
+
+          // 1. Put database items first
+          dbCart.forEach((item) => {
+            mergedMap.set(String(item.id), Number(item.qty));
+          });
+
+          // 2. Add local guest items, summing the quantity if already present
+          currentLocalCart.forEach((item) => {
+            const currentQty = mergedMap.get(String(item.id)) || 0;
+            mergedMap.set(String(item.id), currentQty + Number(item.qty));
+          });
+
+          const mergedCart = Array.from(mergedMap.entries()).map(([id, qty]) => ({
+            id,
+            qty,
+          }));
+
+          return mergedCart;
+        });
+        setIsSynced(true);
+      })
+      .catch((err) => console.error("Error loading backend cart:", err));
+  }, [user]);
+
+  // Save cart to backend when it changes (only after sync has completed)
+  useEffect(() => {
+    if (!user || !isSynced) return;
+
+    api
+      .post("/auth/cart", { cart })
+      .catch((err) => console.error("Error updating backend cart:", err));
+  }, [cart, user, isSynced]);
 
   const value = useMemo<ShopState>(() => {
     const cartItems: CartProduct[] = cart
@@ -114,7 +176,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       wishlist,
       cartItems,
       subtotal,
-      cartCount: cart.reduce((acc, i) => acc + i.qty, 0),
+      cartCount: cartItems.reduce((acc, i) => acc + i.qty, 0),
       addToCart: (id, qty = 1) =>
         setCart((c) => {
           const ex = c.find((i) => i.id === id);

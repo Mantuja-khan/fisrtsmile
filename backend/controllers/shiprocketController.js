@@ -80,7 +80,7 @@ const formatProduct = (product) => {
     ],
 
     // Admin Compatibility Fields
-    _id: product._id.toString(),
+    _id: numericId,
     name: product.name,
     description: product.description || "",
     price: product.price,
@@ -345,7 +345,7 @@ export const checkoutToken = async (req, res) => {
     console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
     // Construct checkout payload explicitly at root level to prevent extra keys or wrappers
-    const payload = {
+    const rowbody = {
       cartData: req.body.cartData,
       redirectUrl: req.body.redirectUrl,
       timestamp: req.body.timestamp || new Date().toISOString(),

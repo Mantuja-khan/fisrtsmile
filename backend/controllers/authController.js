@@ -497,3 +497,45 @@ export const shiprocketLogin = async (req, res) => {
       .json({ message: "Error authenticating user via Shiprocket", error: error.message });
   }
 };
+
+// @desc    Get user cart
+// @route   GET /api/auth/cart
+// @access  Private
+export const getCart = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ cart: user.cart || [] });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+// @desc    Save user cart
+// @route   POST /api/auth/cart
+// @access  Private
+export const saveCart = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { cart } = req.body;
+    if (!Array.isArray(cart)) {
+      return res.status(400).json({ message: "Cart must be an array" });
+    }
+
+    user.cart = cart.map((item) => ({
+      id: String(item.id),
+      qty: Number(item.qty),
+    }));
+
+    await user.save();
+    res.json({ cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};

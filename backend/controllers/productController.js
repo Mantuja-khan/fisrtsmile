@@ -97,7 +97,7 @@ const formatProduct = (product) => {
     ],
 
     // Admin Compatibility Fields
-    _id: product._id.toString(),
+    _id: numericId,
     name: product.name,
     description: product.description || "",
     price: product.price,
