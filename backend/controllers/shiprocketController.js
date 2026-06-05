@@ -351,6 +351,19 @@ export const checkoutToken = async (req, res) => {
       timestamp: req.body.timestamp || new Date().toISOString(),
     };
 
+    // Convert variant_id from string to number
+    if (payload.cartData?.items?.length) {
+      payload.cartData.items = payload.cartData.items.map((item) => ({
+        ...item,
+        variant_id: Number(item.variant_id),
+      }));
+    }
+
+    console.log(
+      "AFTER VARIANT CONVERSION:",
+      JSON.stringify(payload.cartData.items, null, 2)
+    );
+
     if (!payload.cartData || !payload.redirectUrl) {
       console.error("Validation error: cartData or redirectUrl is missing in req.body");
       return res.status(400).json({
@@ -389,7 +402,7 @@ export const checkoutToken = async (req, res) => {
 
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      rawBody,
+      payload,
       {
         headers: {
           "X-Api-Key": apiKey,
