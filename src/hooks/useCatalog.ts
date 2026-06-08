@@ -39,13 +39,47 @@ const mapRow = (r: DbRow): Product => {
   const imgUrl = r.image?.src || "";
   const img = resolveImage(imgUrl);
   
+  const raw = r as any;
+  let catId: string | null = null;
+  let catSlug = r.product_type?.toLowerCase().replace(/\s+/g, '-') || "";
+  let catName = r.product_type || "";
+
+  if (raw.category) {
+    if (typeof raw.category === "object") {
+      const catIdStr = raw.category._id || "";
+      if (catIdStr) {
+        const cleanStr = catIdStr.toString();
+        let hash = 0;
+        for (let i = 0; i < cleanStr.length; i++) {
+          hash = (hash << 5) - hash + cleanStr.charCodeAt(i);
+          hash |= 0;
+        }
+        catId = String(Math.abs(hash));
+      }
+      catSlug = raw.category.slug || catSlug;
+      catName = raw.category.name || catName;
+    } else {
+      const cleanStr = String(raw.category);
+      let hash = 0;
+      for (let i = 0; i < cleanStr.length; i++) {
+        hash = (hash << 5) - hash + cleanStr.charCodeAt(i);
+        hash |= 0;
+      }
+      catId = String(Math.abs(hash));
+    }
+  }
+
+  if (!catId) {
+    catId = r.product_type || "";
+  }
+
   return {
     id: r.id,
     name: r.title,
     description: r.body_html?.replace(/<[^>]*>?/gm, '') || "",
-    category_id: r.product_type, // Using type as category name fallback
-    category_slug: r.product_type?.toLowerCase().replace(/\s+/g, '-'),
-    category_name: r.product_type,
+    category_id: catId,
+    category_slug: catSlug,
+    category_name: catName,
     price: price,
     mrp: mrp,
     image: img,
@@ -72,15 +106,34 @@ export function useCategories() {
     queryFn: async (): Promise<Category[]> => {
       const { data } = await api.get("/categories");
       const collections = data.data?.collections || [];
-      return collections.map((c: any) => ({
-        id: c.id,
-        name: c.title,
-        slug: c.handle,
-        icon: null,
-        image: c.image?.src || null,
-        parent_id: null,
-        sort_order: 0,
-      }));
+      return collections.map((c: any) => {
+        let parentNumericId: string | null = null;
+        if (c.parent) {
+          const parentIdStr = typeof c.parent === "object" ? c.parent._id : String(c.parent);
+          const parentObj = collections.find((col: any) => col._id === parentIdStr);
+          if (parentObj) {
+            parentNumericId = String(parentObj.id);
+          } else {
+            const cleanStr = parentIdStr.toString();
+            let hash = 0;
+            for (let i = 0; i < cleanStr.length; i++) {
+              hash = (hash << 5) - hash + cleanStr.charCodeAt(i);
+              hash |= 0;
+            }
+            parentNumericId = String(Math.abs(hash));
+          }
+        }
+
+        return {
+          id: String(c.id),
+          name: c.title,
+          slug: c.handle,
+          icon: null,
+          image: c.image?.src || null,
+          parent_id: parentNumericId,
+          sort_order: c.sort_order || 0,
+        };
+      });
     },
   });
 }

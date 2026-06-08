@@ -272,15 +272,20 @@ export const loginToken = async (req, res) => {
       .update(JSON.stringify(payload))
       .digest("base64");
 
+    console.log(
+      "FINAL PAYLOAD:",
+      JSON.stringify(payload, null, 2)
+    );
+
     const response = await axios.post(
-      "https://checkout-api.shiprocket.com/api/v1/access-token/login",
-      payload,
+      "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
+      payload,   // rawBody nahi
       {
         headers: {
           "X-Api-Key": apiKey,
           "X-Api-HMAC-SHA256": hmac,
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
 

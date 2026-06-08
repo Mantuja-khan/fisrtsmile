@@ -129,15 +129,24 @@ function ProductListPage() {
       if (selectedCat) {
         // If it's a parent category (i.e. has no parent_id), include products of its subcategories
         if (!selectedCat.parent_id) {
-          const subcategoryIds = categories
-            .filter((c) => c.parent_id === selectedCat.id)
-            .map((c) => c.id);
-          const allowedIds = [selectedCat.id, ...subcategoryIds];
-          list = list.filter((p) => (p.category_id ? allowedIds.includes(p.category_id) : false));
+          const subcategories = categories.filter((c) => String(c.parent_id) === String(selectedCat.id));
+          const allowedCats = [selectedCat, ...subcategories];
+          list = list.filter((p) => {
+            if (!p.category_id) return false;
+            return allowedCats.some(
+              (c) =>
+                String(c.id) === String(p.category_id) ||
+                c.slug === p.category_slug ||
+                c.name.toLowerCase() === p.category_name?.toLowerCase()
+            );
+          });
         } else {
           // If it is a subcategory, match it directly
           list = list.filter(
-            (p) => p.category_id === selectedCat.id || p.category_slug === search.category,
+            (p) =>
+              String(p.category_id) === String(selectedCat.id) ||
+              p.category_slug === search.category ||
+              selectedCat.name.toLowerCase() === p.category_name?.toLowerCase(),
           );
         }
       } else {
