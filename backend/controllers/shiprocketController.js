@@ -345,7 +345,7 @@ export const checkoutToken = async (req, res) => {
     console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
     // Construct checkout payload explicitly at root level to prevent extra keys or wrappers
-    const payload = {
+    const rowbody = {
       cartData: req.body.cartData,
       redirectUrl: req.body.redirectUrl,
       timestamp: req.body.timestamp || new Date().toISOString(),
@@ -384,21 +384,22 @@ export const checkoutToken = async (req, res) => {
     // Stringify once so the HMAC hash and the Axios request body are guaranteed to be identical strings
     const rawBody = JSON.stringify(payload);
 
+    console.log("PAYLOAD TYPE:", typeof payload);
+    console.log("PAYLOAD OBJECT:", payload);
     console.log("RAW BODY:", rawBody);
+    console.log("RAW BODY LENGTH:", rawBody.length);
 
     const hmac = crypto
       .createHmac("sha256", secretKey)
       .update(rawBody)
       .digest("base64");
 
-    console.log(
-      "FINAL PAYLOAD:",
-      JSON.stringify(payload, null, 2)
-    );
+    console.log("OUTGOING REQUEST DETAILS:");
+    console.log("URL: https://checkout-api.shiprocket.com/api/v1/access-token/checkout");
 
-    console.log("PAYLOAD TYPE:", typeof payload);
-    console.log("REDIRECT URL:", payload.redirectUrl);
-    console.log("CART DATA:", JSON.stringify(payload.cartData, null, 2));
+    console.log("X-Api-Key:", apiKey);
+    console.log("X-Api-HMAC-SHA256:", hmac);
+    console.log("RAW BODY SENT:", rawBody);
 
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
@@ -412,31 +413,20 @@ export const checkoutToken = async (req, res) => {
       }
     );
 
-
     console.log("SHIPROCKET SUCCESS RESPONSE STATUS:", response.status);
     console.log("SHIPROCKET SUCCESS RESPONSE DATA:", JSON.stringify(response.data, null, 2));
     console.log("========== SHIPROCKET CHECKOUT DEBUG END ==========");
 
     res.json(response.data);
   } catch (err) {
-    console.error("========== SHIPROCKET ERROR ==========");
-    console.error("MESSAGE:", err.message);
-    console.error("CODE:", err.code);
+    console.error("STATUS:", err.response?.status);
+    console.error("HEADERS:", err.response?.headers);
+    console.error(
+      "ERROR DATA:",
+      JSON.stringify(err.response?.data, null, 2)
+    );
 
-    if (err.response) {
-      console.error("STATUS:", err.response.status);
-      console.error(
-        "DATA:",
-        JSON.stringify(err.response.data, null, 2)
-      );
-    } else {
-      console.error("NO RESPONSE:", err);
-    }
-
-    return res.status(500).json({
-      message: err.message,
-      code: err.code
-    });
+    return res.status(500).json(err.response?.data);
   }
 };
 
