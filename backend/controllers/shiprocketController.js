@@ -384,26 +384,16 @@ export const checkoutToken = async (req, res) => {
     // Stringify once so the HMAC hash and the Axios request body are guaranteed to be identical strings
     const rawBody = JSON.stringify(payload);
 
-    console.log("PAYLOAD TYPE:", typeof payload);
-    console.log("PAYLOAD OBJECT:", payload);
     console.log("RAW BODY:", rawBody);
-    console.log("RAW BODY LENGTH:", rawBody.length);
 
     const hmac = crypto
       .createHmac("sha256", secretKey)
       .update(rawBody)
       .digest("base64");
 
-    console.log("OUTGOING REQUEST DETAILS:");
-    console.log("URL: https://checkout-api.shiprocket.com/api/v1/access-token/checkout");
-
-    console.log("X-Api-Key:", apiKey);
-    console.log("X-Api-HMAC-SHA256:", hmac);
-    console.log("RAW BODY SENT:", rawBody);
-
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      payload,
+      rawBody, // object nahi, raw string bhejo
       {
         headers: {
           "X-Api-Key": apiKey,
@@ -419,18 +409,18 @@ export const checkoutToken = async (req, res) => {
 
     res.json(response.data);
   } catch (err) {
-    console.error("FULL ERROR:", err);
+    console.error("========== SHIPROCKET ERROR ==========");
     console.error("MESSAGE:", err.message);
     console.error("CODE:", err.code);
-    console.error("STACK:", err.stack);
 
     if (err.response) {
       console.error("STATUS:", err.response.status);
-      console.error("DATA:", err.response.data);
-    }
-
-    if (err.request) {
-      console.error("REQUEST:", err.request);
+      console.error(
+        "DATA:",
+        JSON.stringify(err.response.data, null, 2)
+      );
+    } else {
+      console.error("NO RESPONSE:", err);
     }
 
     return res.status(500).json({
