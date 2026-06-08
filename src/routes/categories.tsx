@@ -118,8 +118,8 @@ function CategoriesPage() {
               return (
                 <Link
                   key={parent.id}
-                  to="/subcategories/$slug"
-                  params={{ slug: parent.slug } as never}
+                  to="/products"
+                  search={{ category: parent.slug } as never}
                   className="group flex flex-col items-center w-full transition-transform hover:-translate-y-1"
                 >
                   <div className="w-full aspect-square flex items-center justify-center relative transition-all duration-300">

@@ -60,8 +60,7 @@ function AdminProducts() {
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [offerOpen, setOfferOpen] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [parentCatId, setParentCatId] = useState<string>("");
-  const [subCatId, setSubCatId] = useState<string>("");
+  const [selectedCatId, setSelectedCatId] = useState<string>("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [excelImporting, setExcelImporting] = useState(false);
@@ -265,29 +264,17 @@ function AdminProducts() {
 
           const mapped = rawRows
             .map((r: any) => {
-              const rawSubcat = getVal(r, ["subcategory", "subcat", "childcategory", "childcat"]);
               const rawMaincat = getVal(r, ["category", "cat", "parentcategory", "maincategory"]);
-              const subcatName = cleanStr(rawSubcat);
               const maincatName = cleanStr(rawMaincat);
 
               let matchedCat = null;
-              if (subcatName) {
-                matchedCat = categories.find(
-                  (c: any) => cleanStr(c.name).toLowerCase() === subcatName.toLowerCase(),
-                );
-              }
-
-              if (!matchedCat && maincatName) {
+              if (maincatName) {
                 matchedCat = categories.find(
                   (c: any) => cleanStr(c.name).toLowerCase() === maincatName.toLowerCase(),
                 );
               }
 
-              const displayCatName = subcatName
-                ? maincatName
-                  ? `${maincatName} > ${subcatName}`
-                  : subcatName
-                : maincatName;
+              const displayCatName = maincatName;
 
               const parseBool = (val: any, fallback: boolean): boolean => {
                 if (val === undefined || val === null || val === "") return fallback;
@@ -623,32 +610,9 @@ function AdminProducts() {
     },
   });
 
-  // Pre-fill the parent when editing
-  useState(() => {
-    if (editing?.category) {
-      const cat = categories.find((c) => c._id === (editing.category._id || editing.category));
-      if (cat?.parent) {
-        setParentCatId(cat.parent._id || cat.parent);
-        setSubCatId(cat._id);
-      } else if (cat) {
-        setParentCatId(cat._id);
-        setSubCatId(cat._id);
-      }
-    }
-  });
-
   const handleEdit = (p: ProductRow) => {
-    const catObj = categories.find((c) => c._id === (p.category?._id || p.category));
-    if (catObj?.parent) {
-      setParentCatId(catObj.parent._id || catObj.parent);
-      setSubCatId(catObj._id);
-    } else if (catObj) {
-      setParentCatId(catObj._id);
-      setSubCatId(catObj._id);
-    } else {
-      setParentCatId("");
-      setSubCatId("");
-    }
+    const catId = p.category?._id || p.category || "";
+    setSelectedCatId(catId);
     setEditing(p);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -656,8 +620,7 @@ function AdminProducts() {
 
   const handleNew = () => {
     setEditing(null);
-    setParentCatId("");
-    setSubCatId("");
+    setSelectedCatId("");
     setShowForm(true);
   };
 
@@ -916,47 +879,20 @@ function AdminProducts() {
 
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
-                Main Category
-              </label>
-              <select
-                value={parentCatId}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setParentCatId(val);
-                  setSubCatId(val); // default subcategory to parent itself
-                }}
-                className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
-              >
-                <option value="">— Select Parent —</option>
-                {categories
-                  .filter((c) => !c.parent)
-                  .map((parent) => (
-                    <option key={parent._id} value={parent._id}>
-                      {parent.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
-                Subcategory <span className="text-[10px] italic font-normal">(Optional)</span>
+                Category
               </label>
               <select
                 name="category"
-                value={subCatId}
-                onChange={(e) => setSubCatId(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-input rounded-none bg-white"
+                value={selectedCatId}
+                onChange={(e) => setSelectedCatId(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-input rounded bg-white"
               >
-                <option value={parentCatId}>— Same as Main —</option>
-                {parentCatId &&
-                  categories
-                    .filter((c) => c.parent?._id === parentCatId || c.parent === parentCatId)
-                    .map((child) => (
-                      <option key={child._id} value={child._id}>
-                        {child.name}
-                      </option>
-                    ))}
+                <option value="">— Select Category —</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
 

@@ -127,28 +127,14 @@ function ProductListPage() {
     if (search.category) {
       const selectedCat = categories.find((c) => c.slug === search.category);
       if (selectedCat) {
-        // If it's a parent category (i.e. has no parent_id), include products of its subcategories
-        if (!selectedCat.parent_id) {
-          const subcategories = categories.filter((c) => String(c.parent_id) === String(selectedCat.id));
-          const allowedCats = [selectedCat, ...subcategories];
-          list = list.filter((p) => {
-            if (!p.category_id) return false;
-            return allowedCats.some(
-              (c) =>
-                String(c.id) === String(p.category_id) ||
-                c.slug === p.category_slug ||
-                c.name.toLowerCase() === p.category_name?.toLowerCase()
-            );
-          });
-        } else {
-          // If it is a subcategory, match it directly
-          list = list.filter(
-            (p) =>
-              String(p.category_id) === String(selectedCat.id) ||
-              p.category_slug === search.category ||
-              selectedCat.name.toLowerCase() === p.category_name?.toLowerCase(),
+        list = list.filter((p) => {
+          if (!p.category_id) return false;
+          return (
+            String(selectedCat.id) === String(p.category_id) ||
+            selectedCat.slug === p.category_slug ||
+            selectedCat.name.toLowerCase() === p.category_name?.toLowerCase()
           );
-        }
+        });
       } else {
         list = list.filter((p) => p.category_slug === search.category);
       }
@@ -292,8 +278,6 @@ function ProductListPage() {
       onClose();
     };
 
-    const parentCategories = categories.filter((c) => !c.parent_id);
-
     return (
       <div className={`space-y-5 ${className}`}>
         {/* Active Header & Clear Filter */}
@@ -358,96 +342,26 @@ function ProductListPage() {
               All Categories
             </button>
 
-            {parentCategories.map((parent) => {
-              const children = categories.filter((c) => c.parent_id === parent.id);
-              const hasChildren = children.length > 0;
-              const isExpanded = !!expandedParents[parent.id];
-              const isParentActive = search.category === parent.slug;
-              const isAnyChildActive = children.some((child) => search.category === child.slug);
-              const isActive = isParentActive || isAnyChildActive;
-
+            {categories.map((cat) => {
+              const isActive = search.category === cat.slug;
               return (
-                <div key={parent.id} className="space-y-0.5">
-                  <div
-                    className={`flex items-center justify-between transition-all ${
-                      isParentActive ? "bg-indigo-50/50" : "hover:bg-slate-50"
-                    }`}
-                  >
-                    <button
-                      onClick={() => {
-                        update({ category: parent.slug });
-                        if (hasChildren) {
-                          setExpandedParents((prev) => ({
-                            ...prev,
-                            [parent.id]: !prev[parent.id],
-                          }));
-                        }
-                        onClose();
-                      }}
-                      className={`flex-1 text-left text-xs py-1.5 px-2 transition-colors cursor-pointer truncate flex items-center gap-2 ${
-                        isParentActive
-                          ? "text-indigo-600 font-bold"
-                          : isActive
-                            ? "text-slate-800 font-bold"
-                            : "text-slate-600 hover:text-slate-950"
-                      }`}
-                    >
-                      <span
-                        className={`size-2 border shrink-0 ${
-                          isParentActive
-                            ? "bg-indigo-600 border-indigo-600"
-                            : isActive
-                              ? "bg-slate-700 border-slate-700"
-                              : "border-slate-300"
-                        }`}
-                      />
-                      {parent.name}
-                    </button>
-                    {hasChildren && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedParents((prev) => ({
-                            ...prev,
-                            [parent.id]: !prev[parent.id],
-                          }));
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-slate-700 transition mr-1"
-                      >
-                        <ChevronDown
-                          className={`size-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    )}
-                  </div>
-
-                  {hasChildren && isExpanded && (
-                    <div className="pl-4 ml-3 border-l border-slate-200 flex flex-col gap-0.5 mt-0.5">
-                      {children.map((child) => {
-                        const isChildActive = search.category === child.slug;
-                        return (
-                          <button
-                            key={child.id}
-                            onClick={() => {
-                              update({ category: child.slug });
-                              onClose();
-                            }}
-                            className={`text-left text-[11px] py-1 px-1.5 transition-all cursor-pointer truncate flex items-center gap-1.5 ${
-                              isChildActive
-                                ? "text-indigo-600 font-extrabold bg-indigo-50/30"
-                                : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-                            }`}
-                          >
-                            <span
-                              className={`size-1.5 shrink-0 ${isChildActive ? "bg-indigo-600" : "bg-slate-300"}`}
-                            />
-                            {child.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    update({ category: isActive ? undefined : cat.slug });
+                    onClose();
+                  }}
+                  className={`text-left text-xs py-1.5 px-2 transition-all cursor-pointer flex items-center gap-2 ${
+                    isActive
+                      ? "bg-indigo-50 text-indigo-700 font-bold"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
+                >
+                  <span
+                    className={`size-2 rounded-full border ${isActive ? "bg-indigo-600 border-indigo-600" : "border-slate-300"}`}
+                  />
+                  {cat.name}
+                </button>
               );
             })}
           </div>
