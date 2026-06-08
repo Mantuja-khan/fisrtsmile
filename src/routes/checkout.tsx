@@ -86,16 +86,6 @@ function CheckoutPage() {
   const shipping = pay === "cod" ? 49 : (newSubtotal >= 888 ? 0 : 49);
   const total = newSubtotal + codCharge + shipping;
 
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
   if (cartItems.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">

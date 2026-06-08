@@ -1,15 +1,8 @@
 import Order from "../models/Order.js";
-import Razorpay from "razorpay";
-import crypto from "crypto";
 import dotenv from "dotenv";
 import { trackShipmentByAWB, createShiprocketOrder } from "../services/shiprocketService.js";
 import { generatePayUHash, verifyPayUResponseHash } from "../services/payuService.js";
 dotenv.config();
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -115,61 +108,6 @@ export const getMyOrders = async (req, res) => {
   res.json(orders);
 };
 
-// @desc    Create Razorpay Order
-// @route   POST /api/orders/:id/razorpay
-// @access  Private
-export const createRazorpayOrder = async (req, res) => {
-  const order = await Order.findById(req.params.id);
-
-  if (order) {
-    const options = {
-      amount: Math.round(order.total * 100), // amount in the smallest currency unit
-      currency: "INR",
-      receipt: `receipt_${order.order_number}`,
-    };
-
-    try {
-      const rzOrder = await razorpay.orders.create(options);
-      res.json(rzOrder);
-    } catch (error) {
-      res.status(500).json({ message: "Razorpay order creation failed", error });
-    }
-  } else {
-    res.status(404).json({ message: "Order not found" });
-  }
-};
-
-// @desc    Verify Razorpay Payment
-// @route   PUT /api/orders/:id/pay
-// @access  Private
-export const verifyPayment = async (req, res) => {
-  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-  const order = await Order.findById(req.params.id);
-
-  if (order) {
-    const generated_signature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
-
-    if (generated_signature === razorpay_signature) {
-      order.isPaid = true;
-      order.paidAt = Date.now();
-      order.payment_id = razorpay_payment_id;
-      order.status = "Processing";
-      const updatedOrder = await order.save();
-
-      // Fire and forget: auto push to Shiprocket
-      createShiprocketOrder(updatedOrder);
-
-      res.json(updatedOrder);
-    } else {
-      res.status(400).json({ message: "Payment verification failed" });
-    }
-  } else {
-    res.status(404).json({ message: "Order not found" });
-  }
-};
 // @desc    Get order by order number
 // @route   GET /api/orders/track/:orderNumber
 // @access  Public

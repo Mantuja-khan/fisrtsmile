@@ -345,7 +345,7 @@ export const checkoutToken = async (req, res) => {
     console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
     // Construct checkout payload explicitly at root level to prevent extra keys or wrappers
-    const rowbody = {
+    const payload = {
       cartData: req.body.cartData,
       redirectUrl: req.body.redirectUrl,
       timestamp: req.body.timestamp || new Date().toISOString(),
@@ -396,6 +396,7 @@ export const checkoutToken = async (req, res) => {
 
     console.log("OUTGOING REQUEST DETAILS:");
     console.log("URL: https://checkout-api.shiprocket.com/api/v1/access-token/checkout");
+
     console.log("X-Api-Key:", apiKey);
     console.log("X-Api-HMAC-SHA256:", hmac);
     console.log("RAW BODY SENT:", rawBody);
@@ -418,14 +419,24 @@ export const checkoutToken = async (req, res) => {
 
     res.json(response.data);
   } catch (err) {
-    console.error("STATUS:", err.response?.status);
-    console.error("HEADERS:", err.response?.headers);
-    console.error(
-      "ERROR DATA:",
-      JSON.stringify(err.response?.data, null, 2)
-    );
+    console.error("FULL ERROR:", err);
+    console.error("MESSAGE:", err.message);
+    console.error("CODE:", err.code);
+    console.error("STACK:", err.stack);
 
-    return res.status(500).json(err.response?.data);
+    if (err.response) {
+      console.error("STATUS:", err.response.status);
+      console.error("DATA:", err.response.data);
+    }
+
+    if (err.request) {
+      console.error("REQUEST:", err.request);
+    }
+
+    return res.status(500).json({
+      message: err.message,
+      code: err.code
+    });
   }
 };
 

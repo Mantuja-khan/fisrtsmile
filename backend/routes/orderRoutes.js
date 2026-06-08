@@ -6,8 +6,6 @@ import {
   updateOrderStatus,
   getOrders,
   getMyOrders,
-  createRazorpayOrder,
-  verifyPayment,
   getOrderByNumber,
   cancelOrder,
   trackShipment,
@@ -29,8 +27,6 @@ router.route("/:id/track-shipment").get(protect, trackShipment);
 router.route("/:id/status").put(protect, admin, updateOrderStatus);
 router.route("/:id/cancel").put(protect, cancelOrder);
 router.route("/:id/return").put(protect, returnOrder);
-router.route("/:id/razorpay").post(protect, createRazorpayOrder);
 router.route("/:id/payu").post(protect, initPayUPayment);
-router.route("/:id/pay").put(protect, verifyPayment);
 
 export default router;
