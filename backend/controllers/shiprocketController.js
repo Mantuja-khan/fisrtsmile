@@ -272,20 +272,15 @@ export const loginToken = async (req, res) => {
       .update(JSON.stringify(payload))
       .digest("base64");
 
-    console.log(
-      "FINAL PAYLOAD:",
-      JSON.stringify(payload, null, 2)
-    );
-
     const response = await axios.post(
-      "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      payload,   // rawBody nahi
+      "https://checkout-api.shiprocket.com/api/v1/access-token/login",
+      payload,
       {
         headers: {
           "X-Api-Key": apiKey,
           "X-Api-HMAC-SHA256": hmac,
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -396,9 +391,18 @@ export const checkoutToken = async (req, res) => {
       .update(rawBody)
       .digest("base64");
 
+    console.log(
+      "FINAL PAYLOAD:",
+      JSON.stringify(payload, null, 2)
+    );
+
+    console.log("PAYLOAD TYPE:", typeof payload);
+    console.log("REDIRECT URL:", payload.redirectUrl);
+    console.log("CART DATA:", JSON.stringify(payload.cartData, null, 2));
+
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      rawBody, // object nahi, raw string bhejo
+      payload,
       {
         headers: {
           "X-Api-Key": apiKey,
@@ -407,6 +411,7 @@ export const checkoutToken = async (req, res) => {
         },
       }
     );
+
 
     console.log("SHIPROCKET SUCCESS RESPONSE STATUS:", response.status);
     console.log("SHIPROCKET SUCCESS RESPONSE DATA:", JSON.stringify(response.data, null, 2));
