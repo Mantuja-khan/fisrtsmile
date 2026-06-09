@@ -309,7 +309,6 @@ function ProductPage() {
               Wishlist
             </button>
           </div>
-
           <div className="mt-6 pt-5 border-t border-slate-100">
             <div className="text-xs    text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
               <ShieldCheck className="size-4 text-emerald-600" /> Safely Dispatched

@@ -344,27 +344,37 @@ export const checkoutToken = async (req, res) => {
     console.log("========== SHIPROCKET CHECKOUT DEBUG START ==========");
     console.log("RECEIVED REQ.BODY:", JSON.stringify(req.body, null, 2));
 
-    // Construct checkout payload explicitly at root level to prevent extra keys or wrappers
-    const rowbody = {
-      cartData: req.body.cartData,
-      redirectUrl: req.body.redirectUrl,
+    const cartData = req.body.cartData || req.body.cart_data;
+    const redirectUrl = req.body.redirectUrl || req.body.redirect_url;
+
+    const payload = {
+      cart_data: cartData,
+      cartData: cartData,
+      redirect_url: redirectUrl,
+      redirectUrl: redirectUrl,
       timestamp: req.body.timestamp || new Date().toISOString(),
     };
 
-    // Convert variant_id from string to number
+    // Convert variant_id from string to number or hash MongoDB ID
+    if (payload.cart_data?.items?.length) {
+      payload.cart_data.items = payload.cart_data.items.map((item) => ({
+        ...item,
+        variant_id: convertToNumericId(item.variant_id, "-variant"),
+      }));
+    }
     if (payload.cartData?.items?.length) {
       payload.cartData.items = payload.cartData.items.map((item) => ({
         ...item,
-        variant_id: Number(item.variant_id),
+        variant_id: convertToNumericId(item.variant_id, "-variant"),
       }));
     }
 
     console.log(
       "AFTER VARIANT CONVERSION:",
-      JSON.stringify(payload.cartData.items, null, 2)
+      JSON.stringify(payload.cart_data?.items || payload.cartData?.items, null, 2)
     );
 
-    if (!payload.cartData || !payload.redirectUrl) {
+    if (!cartData || !redirectUrl) {
       console.error("Validation error: cartData or redirectUrl is missing in req.body");
       return res.status(400).json({
         message: "cartData and redirectUrl are required at the root level of the request body.",
@@ -403,7 +413,7 @@ export const checkoutToken = async (req, res) => {
 
     const response = await axios.post(
       "https://checkout-api.shiprocket.com/api/v1/access-token/checkout",
-      payload,
+      rawBody,
       {
         headers: {
           "X-Api-Key": apiKey,

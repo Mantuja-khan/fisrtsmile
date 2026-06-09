@@ -30,7 +30,7 @@ function CartPage() {
             quantity: item.qty,
           })),
         },
-        redirectUrl: "https://trivoxotoys.com/order-success",
+        redirectUrl: window.location.origin + "/payment-success",
         timestamp: new Date().toISOString(),
       };
       const res = await api.post("/shiprocket/checkout-token", payload);
