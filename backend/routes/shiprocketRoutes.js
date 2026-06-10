@@ -7,7 +7,14 @@ import {
   orderWebhook,
   loginToken,
   customerData,
+  getOrderDetails,
+  getOrderList,
+  refundInitiate,
+  refundReport,
 } from "../controllers/shiprocketController.js";
+
+
+
 
 const router = express.Router();
 
@@ -27,5 +34,9 @@ router.post("/customer-data", customerData);
 
 router.post("/checkout-token", checkoutToken);
 router.post("/order-webhook", orderWebhook);
+router.post("/order-details", getOrderDetails);
+router.post("/order-list", getOrderList);
+router.post("/refund-initiate", refundInitiate);
+router.post("/refund-report", refundReport);
 
 export default router;

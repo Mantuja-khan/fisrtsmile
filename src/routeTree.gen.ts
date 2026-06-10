@@ -15,6 +15,7 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as PaymentSuccessRouteImport } from './routes/payment-success'
 import { Route as PaymentFailedRouteImport } from './routes/payment-failed'
+import { Route as MyOrdersRouteImport } from './routes/my-orders'
 import { Route as CouponsRouteImport } from './routes/coupons'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -69,6 +70,11 @@ const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
 const PaymentFailedRoute = PaymentFailedRouteImport.update({
   id: '/payment-failed',
   path: '/payment-failed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyOrdersRoute = MyOrdersRouteImport.update({
+  id: '/my-orders',
+  path: '/my-orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CouponsRoute = CouponsRouteImport.update({
@@ -207,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/my-orders': typeof MyOrdersRoute
   '/payment-failed': typeof PaymentFailedRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/my-orders': typeof MyOrdersRoute
   '/payment-failed': typeof PaymentFailedRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/coupons': typeof CouponsRoute
+  '/my-orders': typeof MyOrdersRoute
   '/payment-failed': typeof PaymentFailedRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/policies': typeof PoliciesRouteWithChildren
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/my-orders'
     | '/payment-failed'
     | '/payment-success'
     | '/policies'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/my-orders'
     | '/payment-failed'
     | '/payment-success'
     | '/policies'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/coupons'
+    | '/my-orders'
     | '/payment-failed'
     | '/payment-success'
     | '/policies'
@@ -407,6 +419,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   CouponsRoute: typeof CouponsRoute
+  MyOrdersRoute: typeof MyOrdersRoute
   PaymentFailedRoute: typeof PaymentFailedRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
   PoliciesRoute: typeof PoliciesRouteWithChildren
@@ -459,6 +472,13 @@ declare module '@tanstack/react-router' {
       path: '/payment-failed'
       fullPath: '/payment-failed'
       preLoaderRoute: typeof PaymentFailedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-orders': {
+      id: '/my-orders'
+      path: '/my-orders'
+      fullPath: '/my-orders'
+      preLoaderRoute: typeof MyOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coupons': {
@@ -695,6 +715,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   CouponsRoute: CouponsRoute,
+  MyOrdersRoute: MyOrdersRoute,
   PaymentFailedRoute: PaymentFailedRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
   PoliciesRoute: PoliciesRouteWithChildren,

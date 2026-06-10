@@ -441,6 +441,180 @@ export const checkoutToken = async (req, res) => {
 };
 
 // ====================================================
+// REFUND INITIATE API
+// POST /api/shiprocket/refund-initiate
+// Proxies: POST https://checkout-api.shiprocket.com/api/v1/external/refund/initiate
+// ====================================================
+export const refundInitiate = async (req, res) => {
+  try {
+    const { apiKey, secretKey } = getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({ message: "Shiprocket credentials missing in .env" });
+    }
+
+    const payload = req.body;
+    const rawBody = JSON.stringify(payload);
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(rawBody)
+      .digest("base64");
+
+    console.log("========== SHIPROCKET REFUND INITIATE START ==========");
+    console.log("PAYLOAD:", rawBody);
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/external/refund/initiate",
+      rawBody,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("SHIPROCKET REFUND RESPONSE:", JSON.stringify(response.data, null, 2));
+    console.log("========== SHIPROCKET REFUND INITIATE END ==========");
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Shiprocket refund-initiate error:", err.response?.data || err.message);
+    res.status(err.response?.status || 500).json(
+      err.response?.data || { message: "Refund initiation failed" }
+    );
+  }
+};
+
+// ====================================================
+// ORDER DETAILS API
+// POST /api/shiprocket/order-details
+// Proxies: POST https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details
+// ====================================================
+export const getOrderDetails = async (req, res) => {
+  try {
+    const { apiKey, secretKey } = getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({ message: "Shiprocket credentials missing in .env" });
+    }
+
+    const payload = req.body;
+    const rawBody = JSON.stringify(payload);
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(rawBody)
+      .digest("base64");
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details",
+      rawBody,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Shiprocket order-details error:", err.response?.data || err.message);
+    res.status(err.response?.status || 500).json(
+      err.response?.data || { message: "Order details fetch failed" }
+    );
+  }
+};
+
+// ====================================================
+// ORDER LIST API
+// POST /api/shiprocket/order-list
+// Proxies: POST https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details/list
+// ====================================================
+export const getOrderList = async (req, res) => {
+  try {
+    const { apiKey, secretKey } = getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({ message: "Shiprocket credentials missing in .env" });
+    }
+
+    const payload = req.body;
+    const rawBody = JSON.stringify(payload);
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(rawBody)
+      .digest("base64");
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details/list",
+      rawBody,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Shiprocket order-list error:", err.response?.data || err.message);
+    res.status(err.response?.status || 500).json(
+      err.response?.data || { message: "Order list fetch failed" }
+    );
+  }
+};
+
+// ====================================================
+// REFUND REPORT API
+// POST /api/shiprocket/refund-report
+// Proxies: POST https://checkout-api.shiprocket.com/api/v1/external/refund/reports
+// ====================================================
+export const refundReport = async (req, res) => {
+  try {
+    const { apiKey, secretKey } = getShiprocketCredentials();
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({ message: "Shiprocket credentials missing in .env" });
+    }
+
+    const payload = req.body;
+    const rawBody = JSON.stringify(payload);
+
+    const hmac = crypto
+      .createHmac("sha256", secretKey)
+      .update(rawBody)
+      .digest("base64");
+
+    const response = await axios.post(
+      "https://checkout-api.shiprocket.com/api/v1/external/refund/reports",
+      rawBody,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-Api-HMAC-SHA256": hmac,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Shiprocket refund-report error:", err.response?.data || err.message);
+    res.status(err.response?.status || 500).json(
+      err.response?.data || { message: "Refund report fetch failed" }
+    );
+  }
+};
+
+// ====================================================
 // ORDER WEBHOOK
 // POST /api/shiprocket/order-webhook
 // ====================================================
