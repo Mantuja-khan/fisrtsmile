@@ -489,12 +489,12 @@ export function Header() {
             </Link>
 
             {/* Coupons Link */}
-            <Link
+            {/* <Link
               to="/coupons"
               className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
             >
               Coupons
-            </Link>
+            </Link> */}
 
             {/* <Link
               to="/my-orders"
@@ -619,13 +619,13 @@ export function Header() {
                 )}
               </div>
 
-              <Link
+              {/* <Link
                 to="/coupons"
                 className="p-4 border-b border-slate-100    text-slate-800"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Coupons
-              </Link>
+              </Link> */}
 
               {/* <Link
                 to="/my-orders"
