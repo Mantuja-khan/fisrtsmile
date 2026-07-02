@@ -17,6 +17,7 @@ import {
   Smile,
   Cloud,
   ArrowLeft,
+  Ticket,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -77,6 +78,7 @@ function AdminLayout() {
       | "/admin/products"
       | "/admin/categories"
       | "/admin/orders"
+      | "/admin/coupons"
       | "/admin/users";
     label: string;
     icon: any;
@@ -88,6 +90,7 @@ function AdminLayout() {
     { to: "/admin/products", label: "Products", icon: Package },
     { to: "/admin/categories", label: "Categories", icon: Tag },
     { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
+    { to: "/admin/coupons", label: "Coupons", icon: Ticket },
     { to: "/admin/users", label: "Users", icon: Users },
   ];
 

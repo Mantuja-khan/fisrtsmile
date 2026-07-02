@@ -104,7 +104,29 @@ export const getOrders = async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 export const getMyOrders = async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  let query = { user: req.user._id };
+  if (req.user.phone) {
+    const cleanPhone = req.user.phone.replace(/\D/g, ""); // Keep only digits
+    const phoneVariants = [req.user.phone, cleanPhone];
+    if (cleanPhone.length === 10) {
+      phoneVariants.push(`+91${cleanPhone}`);
+      phoneVariants.push(`91${cleanPhone}`);
+      phoneVariants.push(`0${cleanPhone}`);
+    } else if (cleanPhone.length === 12 && cleanPhone.startsWith("91")) {
+      const tenDigit = cleanPhone.substring(2);
+      phoneVariants.push(tenDigit);
+      phoneVariants.push(`+${cleanPhone}`);
+    }
+    const uniqueVariants = [...new Set(phoneVariants)];
+    query = {
+      $or: [
+        { user: req.user._id },
+        { customer_phone: { $in: uniqueVariants } },
+        { "shipping_address.phone": { $in: uniqueVariants } }
+      ]
+    };
+  }
+  const orders = await Order.find(query).sort({ createdAt: -1 });
   res.json(orders);
 };
 
@@ -248,7 +270,7 @@ export const handlePayUResponse = async (req, res) => {
     host.startsWith("172.");
   const frontendBase = isLocal
     ? "http://localhost:5173"
-    : process.env.FRONTEND_URL || "https://toyhaat.com";
+    : process.env.FRONTEND_URL || "https://trivoxotoys.com";
 
   if (!isValid) {
     console.error("🚫 PayU Hash Compromise Alert!");

@@ -4,6 +4,7 @@ import Order from '../models/Order.js';
 import User from '../models/User.js';
 import axios from 'axios';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 
 // Helper function to deterministically convert any string ID to a safe 32-bit positive integer
 const convertToNumericId = (idStr, suffix = "") => {
@@ -272,17 +273,30 @@ export const loginToken = async (req, res) => {
       .update(JSON.stringify(payload))
       .digest("base64");
 
-    const response = await axios.post(
-      "https://checkout-api.shiprocket.com/api/v1/access-token/login",
-      payload,
-      {
-        headers: {
-          "X-Api-Key": apiKey,
-          "X-Api-HMAC-SHA256": hmac,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const headers = {
+      "X-Api-Key": apiKey,
+      "X-Api-HMAC-SHA256": hmac,
+      "Content-Type": "application/json",
+    };
+
+    let response;
+
+    // Primary: new Fastrr API endpoint
+    try {
+      response = await axios.post(
+        "https://fastrr-api-dev.pickrr.com/api/v1/access-token/login",
+        payload,
+        { headers }
+      );
+    } catch (primaryErr) {
+      console.warn("Primary Fastrr endpoint failed, falling back to checkout-api.shiprocket.com:", primaryErr.message);
+      // Fallback: legacy Shiprocket checkout API
+      response = await axios.post(
+        "https://checkout-api.shiprocket.com/api/v1/access-token/login",
+        payload,
+        { headers }
+      );
+    }
 
     res.json(response.data);
   } catch (err) {
@@ -298,6 +312,7 @@ export const loginToken = async (req, res) => {
     );
   }
 };
+
 
 // ====================================================
 // CUSTOMER DATA API
@@ -543,27 +558,112 @@ export const getOrderList = async (req, res) => {
       return res.status(500).json({ message: "Shiprocket credentials missing in .env" });
     }
 
-    const payload = req.body;
-    const rawBody = JSON.stringify(payload);
+    const originalPhone = req.body.phone;
+    if (!originalPhone) {
+      const payload = req.body;
+      const rawBody = JSON.stringify(payload);
+      const hmac = crypto.createHmac("sha256", secretKey).update(rawBody).digest("base64");
+      const response = await axios.post(
+        "https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details/list",
+        rawBody,
+        {
+          headers: {
+            "X-Api-Key": apiKey,
+            "X-Api-HMAC-SHA256": hmac,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return res.json(response.data);
+    }
 
-    const hmac = crypto
-      .createHmac("sha256", secretKey)
-      .update(rawBody)
-      .digest("base64");
+    // Generate phone variants
+    const cleanPhone = originalPhone.toString().replace(/\D/g, "");
+    const phoneVariants = [originalPhone.toString(), cleanPhone];
+    if (cleanPhone.length === 10) {
+      phoneVariants.push(`+91${cleanPhone}`);
+      phoneVariants.push(`91${cleanPhone}`);
+      phoneVariants.push(`0${cleanPhone}`);
+    } else if (cleanPhone.length === 12 && cleanPhone.startsWith("91")) {
+      const tenDigit = cleanPhone.substring(2);
+      phoneVariants.push(tenDigit);
+      phoneVariants.push(`+${cleanPhone}`);
+    }
+    const uniqueVariants = [...new Set(phoneVariants)];
 
-    const response = await axios.post(
-      "https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details/list",
-      rawBody,
-      {
-        headers: {
-          "X-Api-Key": apiKey,
-          "X-Api-HMAC-SHA256": hmac,
-          "Content-Type": "application/json",
-        },
+    // Fetch for all variants in parallel
+    const fetchPromises = uniqueVariants.map(async (phone) => {
+      try {
+        const payload = { ...req.body, phone };
+        const rawBody = JSON.stringify(payload);
+        const hmac = crypto.createHmac("sha256", secretKey).update(rawBody).digest("base64");
+        const resp = await axios.post(
+          "https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details/list",
+          rawBody,
+          {
+            headers: {
+              "X-Api-Key": apiKey,
+              "X-Api-HMAC-SHA256": hmac,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        return resp.data;
+      } catch (err) {
+        console.error(`Error querying Shiprocket for phone ${phone}:`, err.message);
+        return null;
       }
-    );
+    });
 
-    res.json(response.data);
+    const results = await Promise.all(fetchPromises);
+
+    // Merge results
+    let mergedOrders = [];
+    let isArrayResponse = false;
+    let baseResponse = null;
+
+    results.forEach((r) => {
+      if (!r) return;
+      if (!baseResponse) baseResponse = r;
+
+      const orders = Array.isArray(r)
+        ? r
+        : r?.data?.orders || r?.orders || r?.data || [];
+
+      if (Array.isArray(r)) {
+        isArrayResponse = true;
+      }
+
+      orders.forEach((o) => {
+        const id = o.channel_order_id || o.reference_number || o.order_id?.toString();
+        if (id && !mergedOrders.some((existing) => {
+          const exId = existing.channel_order_id || existing.reference_number || existing.order_id?.toString();
+          return exId === id;
+        })) {
+          mergedOrders.push(o);
+        }
+      });
+    });
+
+    if (!baseResponse) {
+      return res.json([]);
+    }
+
+    if (isArrayResponse) {
+      return res.json(mergedOrders);
+    } else {
+      const responseToSend = { ...baseResponse };
+      if (responseToSend.data && responseToSend.data.orders) {
+        responseToSend.data = { ...responseToSend.data, orders: mergedOrders };
+      } else if (responseToSend.orders) {
+        responseToSend.orders = mergedOrders;
+      } else if (responseToSend.data && Array.isArray(responseToSend.data)) {
+        responseToSend.data = mergedOrders;
+      } else {
+        responseToSend.orders = mergedOrders;
+      }
+      return res.json(responseToSend);
+    }
   } catch (err) {
     console.error("Shiprocket order-list error:", err.response?.data || err.message);
     res.status(err.response?.status || 500).json(
@@ -620,13 +720,16 @@ export const refundReport = async (req, res) => {
 // ====================================================
 export const orderWebhook = async (req, res) => {
   try {
-    const order = req.body;
+    const payload = req.body;
     console.log("========== SHIPROCKET ORDER WEBHOOK START ==========");
-    console.log("PAYLOAD RECEIVED:", JSON.stringify(order, null, 2));
+    console.log("PAYLOAD RECEIVED:", JSON.stringify(payload, null, 2));
 
-    const phone = order.customer_phone || (order.shipping_address && order.shipping_address.phone) || order.phone;
-    const email = order.customer_email || order.email;
-    const name = order.customer_name || (order.shipping_address && order.shipping_address.fullName) || order.name;
+    const phone = payload.customer_phone || payload.phone || 
+                  (payload.customer && payload.customer.phone) || 
+                  (payload.shipping_address && payload.shipping_address.phone);
+    const email = payload.customer_email || payload.email || (payload.customer && payload.customer.email);
+    const name = payload.customer_name || (payload.shipping_address && payload.shipping_address.fullName) || 
+                 payload.name || (payload.customer && ((payload.customer.first_name || "") + " " + (payload.customer.last_name || "")).trim());
 
     let user = null;
 
@@ -647,12 +750,12 @@ export const orderWebhook = async (req, res) => {
       if (!user) {
         console.log(`User not found for phone ${formattedPhone}. Creating a new user automatically.`);
         const secureRandomPassword = crypto.randomBytes(16).toString("hex");
-        let finalEmail = email ? email.toLowerCase().trim() : `${formattedPhone}@toyhaat.fastrr.com`;
+        let finalEmail = email ? email.toLowerCase().trim() : `${formattedPhone}@trivoxotoys.com`;
 
         // Ensure email uniqueness
         const emailExists = await User.findOne({ email: finalEmail });
         if (emailExists) {
-          finalEmail = `${formattedPhone}-${Date.now()}@toyhaat.fastrr.com`;
+          finalEmail = `${formattedPhone}-${Date.now()}@trivoxotoys.com`;
         }
 
         user = await User.create({
@@ -660,10 +763,10 @@ export const orderWebhook = async (req, res) => {
           email: finalEmail,
           phone: formattedPhone,
           password: secureRandomPassword,
-          address: order.shipping_address?.address || "",
-          city: order.shipping_address?.city || "",
-          state: order.shipping_address?.state || "",
-          pincode: order.shipping_address?.pincode || "",
+          address: (payload.shipping_address?.address1 || payload.shipping_address?.address || ""),
+          city: payload.shipping_address?.city || "",
+          state: payload.shipping_address?.province || payload.shipping_address?.state || "",
+          pincode: payload.shipping_address?.zip || payload.shipping_address?.pincode || "",
         });
       }
     } else if (email) {
@@ -677,20 +780,123 @@ export const orderWebhook = async (req, res) => {
           full_name: name || "Customer",
           email: finalEmail,
           password: secureRandomPassword,
-          address: order.shipping_address?.address || "",
-          city: order.shipping_address?.city || "",
-          state: order.shipping_address?.state || "",
-          pincode: order.shipping_address?.pincode || "",
+          address: (payload.shipping_address?.address1 || payload.shipping_address?.address || ""),
+          city: payload.shipping_address?.city || "",
+          state: payload.shipping_address?.province || payload.shipping_address?.state || "",
+          pincode: payload.shipping_address?.zip || payload.shipping_address?.pincode || "",
         });
       }
     }
 
-    if (user) {
-      console.log(`Associating order with user ID: ${user._id}`);
-      order.user = user._id;
+    // Shopify-emulated payload mapping for Order schema compatibility
+    let order_number = payload.order_number || payload.name || (payload.id && payload.id.toString());
+    if (!order_number) {
+      order_number = "ORD" + Date.now();
     }
 
-    const createdOrder = await Order.create(order);
+    let customer_name = name || "Customer";
+    let customer_email = email || "no-email@dummy.com";
+
+    // Shipping address mapping
+    let shipping_address = {
+      address: payload.shipping_address?.address || "",
+      city: payload.shipping_address?.city || "",
+      state: payload.shipping_address?.state || "",
+      pincode: payload.shipping_address?.pincode || "",
+    };
+    if (payload.shipping_address && (payload.shipping_address.address1 || payload.shipping_address.address2)) {
+      shipping_address = {
+        address: [payload.shipping_address.address1, payload.shipping_address.address2].filter(Boolean).join(", "),
+        city: payload.shipping_address.city || "",
+        state: payload.shipping_address.province || payload.shipping_address.state || "",
+        pincode: payload.shipping_address.zip || payload.shipping_address.pincode || "",
+      };
+    }
+
+    // Items mapping
+    let items = [];
+    const rawItems = payload.items || payload.line_items || [];
+    for (const item of rawItems) {
+      const sku = item.sku || item.product_id;
+      let product_id = null;
+      let itemImage = item.image || (item.image && item.image.src) || "";
+
+      if (sku && mongoose.Types.ObjectId.isValid(sku)) {
+        product_id = sku;
+      } else {
+        const foundProd = await Product.findOne({
+          $or: [
+            { name: item.name || item.title },
+            { shiprocketVariantId: sku }
+          ]
+        });
+        if (foundProd) {
+          product_id = foundProd._id;
+          if (!itemImage && foundProd.image) {
+            itemImage = foundProd.image;
+          }
+        }
+      }
+
+      items.push({
+        product: product_id,
+        name: item.name || item.title || "",
+        quantity: item.quantity || item.qty || 1,
+        price: Number(item.price) || 0,
+        image: itemImage,
+      });
+    }
+
+    const subtotal = Number(payload.subtotal || payload.subtotal_price || payload.total_line_items_price || 0);
+    const shipping = Number(payload.shipping || payload.total_shipping_price_set?.shop_money?.amount || 0);
+    const cod_charge = Number(payload.cod_charge || 0);
+    const discount = Number(payload.discount || payload.total_discounts || 0);
+    const total = Number(payload.total || payload.total_price || 0);
+    const payment_method = payload.payment_method || payload.gateway || (payload.payment_gateway_names && payload.payment_gateway_names[0]) || "prepaid";
+    
+    let rawStatus = payload.status || "Placed";
+    // Normalize status into capitalization required by enum: [Placed, Processing, Shipped, Delivered, Cancelled, Return Requested, Returned]
+    const validStatuses = ["Placed", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned"];
+    let status = "Placed";
+    const foundStatus = validStatuses.find(s => s.toLowerCase() === rawStatus.toLowerCase());
+    if (foundStatus) {
+      status = foundStatus;
+    } else {
+      // mapping standard keywords
+      const lowerStatus = rawStatus.toLowerCase();
+      if (lowerStatus.includes("deliver")) status = "Delivered";
+      else if (lowerStatus.includes("ship") || lowerStatus.includes("transit") || lowerStatus.includes("dispatch")) status = "Shipped";
+      else if (lowerStatus.includes("process") || lowerStatus.includes("confirm") || lowerStatus.includes("pack")) status = "Processing";
+      else if (lowerStatus.includes("cancel")) status = "Cancelled";
+      else if (lowerStatus.includes("return") && lowerStatus.includes("request")) status = "Return Requested";
+      else if (lowerStatus.includes("return")) status = "Returned";
+    }
+
+    const mappedOrder = {
+      order_number,
+      customer_name,
+      customer_email,
+      customer_phone: phone,
+      shipping_address,
+      items,
+      subtotal,
+      shipping,
+      cod_charge,
+      discount,
+      total,
+      payment_method,
+      status,
+      isPaid: payload.isPaid || (payload.financial_status === "paid") || false,
+      paidAt: payload.paidAt || (payload.financial_status === "paid" ? Date.now() : null),
+      payment_id: payload.payment_id || payload.gateway || null,
+      user: user ? user._id : null,
+      shiprocket_order_id: payload.shiprocket_order_id || payload.order_id || payload.id || null,
+      shipment_id: payload.shipment_id || null,
+      awb_code: payload.awb_code || null,
+      tracking_url: payload.tracking_url || null,
+    };
+
+    const createdOrder = await Order.create(mappedOrder);
     console.log("Created order successfully in database:", createdOrder._id);
     console.log("========== SHIPROCKET ORDER WEBHOOK END ==========");
 

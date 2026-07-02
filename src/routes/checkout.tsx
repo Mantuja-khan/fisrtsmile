@@ -58,19 +58,19 @@ function CheckoutPage() {
     }
   }, [user, hasLoadedProfile]);
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     if (!couponCode) return;
-    const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
-    const found = saved.find((c: any) => c.code === couponCode && c.active);
-    if (found) {
-      if (found.phone && user?.phone && found.phone !== user.phone) {
-        toast.error("This coupon is not valid for your account.");
-        return;
+    try {
+      const { data } = await api.get("/coupons");
+      const found = data.find((c: any) => c.code === couponCode.trim().toUpperCase() && c.active);
+      if (found) {
+        setAppliedCoupon(found);
+        toast.success("Coupon applied successfully!");
+      } else {
+        toast.error("Invalid or expired coupon code.");
       }
-      setAppliedCoupon(found);
-      toast.success("Coupon applied successfully!");
-    } else {
-      toast.error("Invalid or expired coupon code.");
+    } catch (err) {
+      toast.error("Failed to verify coupon code.");
     }
   };
 
@@ -119,7 +119,7 @@ function CheckoutPage() {
           </div>
 
           <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
-            By checking out, you agree to ToyHaat's Terms & Conditions. OTP services are powered
+            By checking out, you agree to Trivoxo Toys' Terms & Conditions. OTP services are powered
             securely by Shiprocket.
           </p>
         </div>
@@ -195,11 +195,11 @@ function CheckoutPage() {
         // CLEAR LOCAL STATE BEFORE REDIRECT so user doesn't see double cart
         clearCart();
         if (appliedCoupon) {
-          const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
+          const saved = JSON.parse(localStorage.getItem("trivoxo_coupons") || "[]");
           const updated = saved.map((c: any) =>
             c.code === appliedCoupon.code ? { ...c, active: false } : c,
           );
-          localStorage.setItem("toyhaat_coupons", JSON.stringify(updated));
+          localStorage.setItem("trivoxo_coupons", JSON.stringify(updated));
         }
 
         // Execute secure dynamic POST to PayU
@@ -208,11 +208,11 @@ function CheckoutPage() {
       } else {
         clearCart();
         if (appliedCoupon) {
-          const saved = JSON.parse(localStorage.getItem("toyhaat_coupons") || "[]");
+          const saved = JSON.parse(localStorage.getItem("trivoxo_coupons") || "[]");
           const updated = saved.map((c: any) =>
             c.code === appliedCoupon.code ? { ...c, active: false } : c,
           );
-          localStorage.setItem("toyhaat_coupons", JSON.stringify(updated));
+          localStorage.setItem("trivoxo_coupons", JSON.stringify(updated));
         }
         toast.success(`Order placed! ID: ${data.order_number}`);
         navigate({ to: "/track", search: { orderId: data.order_number } as never });

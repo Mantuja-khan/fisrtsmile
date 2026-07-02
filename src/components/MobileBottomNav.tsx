@@ -24,14 +24,14 @@ export function MobileBottomNav() {
             </span>
           )}
         </Link>
-        <Link
+        {/* <Link
           to="/account"
           search={{ view: "orders" } as any}
           className={item}
           activeProps={active}
         >
           <Package className="size-5" /> My Orders
-        </Link>
+        </Link> */}
         <Link
           to="/account"
           search={{ view: "profile" } as any}

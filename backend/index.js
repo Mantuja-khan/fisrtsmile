@@ -9,6 +9,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 
 import path from "path";
 
@@ -48,6 +49,7 @@ app.use("/api/collections", collectionRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/coupons", couponRoutes);
 app.use("/api/shiprocket", shiprocketRoutes);
 
 import { fileURLToPath } from "url";

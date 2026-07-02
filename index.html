@@ -10,10 +10,21 @@
   <link rel="stylesheet" href="https://checkout-ui.shiprocket.com/assets/styles/shopify.css" />
   <script src="https://checkout-ui.shiprocket.com/assets/js/channels/login.js"></script>
   <script src="https://checkout-ui.shiprocket.com/assets/js/channels/shopify.js"></script>
-</head> 
+</head>
 <body>
   <div id="app"></div>
+  <!-- Required container for Shiprocket/Fastrr login widget --
+       login.js reads .style on this element; without it the widget throws
+       "Cannot read properties of null (reading 'style')" on modal close -->
+  <div
+    id="fastrr-checkout"
+    style="display:none;position:fixed;z-index:99999;top:0;left:0;width:100%;height:100%;"
+    aria-hidden="true"
+  ></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>
+
+
+    

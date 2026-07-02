@@ -19,6 +19,7 @@ import { useAuth } from "@/store/auth";
 import api from "@/services/api";
 import { toast } from "sonner";
 import { redirectToPayU } from "@/utils/payu";
+import ShiprocketLoginButton from "@/components/ShiprocketLoginButton";
 
 export const Route = createFileRoute("/my-orders")({
   head: () => ({ meta: [{ title: "My Orders — Trivoxo Toys" }] }),
@@ -187,11 +188,8 @@ function MyOrdersPage() {
     if (!user) return;
     setLoading(true);
     try {
-      // 1. Fetch orders from our DB
-      const { data: dbOrders } = await api.get("/orders/myorders");
-
-      // 2. Fetch live Shiprocket statuses (using user phone if available)
-      let srOrderMap: Record<string, { status: string; awb?: string }> = {};
+      // Fetch live Shiprocket statuses (using user phone if available)
+      let srOrders: any[] = [];
       if (user.phone) {
         try {
           const { data: srData } = await api.post("/shiprocket/order-list", {
@@ -199,42 +197,44 @@ function MyOrdersPage() {
             page: 1,
             per_page: 50,
           });
-          const srOrders: any[] = Array.isArray(srData)
+          srOrders = Array.isArray(srData)
             ? srData
             : srData?.data?.orders || srData?.orders || srData?.data || [];
-
-          srOrders.forEach((sr: any) => {
-            const ref =
-              sr.channel_order_id ||
-              sr.reference_number ||
-              sr.order_id?.toString();
-            if (ref) {
-              srOrderMap[ref] = {
-                status: sr.status || sr.current_status || "",
-                awb: sr.shipments?.[0]?.awb || sr.awb_code || "",
-              };
-            }
-          });
         } catch {
-          // Shiprocket fetch failed — silently fall back to DB statuses
+          // Shiprocket fetch failed
         }
       }
 
-      // 3. Merge: augment each DB order with live Shiprocket status
-      const merged = dbOrders.map((o: MyOrder) => {
-        const sr = srOrderMap[o.order_number];
-        if (sr?.status) {
-          return {
-            ...o,
-            shiprocket_status: sr.status,      // raw label for display
-            shiprocket_awb: sr.awb,
-            status: mapShiprocketStatus(sr.status) as MyOrder["status"],
-          };
-        }
-        return o;
+      // Map Shiprocket orders directly to the MyOrder schema
+      const mapped = srOrders.map((sr: any) => {
+        const ref =
+          sr.channel_order_id ||
+          sr.reference_number ||
+          sr.order_id?.toString();
+
+        const mappedItems = (sr.products || sr.items || sr.line_items || []).map((p: any) => ({
+          name: p.name || p.title || "Toy Product",
+          quantity: Number(p.quantity || p.qty || 1),
+          price: Number(p.price || 0),
+          image: p.image || p.image_url || p.image_src || "https://placehold.co/80x80?text=Toy",
+          product: p.product_id || p.sku || "",
+        }));
+
+        return {
+          _id: sr.order_id?.toString() || sr.channel_order_id || ref,
+          order_number: ref,
+          status: mapShiprocketStatus(sr.status || sr.current_status || "placed") as MyOrder["status"],
+          shiprocket_status: sr.status || sr.current_status || "Placed",
+          shiprocket_awb: sr.shipments?.[0]?.awb || sr.awb_code || "",
+          total: Number(sr.total || sr.total_price || sr.order_total || mappedItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)),
+          createdAt: sr.created_at || sr.date || new Date().toISOString(),
+          payment_method: sr.payment_method || sr.payment_type || "COD",
+          isPaid: sr.is_paid || (sr.payment_status && sr.payment_status.toLowerCase() === "paid") || false,
+          items: mappedItems,
+        };
       });
 
-      setOrders(merged);
+      setOrders(mapped);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to load orders");
     } finally {
@@ -318,12 +318,11 @@ function MyOrdersPage() {
           </div>
           <h2 className="font-bold text-lg text-slate-800 mb-2">Sign in to view orders</h2>
           <p className="text-xs text-slate-400 mb-6">Please log in to track your orders, refunds, and more.</p>
-          <Link
-            to="/account"
-            className="inline-block bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-slate-800 transition"
-          >
-            Sign In
-          </Link>
+          <ShiprocketLoginButton
+            buttonText="Login with Phone Number"
+            className="w-full py-3.5 text-xs font-black tracking-widest uppercase rounded-full shadow-md bg-[#802a8f] hover:bg-[#802a8f]/90 text-white transition-all transform hover:scale-[1.02]"
+            onSuccess={load}
+          />
         </div>
       </div>
     );
@@ -488,7 +487,7 @@ function MyOrdersPage() {
                   const isCancelled = lstatus === "cancelled";
                   const isDelivered = lstatus === "delivered";
                   const diffDays = Math.ceil(Math.abs(new Date().getTime() - new Date(o.createdAt).getTime()) / (1000 * 60 * 60 * 24));
-                  const canReturn = isDelivered && diffDays <= 4 && lstatus !== "return requested" && lstatus !== "returned";
+                  const canReturn = isDelivered && diffDays <= 4;
 
                   return (
                     <div key={o._id} className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden hover:shadow-md transition-shadow duration-200">
@@ -574,6 +573,16 @@ function MyOrdersPage() {
                               <p className="text-xs text-slate-400 mt-0.5">
                                 Qty: {it.quantity} × ₹{Number(it.price).toLocaleString("en-IN")}
                               </p>
+                              {o.shiprocket_status ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-2 py-0.5 rounded-full mt-1.5 w-fit uppercase tracking-wide">
+                                  <span className="size-1.5 rounded-full bg-violet-500 animate-pulse" />
+                                  Shiprocket: {o.shiprocket_status}
+                                </span>
+                              ) : o.status ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-slate-600 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-full mt-1.5 w-fit uppercase tracking-wide">
+                                  Status: {o.status}
+                                </span>
+                              ) : null}
                             </div>
                             <div className="shrink-0 text-right flex items-center gap-1">
                               <span className="font-black text-sm text-slate-900">

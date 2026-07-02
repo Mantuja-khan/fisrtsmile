@@ -140,15 +140,15 @@ export const getEmailTemplate = (title, content) => {
                     
                     <div class="signature">
                         Best Regards,<br>
-                        <strong>Team Toy Haat</strong>
+                        <strong>Team Trivoxo</strong>
                     </div>
                 </div>
                 <div class="footer">
-                    <p>© ${new Date().getFullYear()} Toy Haat. All Rights Reserved.</p>
+                    <p>© ${new Date().getFullYear()} Trivoxo. All Rights Reserved.</p>
                     <p>Bringing smiles, one toy at a time.</p>
                     <div class="social-links">
-                        <a href="mailto:toyhaat@gmail.com">Email Us</a> | 
-                        <a href="https://instagram.com/toyhaat">Instagram</a>
+                        <a href="mailto:support@trivoxotoys.com">Email Us</a> | 
+                        <a href="https://instagram.com/trivoxotoys">Instagram</a>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,7 @@ export const sendEmail = async (to, subject, text, html) => {
     const logoPath = path.join(__dirname, "../../src/assets/firstsmile_logo.png");
 
     await transporter.sendMail({
-      from: `"Toy Haat" <${process.env.EMAIL_USER}>`,
+      from: `"Trivoxo" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,

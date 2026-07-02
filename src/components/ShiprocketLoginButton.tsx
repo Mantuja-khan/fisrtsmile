@@ -61,13 +61,21 @@ export default function ShiprocketLoginButton({
 
           // Extract token, phone and address info supporting multiple response patterns
           const customerToken =
-            response.authorized_customer_token ||
-            response.authorised_customer_token ||
-            response.token;
+            response?.result?.authorised_customer_token ||
+            response?.result?.authorized_customer_token ||
+            response?.authorised_customer_token ||
+            response?.authorized_customer_token ||
+            response?.token;
+
           const phone =
-            response.phone || response.customer?.phone || response.mobile_number || response.mobile;
+            response?.data?.phone ||
+            response?.phone ||
+            response?.customer?.phone;
           const addressData =
-            response.address_data || response.customer || response.address || response;
+            response?.data?.addresses?.[0] ||
+            response?.data ||
+            response?.address ||
+            {};
 
           if (!customerToken) {
             // Callback fired but without token (e.g. user closed it or aborted)
@@ -104,15 +112,39 @@ export default function ShiprocketLoginButton({
       // 4. Trigger the checkout OTP popup
       console.log("Launching OTP popup...");
 
-      headless.login(
-        e.nativeEvent,
-        token,
-        {
-          themecolor: "ff6600",
-          image: "https://trivoxotoys.com/logo.png",
-        },
-        fastrrCallback,
-      );
+      // Ensure the fastrr-checkout container exists (login.js reads .style on it)
+      let fastrrContainer = document.getElementById("fastrr-checkout");
+      if (!fastrrContainer) {
+        fastrrContainer = document.createElement("div");
+        fastrrContainer.id = "fastrr-checkout";
+        fastrrContainer.style.cssText =
+          "display:none;position:fixed;z-index:99999;top:0;left:0;width:100%;height:100%;";
+        document.body.appendChild(fastrrContainer);
+      }
+
+      try {
+        headless.login(
+          e.nativeEvent,
+          token,
+          {
+            themecolor: "ff6600",
+            image: "https://trivoxotoys.com/logo.png",
+          },
+          fastrrCallback,
+        );
+      } catch (widgetErr: any) {
+        // Shiprocket's widget can throw "Cannot read properties of null (reading 'style')"
+        // when the user closes the modal — this is a known bug in their login.js.
+        // We swallow it here so the user doesn't see an error.
+        if (
+          widgetErr instanceof TypeError &&
+          widgetErr.message?.includes("style")
+        ) {
+          console.warn("Shiprocket widget style error (safe to ignore):", widgetErr.message);
+        } else {
+          throw widgetErr; // re-throw unexpected errors
+        }
+      }
     } catch (err: any) {
       console.error("Shiprocket token or popup error:", err);
       toast.error(err.response?.data?.message || err.message || "Failed to initialize OTP login.");

@@ -230,15 +230,6 @@ export function Header() {
             <div className="hidden lg:flex items-center gap-4 mr-2">
               <Link to="/about" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">About</Link>
               <Link to="/contact" className="text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider">Contact</Link>
-              {user && (
-                <Link
-                  to="/my-orders"
-                  className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-[#1E3A8A] transition-colors uppercase tracking-wider"
-                >
-                  <Package className="size-4" />
-                  My Orders
-                </Link>
-              )}
             </div>
 
 
@@ -505,16 +496,13 @@ export function Header() {
               Coupons
             </Link>
 
-            {/* My Orders — only shown when user is logged in */}
-            {user && (
-              <Link
-                to="/my-orders"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
-              >
-                <Package className="size-3.5 shrink-0" />
-                My Orders
-              </Link>
-            )}
+            {/* <Link
+              to="/my-orders"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider text-slate-800 hover:bg-white/40 hover:text-slate-950 transition-all"
+            >
+              <Package className="size-3.5 shrink-0" />
+              My Orders
+            </Link> */}
           </nav>
         </div>
       </div>
@@ -639,16 +627,13 @@ export function Header() {
                 Coupons
               </Link>
 
-              {user && (
-                <Link
-                  to="/account"
-                  search={{ view: "orders" } as any}
-                  className="p-4 border-b border-slate-100    text-slate-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  My Orders
-                </Link>
-              )}
+              {/* <Link
+                to="/my-orders"
+                className="p-4 border-b border-slate-100    text-slate-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                My Orders
+              </Link> */}
 
               <Link
                 to="/about"

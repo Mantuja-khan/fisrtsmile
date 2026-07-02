@@ -1,12 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Mail, MessageCircle, Instagram, Truck, Headphones, CornerDownLeft, Banknote, ShieldCheck, CreditCard } from "lucide-react";
 import logo from "@/assets/firstsmile_logo.png";
-import footerBg from "@/assets/footer_banner.jpg";
+import footerBg from "@/assets/firstsmile_logo.png";
 
 export function Footer() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
-
   return (
     <>
       {/* Features Block */}
@@ -169,7 +168,7 @@ export function Footer() {
                 </span>
               </div>
               <span className="font-medium text-slate-300 flex items-center gap-1">
-                Made with <span className="text-rose-500 animate-pulse">❤️</span> for little explorers
+                Created by VM solutiions
               </span>
             </div>
           </div>

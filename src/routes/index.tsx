@@ -64,35 +64,35 @@ const INSTAGRAM_REELS = [
     id: "reel-1",
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-child-playing-with-toys-in-a-crib-41761-large.mp4",
-    instagramUrl: "https://www.instagram.com/toyhaat/",
+    instagramUrl: "https://www.instagram.com/trivoxotoys/",
     caption: "THIS KEPT MY CHILD BUSY LONGER THAN CARTOONS 😂",
   },
   {
     id: "reel-2",
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-little-child-playing-with-wooden-toys-at-home-43033-large.mp4",
-    instagramUrl: "https://www.instagram.com/toyhaat/",
+    instagramUrl: "https://www.instagram.com/trivoxotoys/",
     caption: "PREMIUM WOODEN BLOCKS & LEARNING TOYS 🪵",
   },
   {
     id: "reel-3",
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-kids-hands-playing-with-colorful-building-blocks-42323-large.mp4",
-    instagramUrl: "https://www.instagram.com/toyhaat/",
+    instagramUrl: "https://www.instagram.com/trivoxotoys/",
     caption: "CREATIVE & IMAGINATIVE PLAY FOR TODDLERS 🧩",
   },
   {
     id: "reel-4",
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-toddler-girl-playing-with-soft-plush-toys-in-bed-48866-large.mp4",
-    instagramUrl: "https://www.instagram.com/toyhaat/",
+    instagramUrl: "https://www.instagram.com/trivoxotoys/",
     caption: "SUPER CUTE SOFT TOYS FOR THE PERFECT SLEEP 🧸",
   },
   {
     id: "reel-5",
     videoUrl:
       "https://assets.mixkit.co/videos/preview/mixkit-happy-baby-playing-with-colorful-toys-43026-large.mp4",
-    instagramUrl: "https://www.instagram.com/toyhaat/",
+    instagramUrl: "https://www.instagram.com/trivoxotoys/",
     caption: "SMART TOYS BY Trivoxo Toys 😊",
   },
 ];
@@ -606,7 +606,7 @@ function HomePage() {
                   search={{ age: age.value } as never}
                   className="age-card-item group flex flex-col items-center shrink-0 snap-start transition-transform hover:-translate-y-2"
                 >
-                  <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
+                  <div className="w-full aspect-square overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
                     <img
                       src={age.image}
                       alt={age.label}
@@ -627,7 +627,7 @@ function HomePage() {
                   search={{ age: age.value } as never}
                   className="age-card-item group flex-col items-center transition-transform hover:-translate-y-2 flex"
                 >
-                  <div className="w-full aspect-square overflow-hidden relative rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm border border-slate-100 bg-white">
+                  <div className="w-full aspect-square overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
                     <img
                       src={age.image}
                       alt={age.label}

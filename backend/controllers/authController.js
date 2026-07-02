@@ -96,17 +96,17 @@ export const registerUser = async (req, res) => {
 
   if (user) {
     // Send Welcome Email (Fire and forget asynchronously)
-    const welcomeTitle = "Welcome to Toy Haat! 🎉";
-    const welcomeText = `Welcome ${full_name} to Toy Haat! Your account has been successfully created. We are excited to help you bring smiles, one toy at a time.`;
+    const welcomeTitle = "Welcome to Trivoxo! 🎉";
+    const welcomeText = `Welcome ${full_name} to Trivoxo! Your account has been successfully created. We are excited to help you bring smiles, one toy at a time.`;
     const welcomeHtml = getEmailTemplate(
       welcomeTitle,
       `
-            <h1>Welcome to Toy Haat! 🎈</h1>
+            <h1>Welcome to Trivoxo! 🎈</h1>
             <p>Dear <strong>${full_name}</strong>,</p>
-            <p>Thank you for joining the <strong>Toy Haat</strong> family! Your account has been successfully created.</p>
+            <p>Thank you for joining the <strong>Trivoxo</strong> family! Your account has been successfully created.</p>
             <p>Explore our wide collections of premium, educational, and joyful toys curated just for you.</p>
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://toyhaat.com" class="btn">Start Exploring Our Toys</a>
+                <a href="https://trivoxotoys.com" class="btn">Start Exploring Our Toys</a>
             </div>
             <p>If you have any questions, simply hit reply or reach out on Instagram! We are always happy to assist.</p>
         `,
@@ -267,14 +267,14 @@ export const sendOTP = async (req, res) => {
   await OTP.deleteMany({ email: normalizedEmail });
   await OTP.create({ email: normalizedEmail, otp });
 
-  const title = "Verification Code — Toy Haat";
+  const title = "Verification Code — Trivoxo";
   const text = `Your verification code is: ${otp}. This code is valid for 10 minutes.`;
   const html = getEmailTemplate(
     title,
     `
         <h1>Account Verification</h1>
         <p>Hello there,</p>
-        <p>Thank you for choosing <strong>Toy Haat</strong>. To complete your verification, please use the one-time passcode (OTP) below:</p>
+        <p>Thank you for choosing <strong>Trivoxo</strong>. To complete your verification, please use the one-time passcode (OTP) below:</p>
         <div class="otp-box">${otp}</div>
         <p>This code is valid for <strong>10 minutes</strong>. For security, please do not share this code with anyone.</p>
     `,
@@ -416,7 +416,7 @@ export const shiprocketLogin = async (req, res) => {
     const email = sa.email || req.body.email || "";
     const firstName = sa.first_name || "";
     const lastName = sa.last_name || "";
-    const fullName = [firstName, lastName].filter(Boolean).join(" ") || "ToyHaat Customer";
+    const fullName = [firstName, lastName].filter(Boolean).join(" ") || "Trivoxo Customer";
 
     const fullAddress = [sa.address1, sa.address2].filter(Boolean).join(", ") || "";
     const city = sa.city || "";
@@ -438,7 +438,7 @@ export const shiprocketLogin = async (req, res) => {
 
       // Update user details with newest verified info from Shiprocket Fastrr
       user.phone = formattedPhone;
-      if (fullName && fullName !== "ToyHaat Customer") user.full_name = fullName;
+      if (fullName && fullName !== "Trivoxo Customer") user.full_name = fullName;
       if (fullAddress) user.address = fullAddress;
       if (city) user.city = city;
       if (state) user.state = state;
@@ -451,17 +451,17 @@ export const shiprocketLogin = async (req, res) => {
       const secureRandomPassword = crypto.randomBytes(16).toString("hex");
 
       // Fallback email if email is empty or already taken by another account
-      let finalEmail = email ? email.toLowerCase().trim() : `${formattedPhone}@toyhaat.fastrr.com`;
+      let finalEmail = email ? email.toLowerCase().trim() : `${formattedPhone}@trivoxotoys.com`;
       const emailExists = await User.findOne({ email: finalEmail });
       if (emailExists || !finalEmail) {
-        finalEmail = `${formattedPhone}@toyhaat.fastrr.com`;
+        finalEmail = `${formattedPhone}@trivoxotoys.com`;
       }
 
       // Check if this fallback email exists
       const fallbackExists = await User.findOne({ email: finalEmail });
       if (fallbackExists) {
         // If collision still happens (rare), append timestamp
-        finalEmail = `${formattedPhone}-${Date.now()}@toyhaat.fastrr.com`;
+        finalEmail = `${formattedPhone}-${Date.now()}@trivoxotoys.com`;
       }
 
       // Create user

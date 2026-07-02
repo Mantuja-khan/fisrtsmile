@@ -520,12 +520,65 @@ function MyOrdersEngine() {
     }
   };
 
+  const mapShiprocketStatus = (srStatus: string): string => {
+    const s = srStatus.toLowerCase();
+    if (s.includes("deliver")) return "delivered";
+    if (s.includes("ship") || s.includes("transit") || s.includes("dispatch")) return "shipped";
+    if (s.includes("process") || s.includes("confirm") || s.includes("pack")) return "processing";
+    if (s.includes("cancel")) return "cancelled";
+    if (s.includes("return") && s.includes("request")) return "return requested";
+    if (s.includes("return")) return "returned";
+    return "placed";
+  };
+
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const { data } = await api.get("/orders/myorders");
-      setOrders(data);
+      let srOrders: any[] = [];
+      if (user.phone) {
+        try {
+          const { data: srData } = await api.post("/shiprocket/order-list", {
+            phone: user.phone,
+            page: 1,
+            per_page: 50,
+          });
+          srOrders = Array.isArray(srData)
+            ? srData
+            : srData?.data?.orders || srData?.orders || srData?.data || [];
+        } catch {
+          // Ignore fetch errors
+        }
+      }
+
+      const mapped = srOrders.map((sr: any) => {
+        const ref =
+          sr.channel_order_id ||
+          sr.reference_number ||
+          sr.order_id?.toString() ||
+          "SR-" + Date.now();
+
+        const mappedItems = (sr.products || sr.items || sr.line_items || []).map((p: any) => ({
+          name: p.name || p.title || "Toy Product",
+          quantity: Number(p.quantity || p.qty || 1),
+          price: Number(p.price || 0),
+          image: p.image || p.image_url || p.image_src || "https://placehold.co/80x80?text=Toy",
+          product: p.product_id || p.sku || "",
+        }));
+
+        return {
+          _id: sr.order_id?.toString() || sr.channel_order_id || ref,
+          order_number: ref,
+          status: mapShiprocketStatus(sr.status || sr.current_status || "placed") as MyOrder["status"],
+          total: Number(sr.total || sr.total_price || sr.order_total || mappedItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)),
+          createdAt: sr.created_at || sr.date || new Date().toISOString(),
+          payment_method: sr.payment_method || sr.payment_type || "COD",
+          isPaid: sr.is_paid || (sr.payment_status && sr.payment_status.toLowerCase() === "paid") || false,
+          items: mappedItems,
+        };
+      });
+
+      setOrders(mapped);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to load orders");
     } finally {

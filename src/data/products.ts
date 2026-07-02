@@ -73,7 +73,7 @@ export const resolveImage = (img: any): string => {
 
   // Handle legacy localhost URLs stored in DB
   let normalized = srcStr;
-  const apiHost = import.meta.env.VITE_API_URL || "https://api.toyhaat.com/api";
+  const apiHost = import.meta.env.VITE_API_URL || "https://api.trivoxotoys.com/api";
   const baseUrl = apiHost.replace(/\/api\/?$/, ""); // get base domain without trailing slash or /api
 
   if (
